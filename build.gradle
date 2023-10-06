@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+}
+
+group 'es.ugr.main.java.scimat'
+version '1.1.4'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.xmlgraphics:fop:2.0'
+
+    implementation 'org.apache.xmlgraphics:batik-swing:1.8'
+
+
+    implementation 'org.jdesktop:appframework:1.0.3'
+    implementation 'org.swinglabs:swing-layout:1.0.3'
+    implementation 'org.swinglabs:swing-worker:1.1'
+
+    implementation 'org.jfree:jfreechart:1.0.19'
+
+    implementation 'net.sourceforge.javacsv:javacsv:2.0'
+
+
+    implementation 'org.xerial:sqlite-jdbc:3.8.11.2'
+
+
+    implementation 'org.apache.commons:commons-lang3:3.4'
+
+    implementation 'org.apache.commons:commons-math:2.2'
+
+    implementation 'colt:colt:1.2.0'
+
+
+    implementation 'junit:junit:4.12'
+}

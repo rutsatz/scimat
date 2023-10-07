@@ -5,6 +5,13 @@
  */
 package scimat.api.loader;
 
+import org.apache.commons.lang3.StringUtils;
+import scimat.model.knowledgebase.KnowledgeBaseManager;
+import scimat.model.knowledgebase.dao.*;
+import scimat.model.knowledgebase.entity.*;
+import scimat.model.knowledgebase.exception.KnowledgeBaseException;
+import scimat.project.CurrentProject;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,34 +20,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
-import scimat.model.knowledgebase.KnowledgeBaseManager;
-import scimat.model.knowledgebase.dao.AffiliationDAO;
-import scimat.model.knowledgebase.dao.AuthorDAO;
-import scimat.model.knowledgebase.dao.AuthorReferenceDAO;
-import scimat.model.knowledgebase.dao.AuthorReferenceReferenceDAO;
-import scimat.model.knowledgebase.dao.DocumentAffiliationDAO;
-import scimat.model.knowledgebase.dao.DocumentAuthorDAO;
-import scimat.model.knowledgebase.dao.DocumentDAO;
-import scimat.model.knowledgebase.dao.DocumentReferenceDAO;
-import scimat.model.knowledgebase.dao.DocumentWordDAO;
-import scimat.model.knowledgebase.dao.JournalDAO;
-import scimat.model.knowledgebase.dao.JournalSubjectCategoryPublishDateDAO;
-import scimat.model.knowledgebase.dao.PublishDateDAO;
-import scimat.model.knowledgebase.dao.ReferenceDAO;
-import scimat.model.knowledgebase.dao.ReferenceSourceDAO;
-import scimat.model.knowledgebase.dao.SubjectCategoryDAO;
-import scimat.model.knowledgebase.dao.WordDAO;
-import scimat.model.knowledgebase.entity.Affiliation;
-import scimat.model.knowledgebase.entity.Author;
-import scimat.model.knowledgebase.entity.AuthorReference;
-import scimat.model.knowledgebase.entity.DocumentWord;
-import scimat.model.knowledgebase.entity.Journal;
-import scimat.model.knowledgebase.entity.PublishDate;
-import scimat.model.knowledgebase.entity.Reference;
-import scimat.model.knowledgebase.entity.ReferenceSource;
-import scimat.model.knowledgebase.entity.Word;
-import scimat.model.knowledgebase.exception.KnowledgeBaseException;
-import scimat.project.CurrentProject;
 
 /**
  *
@@ -74,13 +53,13 @@ public class RISLoaderMay2014 implements GenericLoader {
   /**************************************************************************/
   /*                           Public Methods                               */
   /**************************************************************************/
-  
-  
+
+
   /**
-   * 
+   *
    * @param kbm
    * @throws LoaderException
-   * @throws KnowledgeBaseException 
+   * @throws KnowledgeBaseException
    */
   @Override
   public void execute(KnowledgeBaseManager kbm) throws LoaderException, KnowledgeBaseException {
@@ -143,60 +122,36 @@ public class RISLoaderMay2014 implements GenericLoader {
 
       while ((line = input.readLine()) != null) {
 
-        if (line.matches("\\w{2}  - .*")) {
-
-          fieldKey = line.substring(0, 2);
-          field = line.substring(6);
-
-          if (fieldKey.equals("ER")) {
-
-            records.add(record);
-            record = new TreeMap<String, String>();
-
-          } else {
-
-            if (fieldKey.startsWith("N1")) {
-
-              position = field.indexOf(":");
-
-              if (position >= 0) {
-
-                fieldKey = field.substring(0, position).trim();
-
-                field = field.substring(position + 1).trim();
-              }
-            }
-
-            tmpField = record.get(fieldKey);
-
-            if (tmpField != null) {
-
-              tmpField += "\n" + field;
-
-            } else {
-
-              tmpField = field;
-            }
-
-            record.put(fieldKey, tmpField);
-
-          }
-
-        } else if (fieldKey != null) {
-
-          tmpField = record.get(fieldKey);
-
-          if (tmpField != null) {
-
-            tmpField += "\n" + line;
-
-          } else {
-
-            tmpField = line;
-          }
-
-          record.put(fieldKey, tmpField);
+        // new article
+        if (StringUtils.isBlank(line)) {
+          records.add(record);
+          record = new TreeMap<String, String>();
+          continue;
         }
+
+        // continues last part of abstract
+        if (StringUtils.isBlank(StringUtils.substring(line, 0, 3))) {
+          record.put("AB", record.get("AB").concat("\n").concat(line.trim()));
+          continue;
+        }
+
+        String[] parts = line.split("-", 2);
+        String key = parts[0];
+        String value = "";
+        if (parts.length >= 2) {
+          value = parts[1];
+          }
+
+        key = key.trim().toUpperCase();
+        key = StringUtils.remove(key, '\uFEFF');
+
+        if (key.equals("T1")) { // Science Direct, Web of Science
+          key = "TI";
+          }
+
+        value = value.trim();
+
+        record.put(key, value);
       }
 
     } catch (FileNotFoundException fnfe) {
@@ -361,7 +316,7 @@ public class RISLoaderMay2014 implements GenericLoader {
       splitAuthorName = authorNames.split("\n");
 
       for (i = 0; i < splitAuthorName.length; i++) {
-       
+
         authorName = splitAuthorName[i];
 
         author = authorDAO.getAuthor(authorName, "");
@@ -512,7 +467,7 @@ public class RISLoaderMay2014 implements GenericLoader {
 
     return publishDateID;
   }
-  
+
   /**
    *
    * @param documentID

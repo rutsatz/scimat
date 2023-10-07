@@ -2,12 +2,32 @@ plugins {
     id 'java'
 }
 
-group 'es.ugr.main.java.scimat'
+group 'es.ugr.scimat'
 version '1.1.4'
 sourceCompatibility = '1.8'
 
 repositories {
     mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'SciMAT',
+                'Implementation-Version': version,
+                'Main-Class': 'scimat.SciMATApp'
+    }
+    from {
+        duplicatesStrategy DuplicatesStrategy.EXCLUDE
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 dependencies {
@@ -36,4 +56,8 @@ dependencies {
 
 
     implementation 'junit:junit:4.12'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }

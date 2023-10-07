@@ -3,7 +3,7 @@
  *
  * Created on 06-mar-2011, 20:57:22
  */
-package es.ugr.scimat;
+package scimat;
 
 import es.ugr.scimat.gui.MainFrame;
 

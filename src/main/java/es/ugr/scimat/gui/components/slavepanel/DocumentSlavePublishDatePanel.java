@@ -5,7 +5,6 @@
  */
 package es.ugr.scimat.gui.components.slavepanel;
 
-import java.util.ArrayList;
 import es.ugr.scimat.gui.components.ErrorDialogManager;
 import es.ugr.scimat.model.knowledgebase.entity.Document;
 import es.ugr.scimat.model.knowledgebase.entity.PublishDate;
@@ -14,186 +13,187 @@ import es.ugr.scimat.project.CurrentProject;
 import es.ugr.scimat.project.observer.EntityObserver;
 import es.ugr.scimat.project.observer.PublishDateRelationDocumentObserver;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
-public class DocumentSlavePublishDatePanel extends GenericOneSlaveItemPanel 
+public class DocumentSlavePublishDatePanel extends GenericOneSlaveItemPanel
         implements PublishDateRelationDocumentObserver, EntityObserver<PublishDate> {
 
-  /** Creates new form DocumentSlavePublishDatePanel */
-  public DocumentSlavePublishDatePanel() {
-    initComponents();
+    /**
+     * Creates new form DocumentSlavePublishDatePanel
+     */
+    public DocumentSlavePublishDatePanel() {
+        initComponents();
 
-    CurrentProject.getInstance().getKbObserver().addPublishDateRelationDocumentsObserver(this);
-    CurrentProject.getInstance().getKbObserver().addPublishDateObserver(this);
-  }
-
-  /**
-   *
-   */
-  private void refresh() {
-
-    if (this.publishDate != null) {
-
-      this.yearTextField.setText(this.publishDate.getYear());
-      this.dateTextField.setText(this.publishDate.getDate());
-      fireSlaveItemObserver(true);
-
-    } else {
-
-      this.yearTextField.setText("");
-      this.dateTextField.setText("");
+        CurrentProject.getInstance().getKbObserver().addPublishDateRelationDocumentsObserver(this);
+        CurrentProject.getInstance().getKbObserver().addPublishDateObserver(this);
     }
-  }
 
-  /**
-   *
-   */
-  public void setMasterItem(Document document) {
+    /**
+     *
+     */
+    private void refresh() {
 
-    this.document = document;
+        if (this.publishDate != null) {
 
-    try {
+            this.yearTextField.setText(this.publishDate.getYear());
+            this.dateTextField.setText(this.publishDate.getDate());
+            fireSlaveItemObserver(true);
 
-      if (this.document != null) {
+        } else {
 
-        relationChanged();
+            this.yearTextField.setText("");
+            this.dateTextField.setText("");
+        }
+    }
 
-      } else {
+    /**
+     *
+     */
+    public void setMasterItem(Document document) {
 
-        this.publishDate = null;
+        this.document = document;
+
+        try {
+
+            if (this.document != null) {
+
+                relationChanged();
+
+            } else {
+
+                this.publishDate = null;
+                refresh();
+
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            ErrorDialogManager.getInstance().showException(e);
+
+        }
+    }
+
+    /**
+     *
+     */
+    public void relationChanged() throws KnowledgeBaseException {
+
+        if (this.document != null) {
+
+            this.publishDate = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getPublishDate(this.document.getDocumentID());
+
+        } else {
+
+            this.publishDate = null;
+
+        }
+
         refresh();
-
-      }
-
-    } catch (KnowledgeBaseException e) {
-    
-      ErrorDialogManager.getInstance().showException(e);
-
     }
-  }
 
-  /**
-   * 
-   */
-  public void relationChanged() throws KnowledgeBaseException {
-
-    if (this.document != null) {
-    
-      this.publishDate = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getPublishDate(this.document.getDocumentID());
-      
-    } else {
-    
-      this.publishDate = null;
-      
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityAdded(ArrayList<PublishDate> items) throws KnowledgeBaseException {
+        // Do not do nothing
     }
-    
-    refresh();
-  }
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityAdded(ArrayList<PublishDate> items) throws KnowledgeBaseException {
-    // Do not do nothing
-  }
+    /**
+     * @param entity
+     * @throws KnowledgeBaseException
+     */
+    public void entityRefresh() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @param entity
-   * @throws KnowledgeBaseException
-   */
-  public void entityRefresh() throws KnowledgeBaseException {
+        if (this.publishDate != null) {
 
-    if (this.publishDate != null) {
-
-      this.publishDate = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().getPublishDate(this.document.getDocumentID());
-      refresh();
+            this.publishDate = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().getPublishDate(this.document.getDocumentID());
+            refresh();
+        }
     }
-  }
 
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityRemoved(ArrayList<PublishDate> items) throws KnowledgeBaseException {
-    // Do not do nothing
-  }
-
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityUpdated(ArrayList<PublishDate> items) throws KnowledgeBaseException {
-
-    int position;
-
-    if (this.publishDate != null) {
-
-      position = items.indexOf(this.publishDate);
-
-      if (position != -1) {
-
-        this.publishDate = items.get(position);
-      }
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityRemoved(ArrayList<PublishDate> items) throws KnowledgeBaseException {
+        // Do not do nothing
     }
-  }
 
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityUpdated(ArrayList<PublishDate> items) throws KnowledgeBaseException {
 
-    yearDescriptionLabel = new javax.swing.JLabel();
-    yearTextField = new javax.swing.JTextField();
-    dateDescriptionLabel = new javax.swing.JLabel();
-    dateTextField = new javax.swing.JTextField();
+        int position;
 
-    yearDescriptionLabel.setText("Year:");
+        if (this.publishDate != null) {
 
-    yearTextField.setEditable(false);
+            position = items.indexOf(this.publishDate);
 
-    dateDescriptionLabel.setText("Date:");
+            if (position != -1) {
 
-    dateTextField.setEditable(false);
+                this.publishDate = items.get(position);
+            }
+        }
+    }
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-    this.setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(yearDescriptionLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(yearTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(dateDescriptionLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(dateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-        .addComponent(yearDescriptionLabel)
-        .addComponent(yearTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addComponent(dateDescriptionLabel)
-        .addComponent(dateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-    );
-  }// </editor-fold>//GEN-END:initComponents
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel dateDescriptionLabel;
-  private javax.swing.JTextField dateTextField;
-  private javax.swing.JLabel yearDescriptionLabel;
-  private javax.swing.JTextField yearTextField;
-  // End of variables declaration//GEN-END:variables
-  private Document document = null;
-  private PublishDate publishDate = null;
+    /**
+     * This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        yearDescriptionLabel = new javax.swing.JLabel();
+        yearTextField = new javax.swing.JTextField();
+        dateDescriptionLabel = new javax.swing.JLabel();
+        dateTextField = new javax.swing.JTextField();
+
+        yearDescriptionLabel.setText("Year:");
+
+        yearTextField.setEditable(false);
+
+        dateDescriptionLabel.setText("Date:");
+
+        dateTextField.setEditable(false);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(yearDescriptionLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(yearTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(dateDescriptionLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(dateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(yearDescriptionLabel)
+                                .addComponent(yearTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(dateDescriptionLabel)
+                                .addComponent(dateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel dateDescriptionLabel;
+    private javax.swing.JTextField dateTextField;
+    private javax.swing.JLabel yearDescriptionLabel;
+    private javax.swing.JTextField yearTextField;
+    // End of variables declaration//GEN-END:variables
+    private Document document = null;
+    private PublishDate publishDate = null;
 }

@@ -5,50 +5,50 @@
  */
 package es.ugr.scimat.analysis;
 
-import java.io.Serializable;
 import es.ugr.scimat.api.analysis.temporal.EvolutionMap;
 import es.ugr.scimat.api.analysis.temporal.OverlappingMap;
 
+import java.io.Serializable;
+
 /**
- *
  * @author mjcobo
  */
 public class LongitudinalResult implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private EvolutionMap evolutionMap;
-  private OverlappingMap overlappingMap;
+    private EvolutionMap evolutionMap;
+    private OverlappingMap overlappingMap;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param evolutionMap
-   * @param overlappingMap
-   */
-  public LongitudinalResult(EvolutionMap evolutionMap, OverlappingMap overlappingMap) {
-    this.evolutionMap = evolutionMap;
-    this.overlappingMap = overlappingMap;
-  }
+    /**
+     * @param evolutionMap
+     * @param overlappingMap
+     */
+    public LongitudinalResult(EvolutionMap evolutionMap, OverlappingMap overlappingMap) {
+        this.evolutionMap = evolutionMap;
+        this.overlappingMap = overlappingMap;
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
 
-  public EvolutionMap getEvolutionMap() {
-    return evolutionMap;
-  }
+    /***************************************************************************/
 
-  public OverlappingMap getOverlappingMap() {
-    return overlappingMap;
-  }
+    public EvolutionMap getEvolutionMap() {
+        return evolutionMap;
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    public OverlappingMap getOverlappingMap() {
+        return overlappingMap;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

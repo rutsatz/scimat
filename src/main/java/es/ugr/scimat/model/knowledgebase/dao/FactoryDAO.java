@@ -10,265 +10,265 @@ import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.model.statistic.dao.StatisticDAO;
 
 /**
- *
  * @author mjcobo
  */
 public class FactoryDAO {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private KnowledgeBaseManager kbm;
+    private KnowledgeBaseManager kbm;
 
-  private AffiliationDAO affiliationDAO;
-  private AuthorAffiliationDAO authorAffiliationDAO;
-  private AuthorDAO authorDAO;
-  private AuthorGroupDAO authorGroupDAO;
-  private AuthorReferenceDAO authorReferenceDAO;
-  private AuthorReferenceGroupDAO authorReferenceGroupDAO;
-  private AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
-  private DocumentAffiliationDAO documentAffiliationDAO;
-  private DocumentAuthorDAO documentAuthorDAO;
-  private DocumentDAO documentDAO;
-  private DocumentReferenceDAO documentReferenceDAO;
-  private DocumentWordDAO documentWordDAO;
-  private JournalDAO journalDAO;
-  private JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
-  private PeriodDAO periodDAO;
-  private PublishDateDAO publishDateDAO;
-  private PublishDatePeriodDAO publishDatePeriodDAO;
-  private ReferenceDAO referenceDAO;
-  private ReferenceGroupDAO referenceGroupDAO;
-  private ReferenceSourceDAO referenceSourceDAO;
-  private ReferenceSourceGroupDAO referenceSourceGroupDAO;
-  private SubjectCategoryDAO subjectCategoryDAO;
-  private WordDAO wordDAO;
-  private WordGroupDAO wordGroupDAO;
-  private StatisticDAO statisticDAO;
+    private AffiliationDAO affiliationDAO;
+    private AuthorAffiliationDAO authorAffiliationDAO;
+    private AuthorDAO authorDAO;
+    private AuthorGroupDAO authorGroupDAO;
+    private AuthorReferenceDAO authorReferenceDAO;
+    private AuthorReferenceGroupDAO authorReferenceGroupDAO;
+    private AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
+    private DocumentAffiliationDAO documentAffiliationDAO;
+    private DocumentAuthorDAO documentAuthorDAO;
+    private DocumentDAO documentDAO;
+    private DocumentReferenceDAO documentReferenceDAO;
+    private DocumentWordDAO documentWordDAO;
+    private JournalDAO journalDAO;
+    private JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
+    private PeriodDAO periodDAO;
+    private PublishDateDAO publishDateDAO;
+    private PublishDatePeriodDAO publishDatePeriodDAO;
+    private ReferenceDAO referenceDAO;
+    private ReferenceGroupDAO referenceGroupDAO;
+    private ReferenceSourceDAO referenceSourceDAO;
+    private ReferenceSourceGroupDAO referenceSourceGroupDAO;
+    private SubjectCategoryDAO subjectCategoryDAO;
+    private WordDAO wordDAO;
+    private WordGroupDAO wordGroupDAO;
+    private StatisticDAO statisticDAO;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public FactoryDAO(KnowledgeBaseManager kbm) throws KnowledgeBaseException {
+    /***************************************************************************/
 
-    this.kbm = kbm;
+    public FactoryDAO(KnowledgeBaseManager kbm) throws KnowledgeBaseException {
 
-    affiliationDAO = new AffiliationDAO(kbm);
-    authorAffiliationDAO = new AuthorAffiliationDAO(kbm);
-    authorDAO = new AuthorDAO(kbm);
-    authorGroupDAO = new AuthorGroupDAO(kbm);
-    authorReferenceDAO = new AuthorReferenceDAO(kbm);
-    authorReferenceGroupDAO = new AuthorReferenceGroupDAO(kbm);
-    authorReferenceReferenceDAO = new AuthorReferenceReferenceDAO(kbm);
-    documentAffiliationDAO = new DocumentAffiliationDAO(kbm);
-    documentAuthorDAO = new DocumentAuthorDAO(kbm);
-    documentDAO = new DocumentDAO(kbm);
-    documentReferenceDAO = new DocumentReferenceDAO(kbm);
-    documentWordDAO = new DocumentWordDAO(kbm);
-    journalDAO = new JournalDAO(kbm);
-    journalSubjectCategoryPublishDateDAO = new JournalSubjectCategoryPublishDateDAO(kbm);
-    periodDAO = new PeriodDAO(kbm);
-    publishDateDAO = new PublishDateDAO(kbm);
-    publishDatePeriodDAO = new PublishDatePeriodDAO(kbm);
-    referenceDAO = new ReferenceDAO(kbm);
-    referenceGroupDAO = new ReferenceGroupDAO(kbm);
-    referenceSourceDAO = new ReferenceSourceDAO(kbm);
-    referenceSourceGroupDAO = new ReferenceSourceGroupDAO(kbm);
-    subjectCategoryDAO = new SubjectCategoryDAO(kbm);
-    wordDAO = new WordDAO(kbm);
-    wordGroupDAO = new WordGroupDAO(kbm);
-    statisticDAO = new StatisticDAO(kbm);
-  }
+        this.kbm = kbm;
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        affiliationDAO = new AffiliationDAO(kbm);
+        authorAffiliationDAO = new AuthorAffiliationDAO(kbm);
+        authorDAO = new AuthorDAO(kbm);
+        authorGroupDAO = new AuthorGroupDAO(kbm);
+        authorReferenceDAO = new AuthorReferenceDAO(kbm);
+        authorReferenceGroupDAO = new AuthorReferenceGroupDAO(kbm);
+        authorReferenceReferenceDAO = new AuthorReferenceReferenceDAO(kbm);
+        documentAffiliationDAO = new DocumentAffiliationDAO(kbm);
+        documentAuthorDAO = new DocumentAuthorDAO(kbm);
+        documentDAO = new DocumentDAO(kbm);
+        documentReferenceDAO = new DocumentReferenceDAO(kbm);
+        documentWordDAO = new DocumentWordDAO(kbm);
+        journalDAO = new JournalDAO(kbm);
+        journalSubjectCategoryPublishDateDAO = new JournalSubjectCategoryPublishDateDAO(kbm);
+        periodDAO = new PeriodDAO(kbm);
+        publishDateDAO = new PublishDateDAO(kbm);
+        publishDatePeriodDAO = new PublishDatePeriodDAO(kbm);
+        referenceDAO = new ReferenceDAO(kbm);
+        referenceGroupDAO = new ReferenceGroupDAO(kbm);
+        referenceSourceDAO = new ReferenceSourceDAO(kbm);
+        referenceSourceGroupDAO = new ReferenceSourceGroupDAO(kbm);
+        subjectCategoryDAO = new SubjectCategoryDAO(kbm);
+        wordDAO = new WordDAO(kbm);
+        wordGroupDAO = new WordGroupDAO(kbm);
+        statisticDAO = new StatisticDAO(kbm);
+    }
 
-  /**
-   * @return the kbm
-   */
-  public KnowledgeBaseManager getKbm() {
-    return kbm;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * @return the affiliationDAO
-   */
-  public AffiliationDAO getAffiliationDAO() {
-    return affiliationDAO;
-  }
+    /**
+     * @return the kbm
+     */
+    public KnowledgeBaseManager getKbm() {
+        return kbm;
+    }
 
-  /**
-   * @return the authorAffiliationDAO
-   */
-  public AuthorAffiliationDAO getAuthorAffiliationDAO() {
-    return authorAffiliationDAO;
-  }
+    /**
+     * @return the affiliationDAO
+     */
+    public AffiliationDAO getAffiliationDAO() {
+        return affiliationDAO;
+    }
 
-  /**
-   * @return the authorDAO
-   */
-  public AuthorDAO getAuthorDAO() {
-    return authorDAO;
-  }
+    /**
+     * @return the authorAffiliationDAO
+     */
+    public AuthorAffiliationDAO getAuthorAffiliationDAO() {
+        return authorAffiliationDAO;
+    }
 
-  /**
-   * @return the authorGroupDAO
-   */
-  public AuthorGroupDAO getAuthorGroupDAO() {
-    return authorGroupDAO;
-  }
+    /**
+     * @return the authorDAO
+     */
+    public AuthorDAO getAuthorDAO() {
+        return authorDAO;
+    }
 
-  /**
-   * @return the authorReferenceDAO
-   */
-  public AuthorReferenceDAO getAuthorReferenceDAO() {
-    return authorReferenceDAO;
-  }
+    /**
+     * @return the authorGroupDAO
+     */
+    public AuthorGroupDAO getAuthorGroupDAO() {
+        return authorGroupDAO;
+    }
 
-  /**
-   * @return the authorReferenceGroupDAO
-   */
-  public AuthorReferenceGroupDAO getAuthorReferenceGroupDAO() {
-    return authorReferenceGroupDAO;
-  }
+    /**
+     * @return the authorReferenceDAO
+     */
+    public AuthorReferenceDAO getAuthorReferenceDAO() {
+        return authorReferenceDAO;
+    }
 
-  /**
-   * @return the authorReferenceReferenceDAO
-   */
-  public AuthorReferenceReferenceDAO getAuthorReferenceReferenceDAO() {
-    return authorReferenceReferenceDAO;
-  }
+    /**
+     * @return the authorReferenceGroupDAO
+     */
+    public AuthorReferenceGroupDAO getAuthorReferenceGroupDAO() {
+        return authorReferenceGroupDAO;
+    }
 
-  /**
-   * @return the documentAffiliationDAO
-   */
-  public DocumentAffiliationDAO getDocumentAffiliationDAO() {
-    return documentAffiliationDAO;
-  }
+    /**
+     * @return the authorReferenceReferenceDAO
+     */
+    public AuthorReferenceReferenceDAO getAuthorReferenceReferenceDAO() {
+        return authorReferenceReferenceDAO;
+    }
 
-  /**
-   * @return the documentAuthorDAO
-   */
-  public DocumentAuthorDAO getDocumentAuthorDAO() {
-    return documentAuthorDAO;
-  }
+    /**
+     * @return the documentAffiliationDAO
+     */
+    public DocumentAffiliationDAO getDocumentAffiliationDAO() {
+        return documentAffiliationDAO;
+    }
 
-  /**
-   * @return the documentDAO
-   */
-  public DocumentDAO getDocumentDAO() {
-    return documentDAO;
-  }
+    /**
+     * @return the documentAuthorDAO
+     */
+    public DocumentAuthorDAO getDocumentAuthorDAO() {
+        return documentAuthorDAO;
+    }
 
-  /**
-   * @return the documentReferenceDAO
-   */
-  public DocumentReferenceDAO getDocumentReferenceDAO() {
-    return documentReferenceDAO;
-  }
+    /**
+     * @return the documentDAO
+     */
+    public DocumentDAO getDocumentDAO() {
+        return documentDAO;
+    }
 
-  /**
-   * @return the documentWordDAO
-   */
-  public DocumentWordDAO getDocumentWordDAO() {
-    return documentWordDAO;
-  }
+    /**
+     * @return the documentReferenceDAO
+     */
+    public DocumentReferenceDAO getDocumentReferenceDAO() {
+        return documentReferenceDAO;
+    }
 
-  /**
-   * @return the journalDAO
-   */
-  public JournalDAO getJournalDAO() {
-    return journalDAO;
-  }
+    /**
+     * @return the documentWordDAO
+     */
+    public DocumentWordDAO getDocumentWordDAO() {
+        return documentWordDAO;
+    }
 
-  /**
-   * @return the journalSubjectCategoryPublishDateDAO
-   */
-  public JournalSubjectCategoryPublishDateDAO getJournalSubjectCategoryPublishDateDAO() {
-    return journalSubjectCategoryPublishDateDAO;
-  }
+    /**
+     * @return the journalDAO
+     */
+    public JournalDAO getJournalDAO() {
+        return journalDAO;
+    }
 
-  /**
-   * @return the periodDAO
-   */
-  public PeriodDAO getPeriodDAO() {
-    return periodDAO;
-  }
+    /**
+     * @return the journalSubjectCategoryPublishDateDAO
+     */
+    public JournalSubjectCategoryPublishDateDAO getJournalSubjectCategoryPublishDateDAO() {
+        return journalSubjectCategoryPublishDateDAO;
+    }
 
-  /**
-   * @return the publishDateDAO
-   */
-  public PublishDateDAO getPublishDateDAO() {
-    return publishDateDAO;
-  }
+    /**
+     * @return the periodDAO
+     */
+    public PeriodDAO getPeriodDAO() {
+        return periodDAO;
+    }
 
-  /**
-   * @return the publishDatePeriodDAO
-   */
-  public PublishDatePeriodDAO getPublishDatePeriodDAO() {
-    return publishDatePeriodDAO;
-  }
+    /**
+     * @return the publishDateDAO
+     */
+    public PublishDateDAO getPublishDateDAO() {
+        return publishDateDAO;
+    }
 
-  /**
-   * @return the referenceDAO
-   */
-  public ReferenceDAO getReferenceDAO() {
-    return referenceDAO;
-  }
+    /**
+     * @return the publishDatePeriodDAO
+     */
+    public PublishDatePeriodDAO getPublishDatePeriodDAO() {
+        return publishDatePeriodDAO;
+    }
 
-  /**
-   * @return the referenceGroupDAO
-   */
-  public ReferenceGroupDAO getReferenceGroupDAO() {
-    return referenceGroupDAO;
-  }
+    /**
+     * @return the referenceDAO
+     */
+    public ReferenceDAO getReferenceDAO() {
+        return referenceDAO;
+    }
 
-  /**
-   * @return the referenceSourceDAO
-   */
-  public ReferenceSourceDAO getReferenceSourceDAO() {
-    return referenceSourceDAO;
-  }
+    /**
+     * @return the referenceGroupDAO
+     */
+    public ReferenceGroupDAO getReferenceGroupDAO() {
+        return referenceGroupDAO;
+    }
 
-  /**
-   * @return the referenceSourceGroupDAO
-   */
-  public ReferenceSourceGroupDAO getReferenceSourceGroupDAO() {
-    return referenceSourceGroupDAO;
-  }
+    /**
+     * @return the referenceSourceDAO
+     */
+    public ReferenceSourceDAO getReferenceSourceDAO() {
+        return referenceSourceDAO;
+    }
 
-  /**
-   * @return the subjectCategoryDAO
-   */
-  public SubjectCategoryDAO getSubjectCategoryDAO() {
-    return subjectCategoryDAO;
-  }
+    /**
+     * @return the referenceSourceGroupDAO
+     */
+    public ReferenceSourceGroupDAO getReferenceSourceGroupDAO() {
+        return referenceSourceGroupDAO;
+    }
 
-  /**
-   * @return the wordDAO
-   */
-  public WordDAO getWordDAO() {
-    return wordDAO;
-  }
+    /**
+     * @return the subjectCategoryDAO
+     */
+    public SubjectCategoryDAO getSubjectCategoryDAO() {
+        return subjectCategoryDAO;
+    }
 
-  /**
-   * @return the wordGroupDAO
-   */
-  public WordGroupDAO getWordGroupDAO() {
-    return wordGroupDAO;
-  }
+    /**
+     * @return the wordDAO
+     */
+    public WordDAO getWordDAO() {
+        return wordDAO;
+    }
 
-  /**
-   * 
-   */
-  public StatisticDAO getStatisticDAO() {
-    return statisticDAO;
-  }
+    /**
+     * @return the wordGroupDAO
+     */
+    public WordGroupDAO getWordGroupDAO() {
+        return wordGroupDAO;
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     *
+     */
+    public StatisticDAO getStatisticDAO() {
+        return statisticDAO;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -8,65 +8,64 @@ package es.ugr.scimat.gui.components.tablemodel;
 import es.ugr.scimat.analysis.PropertyDocumentSetItem;
 
 /**
- *
  * @author mjcobo
  */
 public class ClusterPropertiesTableModel extends GenericTableModel<PropertyDocumentSetItem> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public ClusterPropertiesTableModel() {
-    super(new String[] {"Mapper","Property", "Value"});
-    
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @param rowIndex
-   * @param columnIndex
-   * @return
-   */
-  @Override
-  public Object getValueAt(int rowIndex, int columnIndex) {
-
-    if ((rowIndex >= 0) && (rowIndex < getRowCount())) {
-
-      switch (columnIndex) {
-
-        case 0:
-
-          return getItem(rowIndex).getMapper();
-
-        case 1:
-
-          return getItem(rowIndex).getPropertyKey();
-
-        case 2:
-
-          return getItem(rowIndex).getValue();
-
-        default:
-          return "";
-      }
-
-    } else {
-
-      return "";
+    public ClusterPropertiesTableModel() {
+        super(new String[]{"Mapper", "Property", "Value"});
 
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @param rowIndex
+     * @param columnIndex
+     * @return
+     */
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+
+        if ((rowIndex >= 0) && (rowIndex < getRowCount())) {
+
+            switch (columnIndex) {
+
+                case 0:
+
+                    return getItem(rowIndex).getMapper();
+
+                case 1:
+
+                    return getItem(rowIndex).getPropertyKey();
+
+                case 2:
+
+                    return getItem(rowIndex).getValue();
+
+                default:
+                    return "";
+            }
+
+        } else {
+
+            return "";
+
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

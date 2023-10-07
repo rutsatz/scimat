@@ -5,9 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.task;
 
-import java.io.File;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import es.ugr.scimat.analysis.GlobalAnalysisResult;
 import es.ugr.scimat.api.report.MakeReportHTML;
 import es.ugr.scimat.gui.commands.NoUndoableTask;
@@ -15,72 +12,75 @@ import es.ugr.scimat.gui.components.ErrorDialogManager;
 import es.ugr.scimat.gui.components.cursor.CursorManager;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.*;
+import java.io.File;
+
 /**
- *
  * @author mjcobo
  */
 public class MakeReportHTMLTask implements NoUndoableTask {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private JComponent component;
-  
-  private GlobalAnalysisResult globalExperimentResult;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  public MakeReportHTMLTask(JComponent component, GlobalAnalysisResult globalExperimentResult) {
-    this.component = component;
-    this.globalExperimentResult = globalExperimentResult;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   */
-  public void execute() {
-    
-    String path;
-    int returnVal;
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-    JFileChooser fileChooser = new JFileChooser();
+    private JComponent component;
 
-    fileChooser.setDialogTitle("Select a directory");
-    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    fileChooser.setMultiSelectionEnabled(false);
-    
-    if (CurrentProject.getInstance().getCurrentProjectPath() != null) {
-    
-      fileChooser.setCurrentDirectory(new File (CurrentProject.getInstance().getCurrentProjectPath()));
+    private GlobalAnalysisResult globalExperimentResult;
+
+    /***************************************************************************/
+    /*                            Constructors                                 */
+
+    /***************************************************************************/
+
+    public MakeReportHTMLTask(JComponent component, GlobalAnalysisResult globalExperimentResult) {
+        this.component = component;
+        this.globalExperimentResult = globalExperimentResult;
     }
 
-    returnVal = fileChooser.showSaveDialog(this.component);
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    if (returnVal == JFileChooser.APPROVE_OPTION) {
+    /**
+     *
+     */
+    public void execute() {
 
-      path = fileChooser.getSelectedFile().getAbsolutePath();
-      
-      try {
+        String path;
+        int returnVal;
 
-        CursorManager.getInstance().setWaitCursor();
-        (new MakeReportHTML(path, this.globalExperimentResult)).execute();
-        CursorManager.getInstance().setNormalCursor();
+        JFileChooser fileChooser = new JFileChooser();
 
-      } catch (Exception e) {
-    
-        ErrorDialogManager.getInstance().showException(e);
-      }
+        fileChooser.setDialogTitle("Select a directory");
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setMultiSelectionEnabled(false);
+
+        if (CurrentProject.getInstance().getCurrentProjectPath() != null) {
+
+            fileChooser.setCurrentDirectory(new File(CurrentProject.getInstance().getCurrentProjectPath()));
+        }
+
+        returnVal = fileChooser.showSaveDialog(this.component);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+            path = fileChooser.getSelectedFile().getAbsolutePath();
+
+            try {
+
+                CursorManager.getInstance().setWaitCursor();
+                (new MakeReportHTML(path, this.globalExperimentResult)).execute();
+                CursorManager.getInstance().setNormalCursor();
+
+            } catch (Exception e) {
+
+                ErrorDialogManager.getInstance().showException(e);
+            }
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

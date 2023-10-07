@@ -5,80 +5,74 @@
  */
 package es.ugr.scimat.gui.components.itemslist;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.components.tablemodel.ReferenceSourcesTableModel;
 import es.ugr.scimat.model.knowledgebase.entity.ReferenceSource;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 import es.ugr.scimat.project.observer.EntityObserver;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
-public class ReferenceSourcesListPanel 
-extends GenericDynamicItemsListPanel<ReferenceSource>
-implements EntityObserver<ReferenceSource> {
+public class ReferenceSourcesListPanel
+        extends GenericDynamicItemsListPanel<ReferenceSource>
+        implements EntityObserver<ReferenceSource> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/  
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param tableModel 
-   */
-  public ReferenceSourcesListPanel() {
-    super(new ReferenceSourcesTableModel());
-    
-    CurrentProject.getInstance().getKbObserver().addReferenceSourceObserver(this);
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityAdded(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
-    addItems(items);
-  }
+    /**
+     * @param tableModel
+     */
+    public ReferenceSourcesListPanel() {
+        super(new ReferenceSourcesTableModel());
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException 
-   */
-  public void entityRemoved(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
-    removeItems(items);
-  }
+        CurrentProject.getInstance().getKbObserver().addReferenceSourceObserver(this);
+    }
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException 
-   */
-  public void entityUpdated(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
-    updateItems(items);
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws KnowledgeBaseException 
-   */
-  public void entityRefresh() throws KnowledgeBaseException {
-    refreshItems(CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO().getReferenceSources());
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityAdded(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
+        addItems(items);
+    }
+
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityRemoved(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
+        removeItems(items);
+    }
+
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityUpdated(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
+        updateItems(items);
+    }
+
+    /**
+     * @throws KnowledgeBaseException
+     */
+    public void entityRefresh() throws KnowledgeBaseException {
+        refreshItems(CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO().getReferenceSources());
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

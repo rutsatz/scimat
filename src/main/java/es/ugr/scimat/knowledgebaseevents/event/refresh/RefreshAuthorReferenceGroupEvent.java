@@ -10,41 +10,38 @@ import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
 /**
- *
  * @author mjcobo
  */
 public class RefreshAuthorReferenceGroupEvent implements KnowledgeBaseEvent {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param authorReferenceGroups 
-   */
-  public RefreshAuthorReferenceGroupEvent() {
-  
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @throws KnowledgeBaseException 
-   */
-  public void fireEvent() throws KnowledgeBaseException {
-    
-    CurrentProject.getInstance().getKbObserver().fireAuthorReferenceGroupRefresh();
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
+
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
+
+    /**
+     * @param authorReferenceGroups
+     */
+    public RefreshAuthorReferenceGroupEvent() {
+
+    }
+
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @throws KnowledgeBaseException
+     */
+    public void fireEvent() throws KnowledgeBaseException {
+
+        CurrentProject.getInstance().getKbObserver().fireAuthorReferenceGroupRefresh();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

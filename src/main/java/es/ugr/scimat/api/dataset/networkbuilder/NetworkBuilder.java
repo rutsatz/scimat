@@ -10,10 +10,9 @@ import es.ugr.scimat.api.dataset.UndirectNetworkMatrix;
 import es.ugr.scimat.api.dataset.exception.NotExistsItemException;
 
 /**
- *
  * @author mjcobo
  */
 public interface NetworkBuilder {
 
-  public UndirectNetworkMatrix execute() throws NotExistsItemException;
+    public UndirectNetworkMatrix execute() throws NotExistsItemException;
 }

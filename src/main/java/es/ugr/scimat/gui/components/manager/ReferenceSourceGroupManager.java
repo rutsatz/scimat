@@ -5,67 +5,67 @@
  */
 package es.ugr.scimat.gui.components.manager;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.commands.edit.delete.DeleteReferenceSourceGroupEdit;
+import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
 import es.ugr.scimat.gui.components.adddialog.AddDialogManager;
+import es.ugr.scimat.gui.components.globalslavepanel.ReferenceSourceGroupGlobalSlavePanel;
 import es.ugr.scimat.gui.components.itemslist.ReferenceSourceGroupsListPanel;
 import es.ugr.scimat.gui.components.joindialog.JoinEntitiesDialogManager;
-import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
-import es.ugr.scimat.gui.components.globalslavepanel.ReferenceSourceGroupGlobalSlavePanel;
 import es.ugr.scimat.model.knowledgebase.entity.ReferenceSourceGroup;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class ReferenceSourceGroupManager extends GenericItemManagerPanel<ReferenceSourceGroup> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public ReferenceSourceGroupManager() {
-    super(new ReferenceSourceGroupsListPanel(),
-          new ReferenceSourceGroupGlobalSlavePanel());
+    /***************************************************************************/
 
-    setMasterPanelTitle("Sources-reference group list");
-    setSlavePanelTitle("Sources-reference group detail");
-  }
+    public ReferenceSourceGroupManager() {
+        super(new ReferenceSourceGroupsListPanel(),
+                new ReferenceSourceGroupGlobalSlavePanel());
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        setMasterPanelTitle("Sources-reference group list");
+        setSlavePanelTitle("Sources-reference group detail");
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void addAction() {
-    AddDialogManager.getInstance().showAddReferenceSourceGroupDialog();
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  @Override
-  public void moveToAction(ArrayList<ReferenceSourceGroup> items) {
-    JoinEntitiesDialogManager.getInstance().showReferenceSourceGroupsJoinDialog(items);
-  }
+    /**
+     *
+     */
+    @Override
+    public void addAction() {
+        AddDialogManager.getInstance().showAddReferenceSourceGroupDialog();
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void removeAction(ArrayList<ReferenceSourceGroup> items) {
-    (new PerformKnowledgeBaseEditTask(new DeleteReferenceSourceGroupEdit(items), this)).execute();
-  }
+    /**
+     *
+     */
+    @Override
+    public void moveToAction(ArrayList<ReferenceSourceGroup> items) {
+        JoinEntitiesDialogManager.getInstance().showReferenceSourceGroupsJoinDialog(items);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     *
+     */
+    @Override
+    public void removeAction(ArrayList<ReferenceSourceGroup> items) {
+        (new PerformKnowledgeBaseEditTask(new DeleteReferenceSourceGroupEdit(items), this)).execute();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

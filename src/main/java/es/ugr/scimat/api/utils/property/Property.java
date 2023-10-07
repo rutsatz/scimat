@@ -8,71 +8,68 @@ package es.ugr.scimat.api.utils.property;
 import java.io.Serializable;
 
 /**
- *
  * @author mjcobo
  */
 public abstract class Property<T> implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  private T value;
+    /**
+     *
+     */
+    private T value;
 
-  /**
-   * 
-   */
-  private PropertyTypes type;
+    /**
+     *
+     */
+    private PropertyTypes type;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param type
-   */
-  public Property(T value, PropertyTypes type) {
-    
-    this.value = value;
-    this.type = type;
-  }
+    /**
+     * @param type
+     */
+    public Property(T value, PropertyTypes type) {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        this.value = value;
+        this.type = type;
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public PropertyTypes getType() {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    return this.type;
-  }
+    /**
+     * @return
+     */
+    public PropertyTypes getType() {
 
-  /**
-   * Return the value of the property.
-   * @return
-   */
-  public T getValue() {
-    return value;
-  }
+        return this.type;
+    }
 
-  /**
-   * 
-   * @return
-   */
-  @Override
-  public String toString() {
-    
-    return String.valueOf(this.value);
-  }
+    /**
+     * Return the value of the property.
+     *
+     * @return
+     */
+    public T getValue() {
+        return value;
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @return
+     */
+    @Override
+    public String toString() {
+
+        return String.valueOf(this.value);
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

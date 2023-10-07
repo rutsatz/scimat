@@ -8,9 +8,8 @@ package es.ugr.scimat.analysis;
 import java.io.Serializable;
 
 /**
- *
  * @author mjcobo
  */
 public enum KindOfMatrixEnum implements Serializable {
-  CoOccurrence, BasicCoupling, AggregatedCouplingBasedOnAuthor, AggregatedCouplingBasedOnJournal
+    CoOccurrence, BasicCoupling, AggregatedCouplingBasedOnAuthor, AggregatedCouplingBasedOnJournal
 }

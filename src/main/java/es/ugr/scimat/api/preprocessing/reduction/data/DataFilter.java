@@ -15,19 +15,19 @@ import es.ugr.scimat.api.dataset.Dataset;
  */
 public interface DataFilter {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
- 
-  /**
-   * Under this method the classes which implement this filter have tp implement
-   * the filer.
-   *
-   * NOTE: the dataset will be modified.
-   */
-  public void execute(Dataset dataset);
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * Under this method the classes which implement this filter have tp implement
+     * the filer.
+     * <p>
+     * NOTE: the dataset will be modified.
+     */
+    public void execute(Dataset dataset);
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

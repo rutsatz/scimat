@@ -6,86 +6,82 @@
 
 package es.ugr.scimat.gui.components.cursor;
 
-import java.awt.Cursor;
-import java.awt.Window;
+import java.awt.*;
 
 /**
- *
  * @author Manuel Jesus Cobo Martin.
  */
 public class CursorManager {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  private Window window;
+    /**
+     *
+     */
+    private Window window;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private CursorManager() {
-  }
+    /**
+     *
+     */
+    private CursorManager() {
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   * @return
-   */
-  public static CursorManager getInstance() {
-    return CursorManagerSingleton.INSTANCE;
-  }
+    /**
+     * @return
+     */
+    public static CursorManager getInstance() {
+        return CursorManagerSingleton.INSTANCE;
+    }
 
-  /**
-   *
-   */
-  private static class CursorManagerSingleton {
-    private static final CursorManager INSTANCE = new CursorManager();
-  }
+    /**
+     *
+     */
+    private static class CursorManagerSingleton {
+        private static final CursorManager INSTANCE = new CursorManager();
+    }
 
-  /**
-   * 
-   * @param window
-   */
-  public void init(Window window) {
+    /**
+     * @param window
+     */
+    public void init(Window window) {
 
-    this.window = window;
-    //this.window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    this.window.setCursor(null);
-  }
+        this.window = window;
+        //this.window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        this.window.setCursor(null);
+    }
 
-  public Window getWindow() {
-    return window;
-  }
+    public Window getWindow() {
+        return window;
+    }
 
-  /**
-   * 
-   */
-  public void setWaitCursor() {
+    /**
+     *
+     */
+    public void setWaitCursor() {
 
-    this.window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-  }
+        this.window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+    }
 
-  /**
-   *
-   */
-  public void setNormalCursor() {
+    /**
+     *
+     */
+    public void setNormalCursor() {
 
-    this.window.setCursor(null);
-  }
+        this.window.setCursor(null);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 
 }

@@ -11,121 +11,114 @@ import java.util.TreeSet;
 
 /**
  * This class represent an high level item which aggregates a set of documents.
- * 
+ *
  * @author mjcobo
  */
 public class DocHighLevelItemElement implements Serializable, Cloneable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * Document Identifier
-   */
-  private Integer docID;
+    /**
+     * Document Identifier
+     */
+    private Integer docID;
 
-  /**
-   * List with the document's items
-   */
-  private TreeSet<Integer> highLevelItems = new TreeSet<Integer>();
+    /**
+     * List with the document's items
+     */
+    private TreeSet<Integer> highLevelItems = new TreeSet<Integer>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param docID
-   */
-  public DocHighLevelItemElement(Integer docID) {
+    /**
+     * @param docID
+     */
+    public DocHighLevelItemElement(Integer docID) {
 
-    this.docID = docID;
-  }
+        this.docID = docID;
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @return
-   */
-  public Integer getDocID() {
-    return docID;
-  }
+    /**
+     * @return
+     */
+    public Integer getDocID() {
+        return docID;
+    }
 
-  /**
-   * Add a new high level item to the document.
-   *
-   * @param highLevelItemID the high level item's identifier
-   *
-   * @return {@code true} if this document do not already contain the high level item.
-   */
-  public boolean addHighLevelItem(Integer highLevelItemID) {
+    /**
+     * Add a new high level item to the document.
+     *
+     * @param highLevelItemID the high level item's identifier
+     * @return {@code true} if this document do not already contain the high level item.
+     */
+    public boolean addHighLevelItem(Integer highLevelItemID) {
 
-    return this.highLevelItems.add(highLevelItemID);
-  }
+        return this.highLevelItems.add(highLevelItemID);
+    }
 
-  /**
-   * Returns {@code true} if this document contains the specified high level item.
-   *
-   * @param highLevelItemID the item's identifie
-   *
-   * @return {@code true} if this document contains the specified high level item
-   */
-  public boolean containsHighLevelItem(Integer highLevelItemID) {
+    /**
+     * Returns {@code true} if this document contains the specified high level item.
+     *
+     * @param highLevelItemID the item's identifie
+     * @return {@code true} if this document contains the specified high level item
+     */
+    public boolean containsHighLevelItem(Integer highLevelItemID) {
 
-    return this.highLevelItems.contains(highLevelItemID);
-  }
+        return this.highLevelItems.contains(highLevelItemID);
+    }
 
-  /**
-   * Remove the high level item from the document.
-   *
-   * @param highLevelItemID
-   *
-   * @return {@code true} if this document contain the high level item
-   */
-  public boolean removeHighLevelItem(Integer highLevelItemID) {
+    /**
+     * Remove the high level item from the document.
+     *
+     * @param highLevelItemID
+     * @return {@code true} if this document contain the high level item
+     */
+    public boolean removeHighLevelItem(Integer highLevelItemID) {
 
-    return this.highLevelItems.remove(highLevelItemID);
-  }
+        return this.highLevelItems.remove(highLevelItemID);
+    }
 
-  /**
-   * Return the number of high level items associated with the document.
-   *
-   * @return the number of high level item of the documents.
-   */
-  public int getHighLevelItemsCount() {
+    /**
+     * Return the number of high level items associated with the document.
+     *
+     * @return the number of high level item of the documents.
+     */
+    public int getHighLevelItemsCount() {
 
-    return this.highLevelItems.size();
-  }
+        return this.highLevelItems.size();
+    }
 
-  /**
-   *
-   * @return
-   */
-  public ArrayList<Integer> getHighLevelItemsList() {
+    /**
+     * @return
+     */
+    public ArrayList<Integer> getHighLevelItemsList() {
 
-    return new ArrayList<Integer>(this.highLevelItems);
-  }
+        return new ArrayList<Integer>(this.highLevelItems);
+    }
 
-  /**
-   * 
-   * @return
-   */
-  @Override
-  protected DocHighLevelItemElement clone() {
+    /**
+     * @return
+     */
+    @Override
+    protected DocHighLevelItemElement clone() {
 
-    DocHighLevelItemElement docHighLevelItemElement;
+        DocHighLevelItemElement docHighLevelItemElement;
 
-    docHighLevelItemElement = new DocHighLevelItemElement(this.docID);
-    docHighLevelItemElement.highLevelItems = new TreeSet<Integer>(this.highLevelItems);
+        docHighLevelItemElement = new DocHighLevelItemElement(this.docID);
+        docHighLevelItemElement.highLevelItems = new TreeSet<Integer>(this.highLevelItems);
 
-    return docHighLevelItemElement;
-  }
+        return docHighLevelItemElement;
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

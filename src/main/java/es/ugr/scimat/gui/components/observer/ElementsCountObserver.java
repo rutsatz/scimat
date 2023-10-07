@@ -6,15 +6,13 @@
 package es.ugr.scimat.gui.components.observer;
 
 /**
- *
  * @author mjcobo
  */
 public interface ElementsCountObserver {
 
-  /**
-   * 
-   * @param newElementsCount
-   */
-  public void elementsCountChanged(int newElementsCount);
+    /**
+     * @param newElementsCount
+     */
+    public void elementsCountChanged(int newElementsCount);
 
 }

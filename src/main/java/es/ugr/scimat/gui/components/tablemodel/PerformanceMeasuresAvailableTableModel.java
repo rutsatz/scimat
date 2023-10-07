@@ -8,61 +8,60 @@ package es.ugr.scimat.gui.components.tablemodel;
 import es.ugr.scimat.analysis.PerformanceMeasuresAvailable;
 
 /**
- *
  * @author mjcobo
  */
 public class PerformanceMeasuresAvailableTableModel extends GenericTableModel<PerformanceMeasuresAvailable> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public PerformanceMeasuresAvailableTableModel() {
-    super(new String[] {"Mapper","Property"});
-    
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @param rowIndex
-   * @param columnIndex
-   * @return
-   */
-  @Override
-  public Object getValueAt(int rowIndex, int columnIndex) {
-
-    if ((rowIndex >= 0) && (rowIndex < getRowCount())) {
-
-      switch (columnIndex) {
-
-        case 0:
-
-          return getItem(rowIndex).getMapper();
-
-        case 1:
-
-          return getItem(rowIndex).getPropertyKey();
-
-        default:
-          return "";
-      }
-
-    } else {
-
-      return "";
+    public PerformanceMeasuresAvailableTableModel() {
+        super(new String[]{"Mapper", "Property"});
 
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @param rowIndex
+     * @param columnIndex
+     * @return
+     */
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+
+        if ((rowIndex >= 0) && (rowIndex < getRowCount())) {
+
+            switch (columnIndex) {
+
+                case 0:
+
+                    return getItem(rowIndex).getMapper();
+
+                case 1:
+
+                    return getItem(rowIndex).getPropertyKey();
+
+                default:
+                    return "";
+            }
+
+        } else {
+
+            return "";
+
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

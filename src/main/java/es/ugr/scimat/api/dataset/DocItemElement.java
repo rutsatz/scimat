@@ -10,168 +10,159 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 /**
- *
  * @author mjcobo
  */
 public class DocItemElement implements Serializable, Cloneable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * Document Identifier
-   */
-  private Integer docID;
+    /**
+     * Document Identifier
+     */
+    private Integer docID;
 
-  /**
-   * Citations acheived by the document.
-   */
-  private int timesCited;
+    /**
+     * Citations acheived by the document.
+     */
+    private int timesCited;
 
-  /**
-   * List with the document's items
-   */
-  private TreeSet<Integer> items = new TreeSet<Integer>();
+    /**
+     * List with the document's items
+     */
+    private TreeSet<Integer> items = new TreeSet<Integer>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   * @param docID
-   */
-  public DocItemElement(Integer docID) {
-    
-    this.docID = docID;
-    this.timesCited = 0;
-  }
+    /**
+     * @param docID
+     */
+    public DocItemElement(Integer docID) {
 
-  /**
-   * 
-   */
-  public DocItemElement(Integer docID, int timesCited) {
+        this.docID = docID;
+        this.timesCited = 0;
+    }
 
-    this.docID = docID;
-    this.timesCited = timesCited;
-  }
+    /**
+     *
+     */
+    public DocItemElement(Integer docID, int timesCited) {
 
-  /**
-   * 
-   * @param docItemElement
-   */
-  public DocItemElement(DocItemElement docItemElement) {
+        this.docID = docID;
+        this.timesCited = timesCited;
+    }
 
-    this.docID = docItemElement.docID;
-    this.timesCited = docItemElement.timesCited;
-    this.items = new TreeSet<Integer>(docItemElement.items);
-  }
+    /**
+     * @param docItemElement
+     */
+    public DocItemElement(DocItemElement docItemElement) {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        this.docID = docItemElement.docID;
+        this.timesCited = docItemElement.timesCited;
+        this.items = new TreeSet<Integer>(docItemElement.items);
+    }
 
-  /**
-   * @return the docID
-   */
-  public Integer getDocID() {
-    return docID;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @return
-   */
-  public int getTimesCited() {
-    return timesCited;
-  }
+    /**
+     * @return the docID
+     */
+    public Integer getDocID() {
+        return docID;
+    }
 
-  /**
-   * Add a new item to the document.
-   *
-   * @param itemID the item's identifier
-   *
-   * @return {@code true} if this document do not already contain the item
-   */
-  public boolean addItem(Integer itemID) {
+    /**
+     * @return
+     */
+    public int getTimesCited() {
+        return timesCited;
+    }
 
-    return this.items.add(itemID);
-  }
+    /**
+     * Add a new item to the document.
+     *
+     * @param itemID the item's identifier
+     * @return {@code true} if this document do not already contain the item
+     */
+    public boolean addItem(Integer itemID) {
 
-  /**
-   * Returns {@code true} if this document contains the specified item.
-   *
-   * @param itemID the item's identifie
-   *
-   * @return {@code true} if this document contains the specified item
-   */
-  public boolean containsItem(Integer itemID) {
+        return this.items.add(itemID);
+    }
 
-    return this.items.contains(itemID);
-  }
+    /**
+     * Returns {@code true} if this document contains the specified item.
+     *
+     * @param itemID the item's identifie
+     * @return {@code true} if this document contains the specified item
+     */
+    public boolean containsItem(Integer itemID) {
 
-  /**
-   * Remove the item from the document.
-   *
-   * @param itemID
-   *
-   * @return {@code true} if this document contain the item
-   */
-  public boolean removeItem(Integer itemID) {
+        return this.items.contains(itemID);
+    }
 
-    return this.items.remove(itemID);
-  }
+    /**
+     * Remove the item from the document.
+     *
+     * @param itemID
+     * @return {@code true} if this document contain the item
+     */
+    public boolean removeItem(Integer itemID) {
 
-  /**
-   * Return the number of items of the document.
-   *
-   * @return the numner of items of the document.
-   */
-  public int getItemsCount() {
+        return this.items.remove(itemID);
+    }
 
-    return this.items.size();
-  }
+    /**
+     * Return the number of items of the document.
+     *
+     * @return the numner of items of the document.
+     */
+    public int getItemsCount() {
 
-  /**
-   * 
-   * @return
-   */
-  public ArrayList<Integer> getItemsList() {
+        return this.items.size();
+    }
 
-    return new ArrayList<Integer>(items);
-  }
+    /**
+     * @return
+     */
+    public ArrayList<Integer> getItemsList() {
 
-  @Override
-  protected DocItemElement clone() {
+        return new ArrayList<Integer>(items);
+    }
 
-    DocItemElement docItemElement;
-    
-    docItemElement = new DocItemElement(docID, timesCited);
-    docItemElement.items = new TreeSet<Integer>(items);
+    @Override
+    protected DocItemElement clone() {
 
-    return docItemElement;
-  }
+        DocItemElement docItemElement;
 
-  /**
-   * 
-   * @return
-   */
-  @Override
-  public String toString() {
+        docItemElement = new DocItemElement(docID, timesCited);
+        docItemElement.items = new TreeSet<Integer>(items);
 
-    String result = "";
+        return docItemElement;
+    }
 
-    result += "(";
-    result += "DocID: " + this.docID;
-    result += "Times cited: " + this.timesCited;
-    result += "Items: " + this.items;
-    result += ")";
+    /**
+     * @return
+     */
+    @Override
+    public String toString() {
 
-    return result;
-  }
+        String result = "";
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+        result += "(";
+        result += "DocID: " + this.docID;
+        result += "Times cited: " + this.timesCited;
+        result += "Items: " + this.items;
+        result += ")";
+
+        return result;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

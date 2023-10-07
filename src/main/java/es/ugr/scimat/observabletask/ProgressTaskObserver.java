@@ -7,15 +7,13 @@
 package es.ugr.scimat.observabletask;
 
 /**
- *
  * @author MJCobo
  */
 public interface ProgressTaskObserver {
 
-  /**
-   * 
-   * @param determinateMode
-   * @param value
-   */
-  public void progressChanged(boolean determinateMode, int value);
+    /**
+     * @param determinateMode
+     * @param value
+     */
+    public void progressChanged(boolean determinateMode, int value);
 }

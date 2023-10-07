@@ -8,9 +8,8 @@ package es.ugr.scimat.analysis;
 import java.io.Serializable;
 
 /**
- *
  * @author mjcobo
  */
 public enum UnitOfAnalysisEnum implements Serializable {
-  Authors, Words, References, AuthorsReference,ReferenceSources
+    Authors, Words, References, AuthorsReference, ReferenceSources
 }

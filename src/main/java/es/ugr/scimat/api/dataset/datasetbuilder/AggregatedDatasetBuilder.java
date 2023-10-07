@@ -10,10 +10,9 @@ import es.ugr.scimat.api.dataset.Dataset;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 
 /**
- *
  * @author mjcobo
  */
 public interface AggregatedDatasetBuilder {
 
-  public AggregatedDataset execute(Dataset dataset) throws KnowledgeBaseException;
+    public AggregatedDataset execute(Dataset dataset) throws KnowledgeBaseException;
 }

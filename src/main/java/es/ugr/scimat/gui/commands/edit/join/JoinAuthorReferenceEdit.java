@@ -5,329 +5,325 @@
  */
 package es.ugr.scimat.gui.commands.edit.join;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeSet;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
 import es.ugr.scimat.model.knowledgebase.dao.AuthorReferenceDAO;
 import es.ugr.scimat.model.knowledgebase.dao.AuthorReferenceReferenceDAO;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceReference;
 import es.ugr.scimat.model.knowledgebase.entity.Author;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceGroup;
 import es.ugr.scimat.model.knowledgebase.entity.AuthorReference;
+import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceGroup;
+import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceReference;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
+
 /**
- *
  * @author mjcobo
  */
 public class JoinAuthorReferenceEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private ArrayList<AuthorReference> authorReferencesToMove;
-  private AuthorReference targetAuthorReference;
-  
-  private ArrayList<ArrayList<AuthorReferenceReference>> authorReferenceReferenceOfSources = new ArrayList<ArrayList<AuthorReferenceReference>>();
-  private ArrayList<AuthorReferenceGroup> authorReferenceGroupOfSources = new ArrayList<AuthorReferenceGroup>();
-  private ArrayList<Author> authorOfSources = new ArrayList<Author>();
-  
-  private TreeSet<AuthorReferenceReference> authorReferenceReferenceOfTarget = new TreeSet<AuthorReferenceReference>();
+    private ArrayList<AuthorReference> authorReferencesToMove;
+    private AuthorReference targetAuthorReference;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private ArrayList<ArrayList<AuthorReferenceReference>> authorReferenceReferenceOfSources = new ArrayList<ArrayList<AuthorReferenceReference>>();
+    private ArrayList<AuthorReferenceGroup> authorReferenceGroupOfSources = new ArrayList<AuthorReferenceGroup>();
+    private ArrayList<Author> authorOfSources = new ArrayList<Author>();
 
-  /**
-   * 
-   * @param authorReferencesToMove
-   * @param targetAuthorReference
-   */
-  public JoinAuthorReferenceEdit(ArrayList<AuthorReference> authorReferencesToMove, AuthorReference targetAuthorReference) {
+    private TreeSet<AuthorReferenceReference> authorReferenceReferenceOfTarget = new TreeSet<AuthorReferenceReference>();
 
-    this.authorReferencesToMove = authorReferencesToMove;
-    this.targetAuthorReference = targetAuthorReference;
-  }
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /**
+     * @param authorReferencesToMove
+     * @param targetAuthorReference
+     */
+    public JoinAuthorReferenceEdit(ArrayList<AuthorReference> authorReferencesToMove, AuthorReference targetAuthorReference) {
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = true;
-    int i, j;
-    AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
-    AuthorReferenceDAO authorReferenceDAO;
-    AuthorReference authorReference;
-    AuthorReferenceReference authorReferenceReference;
-    ArrayList<AuthorReferenceReference> authorReferenceReferences;
-
-    try {
-
-      i = 0;
-      
-      authorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO();
-      authorReferenceReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
-
-      // Retrieve the realations of the target item.
-      this.authorReferenceReferenceOfTarget = new TreeSet<AuthorReferenceReference>(authorReferenceDAO.getReferences(this.targetAuthorReference.getAuthorReferenceID()));
-
-      while ((i < this.authorReferencesToMove.size()) && (successful)) {
-
-        authorReference = this.authorReferencesToMove.get(i);
-
-        // Retrieve the relations of the source items
-        authorReferenceReferences = authorReferenceDAO.getReferences(authorReference.getAuthorReferenceID());
-        this.authorReferenceReferenceOfSources.add(authorReferenceReferences);
-        
-        this.authorReferenceGroupOfSources.add(authorReferenceDAO.getAuthorReferenceGroup(authorReference.getAuthorReferenceID()));
-        
-        this.authorOfSources.add(authorReferenceDAO.getAuthor(authorReference.getAuthorReferenceID()));
-
-        // Do the join
-        j = 0;
-
-        successful = authorReferenceDAO.removeAuthorReference(authorReference.getAuthorReferenceID(), true);
-
-        while ((j < authorReferenceReferences.size()) && (successful)) {
-
-          authorReferenceReference = authorReferenceReferences.get(j);
-
-          // If the target element is not associated with this element we perform the association.
-          if (! authorReferenceReferenceDAO.checkAuthorReferenceReference(this.targetAuthorReference.getAuthorReferenceID(), authorReferenceReference.getReference().getReferenceID())) {
-
-            successful = authorReferenceReferenceDAO.addAuthorReferenceReference(authorReferenceReference.getReference().getReferenceID(), 
-                    this.targetAuthorReference.getAuthorReferenceID(), 
-                    authorReferenceReference.getPosition(), true);
-          }
-
-          j ++;
-        }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.authorReferencesToMove = authorReferencesToMove;
+        this.targetAuthorReference = targetAuthorReference;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = true;
+        int i, j;
+        AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
+        AuthorReferenceDAO authorReferenceDAO;
+        AuthorReference authorReference;
+        AuthorReferenceReference authorReferenceReference;
+        ArrayList<AuthorReferenceReference> authorReferenceReferences;
 
-    int i, j;
-    boolean successful = true;
-    TreeSet<AuthorReferenceReference> tmpAuthorReferenceReferences;
-    AuthorReference authorReference;
-    AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
-    AuthorReferenceReference authorReferenceReference;
-    AuthorReferenceDAO authorReferenceDAO;
-    Iterator<AuthorReferenceReference> itAuthorReferenceReference;
+        try {
 
-    try {
-      
-      authorReferenceReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
-      authorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO();
+            i = 0;
 
-      // Restore the target entity
+            authorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO();
+            authorReferenceReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
 
-      tmpAuthorReferenceReferences = new TreeSet<AuthorReferenceReference>(authorReferenceDAO.getReferences(this.targetAuthorReference.getAuthorReferenceID()));
-      tmpAuthorReferenceReferences.removeAll(this.authorReferenceReferenceOfTarget);
+            // Retrieve the realations of the target item.
+            this.authorReferenceReferenceOfTarget = new TreeSet<AuthorReferenceReference>(authorReferenceDAO.getReferences(this.targetAuthorReference.getAuthorReferenceID()));
 
-      itAuthorReferenceReference = tmpAuthorReferenceReferences.iterator();
+            while ((i < this.authorReferencesToMove.size()) && (successful)) {
 
-      while ((itAuthorReferenceReference.hasNext()) && (successful)) {
-        
-        successful = authorReferenceReferenceDAO.removeAuthorReferenceReference(itAuthorReferenceReference.next().getReference().getReferenceID(), 
-                this.targetAuthorReference.getAuthorReferenceID(), true);
-      }
+                authorReference = this.authorReferencesToMove.get(i);
 
-      i = 0;
-      
-      // Restore the source entities
+                // Retrieve the relations of the source items
+                authorReferenceReferences = authorReferenceDAO.getReferences(authorReference.getAuthorReferenceID());
+                this.authorReferenceReferenceOfSources.add(authorReferenceReferences);
 
-      while ((i < this.authorReferencesToMove.size()) && (successful)) {
+                this.authorReferenceGroupOfSources.add(authorReferenceDAO.getAuthorReferenceGroup(authorReference.getAuthorReferenceID()));
 
-        authorReference = this.authorReferencesToMove.get(i);
+                this.authorOfSources.add(authorReferenceDAO.getAuthor(authorReference.getAuthorReferenceID()));
 
-        successful = authorReferenceDAO.addAuthorReference(authorReference, true);
+                // Do the join
+                j = 0;
 
-        j = 0;
+                successful = authorReferenceDAO.removeAuthorReference(authorReference.getAuthorReferenceID(), true);
 
-        while ((j < this.authorReferenceReferenceOfSources.get(i).size()) && (successful)) {
+                while ((j < authorReferenceReferences.size()) && (successful)) {
 
-          authorReferenceReference = this.authorReferenceReferenceOfSources.get(i).get(j);
+                    authorReferenceReference = authorReferenceReferences.get(j);
 
-          successful = authorReferenceReferenceDAO.addAuthorReferenceReference(authorReferenceReference.getReference().getReferenceID(),
-                  authorReference.getAuthorReferenceID(), 
-                  authorReferenceReference.getPosition(), true);
+                    // If the target element is not associated with this element we perform the association.
+                    if (!authorReferenceReferenceDAO.checkAuthorReferenceReference(this.targetAuthorReference.getAuthorReferenceID(), authorReferenceReference.getReference().getReferenceID())) {
 
-          j++;
+                        successful = authorReferenceReferenceDAO.addAuthorReferenceReference(authorReferenceReference.getReference().getReferenceID(),
+                                this.targetAuthorReference.getAuthorReferenceID(),
+                                authorReferenceReference.getPosition(), true);
+                    }
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
 
-        if ((this.authorReferenceGroupOfSources.get(i) != null) && (successful)) {
+        return successful;
 
-          successful = authorReferenceDAO.setAuthorReferenceGroup(authorReference.getAuthorReferenceID(), 
-                  this.authorReferenceGroupOfSources.get(i).getAuthorReferenceGroupID(), true);
-        }
-
-        if ((this.authorOfSources.get(i) != null) && (successful)) {
-
-          successful = authorReferenceDAO.setAuthor(authorReference.getAuthorReferenceID(), 
-                  this.authorOfSources.get(i).getAuthorID(), true);
-        }
-
-        i++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean successful = true;
-    int i, j;
-    AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
-    AuthorReferenceDAO authorReferenceDAO;
-    AuthorReference authorReference;
-    AuthorReferenceReference authorReferenceReference;
-    ArrayList<AuthorReferenceReference> authorReferenceReferences;
+        int i, j;
+        boolean successful = true;
+        TreeSet<AuthorReferenceReference> tmpAuthorReferenceReferences;
+        AuthorReference authorReference;
+        AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
+        AuthorReferenceReference authorReferenceReference;
+        AuthorReferenceDAO authorReferenceDAO;
+        Iterator<AuthorReferenceReference> itAuthorReferenceReference;
 
-    try {
+        try {
 
-      i = 0;
-      
-      authorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO();
-      authorReferenceReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
+            authorReferenceReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
+            authorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO();
 
-      while ((i < this.authorReferencesToMove.size()) && (successful)) {
+            // Restore the target entity
 
-        authorReference = this.authorReferencesToMove.get(i);
+            tmpAuthorReferenceReferences = new TreeSet<AuthorReferenceReference>(authorReferenceDAO.getReferences(this.targetAuthorReference.getAuthorReferenceID()));
+            tmpAuthorReferenceReferences.removeAll(this.authorReferenceReferenceOfTarget);
 
-        // Retrieve the relations of the source items
-        authorReferenceReferences = this.authorReferenceReferenceOfSources.get(i);
+            itAuthorReferenceReference = tmpAuthorReferenceReferences.iterator();
 
-        // Do the join
-        j = 0;
+            while ((itAuthorReferenceReference.hasNext()) && (successful)) {
 
-        successful = authorReferenceDAO.removeAuthorReference(authorReference.getAuthorReferenceID(), true);
+                successful = authorReferenceReferenceDAO.removeAuthorReferenceReference(itAuthorReferenceReference.next().getReference().getReferenceID(),
+                        this.targetAuthorReference.getAuthorReferenceID(), true);
+            }
 
-        while ((j < authorReferenceReferences.size()) && (successful)) {
+            i = 0;
 
-          authorReferenceReference = authorReferenceReferences.get(j);
+            // Restore the source entities
 
-          // If the target element is not associated with this element we perform the association.
-          if (! authorReferenceReferenceDAO.checkAuthorReferenceReference(this.targetAuthorReference.getAuthorReferenceID(), authorReferenceReference.getReference().getReferenceID())) {
+            while ((i < this.authorReferencesToMove.size()) && (successful)) {
 
-            successful = authorReferenceReferenceDAO.addAuthorReferenceReference(authorReferenceReference.getReference().getReferenceID(), 
-                    this.targetAuthorReference.getAuthorReferenceID(), 
-                    authorReferenceReference.getPosition(), true);
-          }
+                authorReference = this.authorReferencesToMove.get(i);
 
-          j ++;
+                successful = authorReferenceDAO.addAuthorReference(authorReference, true);
+
+                j = 0;
+
+                while ((j < this.authorReferenceReferenceOfSources.get(i).size()) && (successful)) {
+
+                    authorReferenceReference = this.authorReferenceReferenceOfSources.get(i).get(j);
+
+                    successful = authorReferenceReferenceDAO.addAuthorReferenceReference(authorReferenceReference.getReference().getReferenceID(),
+                            authorReference.getAuthorReferenceID(),
+                            authorReferenceReference.getPosition(), true);
+
+                    j++;
+                }
+
+                if ((this.authorReferenceGroupOfSources.get(i) != null) && (successful)) {
+
+                    successful = authorReferenceDAO.setAuthorReferenceGroup(authorReference.getAuthorReferenceID(),
+                            this.authorReferenceGroupOfSources.get(i).getAuthorReferenceGroupID(), true);
+                }
+
+                if ((this.authorOfSources.get(i) != null) && (successful)) {
+
+                    successful = authorReferenceDAO.setAuthor(authorReference.getAuthorReferenceID(),
+                            this.authorOfSources.get(i).getAuthorID(), true);
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
         }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        int i, j;
+        AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
+        AuthorReferenceDAO authorReferenceDAO;
+        AuthorReference authorReference;
+        AuthorReferenceReference authorReferenceReference;
+        ArrayList<AuthorReferenceReference> authorReferenceReferences;
+
+        try {
+
+            i = 0;
+
+            authorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO();
+            authorReferenceReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
+
+            while ((i < this.authorReferencesToMove.size()) && (successful)) {
+
+                authorReference = this.authorReferencesToMove.get(i);
+
+                // Retrieve the relations of the source items
+                authorReferenceReferences = this.authorReferenceReferenceOfSources.get(i);
+
+                // Do the join
+                j = 0;
+
+                successful = authorReferenceDAO.removeAuthorReference(authorReference.getAuthorReferenceID(), true);
+
+                while ((j < authorReferenceReferences.size()) && (successful)) {
+
+                    authorReferenceReference = authorReferenceReferences.get(j);
+
+                    // If the target element is not associated with this element we perform the association.
+                    if (!authorReferenceReferenceDAO.checkAuthorReferenceReference(this.targetAuthorReference.getAuthorReferenceID(), authorReferenceReference.getReference().getReferenceID())) {
+
+                        successful = authorReferenceReferenceDAO.addAuthorReferenceReference(authorReferenceReference.getReference().getReferenceID(),
+                                this.targetAuthorReference.getAuthorReferenceID(),
+                                authorReferenceReference.getPosition(), true);
+                    }
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

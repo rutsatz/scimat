@@ -7,9 +7,10 @@ package es.ugr.scimat.api.similaritymeasure.direct;
 
 /**
  * This interface represents a generic similarity measure.
+ *
  * @author mjcobo
  */
 public interface DirectSimilarityMeasure {
 
-  public double calculateMeasure(int itemsCountI, int itemsCountJ, double itemsCountIJ);
+    public double calculateMeasure(int itemsCountI, int itemsCountJ, double itemsCountIJ);
 }

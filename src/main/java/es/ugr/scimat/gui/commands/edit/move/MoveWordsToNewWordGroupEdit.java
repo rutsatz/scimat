@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.move;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -17,222 +15,220 @@ import es.ugr.scimat.model.knowledgebase.entity.WordGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class MoveWordsToNewWordGroupEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private ArrayList<Word> wordsToMove;
-  private String groupName;
-  private WordGroup wordGroup;
-  private boolean groupNew; // true if the group has to be created.
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param wordsToMove 
-   */
-  public MoveWordsToNewWordGroupEdit(ArrayList<Word> wordsToMove, String groupName) {
-    this.wordsToMove = wordsToMove;
-    this.groupName = groupName;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @return
-   * @throws KnowledgeBaseException 
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-    
-    boolean successful = true;
-    int i;
-    Integer wordGroupID;
-    Word word;
-    WordGroupDAO wordGroupDAO;
-    WordDAO wordDAO;
-    
-    try {
-      
-      wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
-      wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
-      
-      wordGroup = wordGroupDAO.getWordGroup(this.groupName);
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-      if (wordGroup == null) {
+    private ArrayList<Word> wordsToMove;
+    private String groupName;
+    private WordGroup wordGroup;
+    private boolean groupNew; // true if the group has to be created.
 
-        this.groupNew = true;
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-        wordGroupID = wordGroupDAO.addWordGroup(this.groupName, false, true);
-
-        wordGroup = wordGroupDAO.getWordGroup(wordGroupID);
-
-      } else {
-
-        this.groupNew = false;
-      }
-      
-      for (i = 0; i < this.wordsToMove.size(); i++) {
-      
-        word = this.wordsToMove.get(i);
-        
-        successful = wordDAO.setWordGroup(word.getWordID(), wordGroup.getWordGroupID(), true);
-      }
-      
-      // To update the wordgroup (documents count...)
-      wordGroup = wordGroupDAO.getWordGroup(wordGroup.getWordGroupID());
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+    /**
+     * @param wordsToMove
+     */
+    public MoveWordsToNewWordGroupEdit(ArrayList<Word> wordsToMove, String groupName) {
+        this.wordsToMove = wordsToMove;
+        this.groupName = groupName;
     }
 
-    return successful;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
-    
-    boolean successful = true;
-    int i;
-    WordGroupDAO wordGroupDAO;
-    WordDAO wordDAO;
-    
-    try {
-      
-      wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
-      wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
-      
-      for (i = 0; i < this.wordsToMove.size(); i++) {
-        
-        successful = wordDAO.setWordGroup(this.wordsToMove.get(i).getWordID(), null, true);
-      }
-      
-      if (this.groupNew) {
-        
-        successful = wordGroupDAO.removeWordGroup(this.wordGroup.getWordGroupID(), true);
-      }
+    /**
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-      if (successful) {
+        boolean successful = true;
+        int i;
+        Integer wordGroupID;
+        Word word;
+        WordGroupDAO wordGroupDAO;
+        WordDAO wordDAO;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        try {
 
-      } else {
+            wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
+            wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            wordGroup = wordGroupDAO.getWordGroup(this.groupName);
 
-    } catch (KnowledgeBaseException e) {
+            if (wordGroup == null) {
 
-      e.printStackTrace(System.err);
+                this.groupNew = true;
 
-      try{
+                wordGroupID = wordGroupDAO.addWordGroup(this.groupName, false, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                wordGroup = wordGroupDAO.getWordGroup(wordGroupID);
 
-      } catch (KnowledgeBaseException e2) {
+            } else {
 
-        e2.printStackTrace(System.err);
+                this.groupNew = false;
+            }
 
-      }
+            for (i = 0; i < this.wordsToMove.size(); i++) {
+
+                word = this.wordsToMove.get(i);
+
+                successful = wordDAO.setWordGroup(word.getWordID(), wordGroup.getWordGroupID(), true);
+            }
+
+            // To update the wordgroup (documents count...)
+            wordGroup = wordGroupDAO.getWordGroup(wordGroup.getWordGroupID());
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                UndoStack.addEdit(this);
+
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
     }
-  }
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
-    
-    boolean successful = true;
-    int i;
-    WordGroupDAO wordGroupDAO;
-    WordDAO wordDAO;
-    
-    try {
-      
-      wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
-      wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
-      
-      if (groupNew) {
-        
-        successful = wordGroupDAO.addWordGroup(this.wordGroup, true);
-      }
-      
-      for (i = 0; i < this.wordsToMove.size(); i++) {
-        
-        successful = wordDAO.setWordGroup(this.wordsToMove.get(i).getWordID(), wordGroup.getWordGroupID(), true);
-      }
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-      if (successful) {
+        boolean successful = true;
+        int i;
+        WordGroupDAO wordGroupDAO;
+        WordDAO wordDAO;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        try {
 
-      } else {
+            wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
+            wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            for (i = 0; i < this.wordsToMove.size(); i++) {
 
-    } catch (KnowledgeBaseException e) {
+                successful = wordDAO.setWordGroup(this.wordsToMove.get(i).getWordID(), null, true);
+            }
 
-      e.printStackTrace(System.err);
+            if (this.groupNew) {
 
-      try{
+                successful = wordGroupDAO.removeWordGroup(this.wordGroup.getWordGroupID(), true);
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            if (successful) {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        e2.printStackTrace(System.err);
+            } else {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        int i;
+        WordGroupDAO wordGroupDAO;
+        WordDAO wordDAO;
+
+        try {
+
+            wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
+            wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
+
+            if (groupNew) {
+
+                successful = wordGroupDAO.addWordGroup(this.wordGroup, true);
+            }
+
+            for (i = 0; i < this.wordsToMove.size(); i++) {
+
+                successful = wordDAO.setWordGroup(this.wordsToMove.get(i).getWordID(), wordGroup.getWordGroupID(), true);
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

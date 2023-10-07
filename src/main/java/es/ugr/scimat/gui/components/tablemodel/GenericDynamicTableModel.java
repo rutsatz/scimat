@@ -5,10 +5,11 @@
  */
 package es.ugr.scimat.gui.components.tablemodel;
 
+import es.ugr.scimat.gui.components.observer.ElementsCountObserver;
+
+import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.Collections;
-import javax.swing.table.AbstractTableModel;
-import es.ugr.scimat.gui.components.observer.ElementsCountObserver;
 
 /**
  * <p>This class implements a TableModel of an specific Entity type. The class
@@ -22,117 +23,113 @@ import es.ugr.scimat.gui.components.observer.ElementsCountObserver;
  * <p>The number of elements contained in the table is observer through
  * {@link ElementsCountObserver}.</p>
  *
- * @author mjcobo
  * @param <E> The principal element of the table, specifically the element
- * must be an Entity of the model. It must be comparable.
+ *            must be an Entity of the model. It must be comparable.
+ * @author mjcobo
  */
 public abstract class GenericDynamicTableModel<E extends Comparable<E>> extends GenericTableModel<E> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   * @param columnNames
-   */
-  public GenericDynamicTableModel(String[] columnNames) {
-    super(columnNames);
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @param items 
-   */
-  public void addItems(ArrayList<E> items) {
-
-    int i;
-    int position;
-    E item;
-
-    for (i = 0; i < items.size(); i++) {
-
-      item = items.get(i);
-      
-      position = Collections.binarySearch(this.data, item);
-
-      if (position < 0) {
-
-        position = -position - 1;
-
-        this.data.add(position, item);
-
-        fireTableRowsInserted(position, position);
-
-        fireElementsCountChange();
-      }
-
+    /**
+     * @param columnNames
+     */
+    public GenericDynamicTableModel(String[] columnNames) {
+        super(columnNames);
     }
-  }
 
-  /**
-   *
-   * @param items
-   */
-  public void removeItems(ArrayList<E> items) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    int i;
-    int position;
-    E item;
+    /**
+     * @param items
+     */
+    public void addItems(ArrayList<E> items) {
 
-    for (i = 0; i < items.size(); i++) {
+        int i;
+        int position;
+        E item;
 
-      item = items.get(i);
+        for (i = 0; i < items.size(); i++) {
 
-      position = Collections.binarySearch(this.data, item);
+            item = items.get(i);
 
-      if (position >= 0) {
+            position = Collections.binarySearch(this.data, item);
 
-        this.data.remove(position);
+            if (position < 0) {
 
-        fireTableRowsDeleted(position, position);
+                position = -position - 1;
 
-        fireElementsCountChange();
+                this.data.add(position, item);
 
-      }
+                fireTableRowsInserted(position, position);
 
+                fireElementsCountChange();
+            }
+
+        }
     }
-  }
 
-  /**
-   *
-   * @param items
-   */
-  public void updateItems(ArrayList<E> items) {
+    /**
+     * @param items
+     */
+    public void removeItems(ArrayList<E> items) {
 
-    int i;
-    int position;
-    E item;
+        int i;
+        int position;
+        E item;
 
-    for (i = 0; i < items.size(); i++) {
+        for (i = 0; i < items.size(); i++) {
 
-      item = items.get(i);
+            item = items.get(i);
 
-      position = Collections.binarySearch(this.data, item);
-      
-      if (position >= 0) {
+            position = Collections.binarySearch(this.data, item);
 
-        this.data.set(position, item);
-        fireTableRowsUpdated(position, position);
-      }
+            if (position >= 0) {
 
+                this.data.remove(position);
+
+                fireTableRowsDeleted(position, position);
+
+                fireElementsCountChange();
+
+            }
+
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param items
+     */
+    public void updateItems(ArrayList<E> items) {
+
+        int i;
+        int position;
+        E item;
+
+        for (i = 0; i < items.size(); i++) {
+
+            item = items.get(i);
+
+            position = Collections.binarySearch(this.data, item);
+
+            if (position >= 0) {
+
+                this.data.set(position, item);
+                fireTableRowsUpdated(position, position);
+            }
+
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

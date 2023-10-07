@@ -5,9 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -15,252 +12,252 @@ import es.ugr.scimat.model.knowledgebase.entity.Document;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateDocumentEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer documentID;
+    /**
+     *
+     */
+    private Integer documentID;
 
-  /**
-   *
-   */
-  private String type;
+    /**
+     *
+     */
+    private String type;
 
-  /**
-   *
-   */
-  private String title;
+    /**
+     *
+     */
+    private String title;
 
-  /**
-   *
-   */
-  private String docAbstract;
+    /**
+     *
+     */
+    private String docAbstract;
 
-  /**
-   *
-   */
-  private int citationsCount;
+    /**
+     *
+     */
+    private int citationsCount;
 
-  /**
-   *
-   */
-  private String doi;
+    /**
+     *
+     */
+    private String doi;
 
-  /**
-   *
-   */
-  private String sourceIdentifier;
+    /**
+     *
+     */
+    private String sourceIdentifier;
 
-  /**
-   *
-   */
-  private String volume;
+    /**
+     *
+     */
+    private String volume;
 
-  /**
-   *
-   */
-  private String issue;
+    /**
+     *
+     */
+    private String issue;
 
-  /**
-   *
-   */
-  private String beginPage;
+    /**
+     *
+     */
+    private String beginPage;
 
-  /**
-   *
-   */
-  private String endPage;
+    /**
+     *
+     */
+    private String endPage;
 
-  /**
-   * The old elements
-   */
-  private ArrayList<Document> documentsOld;
-  
-  private ArrayList<Document> documentsUpdated;
+    /**
+     * The old elements
+     */
+    private ArrayList<Document> documentsOld;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private ArrayList<Document> documentsUpdated;
 
-  public UpdateDocumentEdit(Integer documentID, 
-          String title, String docAbstract, String type, int citationsCount, String doi,
-          String sourceIdentifier, String volume, String issue, String beginPage,
-          String endPage) {
-    super();
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-    this.documentID = documentID;
-    this.type = type;
-    this.title = title;
-    this.docAbstract = docAbstract;
-    this.citationsCount = citationsCount;
-    this.doi = doi;
-    this.sourceIdentifier = sourceIdentifier;
-    this.volume = volume;
-    this.issue = issue;
-    this.beginPage = beginPage;
-    this.endPage = endPage;
-    this.documentsOld = new ArrayList<Document>();
-    this.documentsUpdated = new ArrayList<Document>();
-            
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public UpdateDocumentEdit(Integer documentID,
+                              String title, String docAbstract, String type, int citationsCount, String doi,
+                              String sourceIdentifier, String volume, String issue, String beginPage,
+                              String endPage) {
+        super();
 
- /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+        this.documentID = documentID;
+        this.type = type;
+        this.title = title;
+        this.docAbstract = docAbstract;
+        this.citationsCount = citationsCount;
+        this.doi = doi;
+        this.sourceIdentifier = sourceIdentifier;
+        this.volume = volume;
+        this.issue = issue;
+        this.beginPage = beginPage;
+        this.endPage = endPage;
+        this.documentsOld = new ArrayList<Document>();
+        this.documentsUpdated = new ArrayList<Document>();
 
-    boolean successful = false;
-
-    try {
-
-      this.documentsOld.add(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID));
-
-      successful = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().updateDocument(documentID,
-              title, docAbstract, type, citationsCount, doi,
-              sourceIdentifier, volume, issue, beginPage, endPage, true);
-      
-      this.documentsUpdated.add(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID));
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        successful = true;
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        successful = false;
-        this.errorMessage = "An error happened.";
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = false;
 
-    boolean flag;
-    Document document;
+        try {
 
-    try {
+            this.documentsOld.add(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID));
 
-      document = this.documentsOld.get(0);
+            successful = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().updateDocument(documentID,
+                    title, docAbstract, type, citationsCount, doi,
+                    sourceIdentifier, volume, issue, beginPage, endPage, true);
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().updateDocument(document.getDocumentID(),
-              document.getTitle(), document.getDocAbstract(),
-              document.getType(), document.getCitationsCount(),
-              document.getDoi(), document.getSourceIdentifier(),
-              document.getVolume(), document.getIssue(),
-              document.getBeginPage(), document.getEndPage(), true);
+            this.documentsUpdated.add(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID));
 
-      if (flag) {
+            if (successful) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+                successful = true;
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                UndoStack.addEdit(this);
 
-    } catch (KnowledgeBaseException e) {
+            } else {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      try{
+                successful = false;
+                this.errorMessage = "An error happened.";
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+        } catch (KnowledgeBaseException e) {
 
-      } catch (KnowledgeBaseException e2) {
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-        e2.printStackTrace(System.err);
+            successful = false;
+            this.errorMessage = "An exception happened.";
 
-      }
+            throw e;
+        }
+
+        return successful;
+
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean flag;
+        boolean flag;
+        Document document;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().updateDocument(documentID,
-              title, docAbstract, type, citationsCount, doi,
-              sourceIdentifier, volume, issue, beginPage, endPage, true);
+            document = this.documentsOld.get(0);
 
-      if (flag) {
+            flag = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().updateDocument(document.getDocumentID(),
+                    document.getTitle(), document.getDocAbstract(),
+                    document.getType(), document.getCitationsCount(),
+                    document.getDoi(), document.getSourceIdentifier(),
+                    document.getVolume(), document.getIssue(),
+                    document.getBeginPage(), document.getEndPage(), true);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+            if (flag) {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      } else {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            } else {
 
-    } catch (KnowledgeBaseException e) {
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      e.printStackTrace(System.err);
+        } catch (KnowledgeBaseException e) {
 
-      try{
+            e.printStackTrace(System.err);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            try {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-        e2.printStackTrace(System.err);
+            } catch (KnowledgeBaseException e2) {
 
-      }
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean flag;
+
+        try {
+
+            flag = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().updateDocument(documentID,
+                    title, docAbstract, type, citationsCount, doi,
+                    sourceIdentifier, volume, issue, beginPage, endPage, true);
+
+            if (flag) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -5,62 +5,59 @@
  */
 package es.ugr.scimat.knowledgebaseevents.event.add;
 
-import java.util.ArrayList;
 import es.ugr.scimat.knowledgebaseevents.event.KnowledgeBaseEvent;
 import es.ugr.scimat.model.knowledgebase.entity.PublishDate;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AddPublishDateEvent implements KnowledgeBaseEvent {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /**
-   * 
-   */
-  private ArrayList<PublishDate> publishDates;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param publishDates 
-   */
-  public AddPublishDateEvent(ArrayList<PublishDate> publishDates) {
-    this.publishDates = publishDates;
-  }
-  
-  /**
-   * 
-   * @param publishDate 
-   */
-  public AddPublishDateEvent(PublishDate publishDate) {
-    this.publishDates = new ArrayList<PublishDate>();
-    this.publishDates.add(publishDate);
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @throws KnowledgeBaseException 
-   */
-  public void fireEvent() throws KnowledgeBaseException {
-    
-    CurrentProject.getInstance().getKbObserver().firePublishDateAdded(publishDates);
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
+
+    /**
+     *
+     */
+    private ArrayList<PublishDate> publishDates;
+
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
+
+    /**
+     * @param publishDates
+     */
+    public AddPublishDateEvent(ArrayList<PublishDate> publishDates) {
+        this.publishDates = publishDates;
+    }
+
+    /**
+     * @param publishDate
+     */
+    public AddPublishDateEvent(PublishDate publishDate) {
+        this.publishDates = new ArrayList<PublishDate>();
+        this.publishDates.add(publishDate);
+    }
+
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @throws KnowledgeBaseException
+     */
+    public void fireEvent() throws KnowledgeBaseException {
+
+        CurrentProject.getInstance().getKbObserver().firePublishDateAdded(publishDates);
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

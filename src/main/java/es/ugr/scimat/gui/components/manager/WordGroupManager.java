@@ -5,67 +5,67 @@
  */
 package es.ugr.scimat.gui.components.manager;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.commands.edit.delete.DeleteWordGroupEdit;
+import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
 import es.ugr.scimat.gui.components.adddialog.AddDialogManager;
+import es.ugr.scimat.gui.components.globalslavepanel.WordGroupGlobalSlavePanel;
 import es.ugr.scimat.gui.components.itemslist.WordGroupsListPanel;
 import es.ugr.scimat.gui.components.joindialog.JoinEntitiesDialogManager;
-import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
-import es.ugr.scimat.gui.components.globalslavepanel.WordGroupGlobalSlavePanel;
 import es.ugr.scimat.model.knowledgebase.entity.WordGroup;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class WordGroupManager extends GenericItemManagerPanel<WordGroup> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public WordGroupManager() {
-    super(new WordGroupsListPanel(),
-          new WordGroupGlobalSlavePanel());
+    /***************************************************************************/
 
-    setMasterPanelTitle("Word groups list");
-    setSlavePanelTitle("Word groups detail");
-  }
+    public WordGroupManager() {
+        super(new WordGroupsListPanel(),
+                new WordGroupGlobalSlavePanel());
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        setMasterPanelTitle("Word groups list");
+        setSlavePanelTitle("Word groups detail");
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void addAction() {
-    AddDialogManager.getInstance().showAddWordGroupDialog();
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  @Override
-  public void moveToAction(ArrayList<WordGroup> items) {
-    JoinEntitiesDialogManager.getInstance().showWordGroupsJoinDialog(items);
-  }
+    /**
+     *
+     */
+    @Override
+    public void addAction() {
+        AddDialogManager.getInstance().showAddWordGroupDialog();
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void removeAction(ArrayList<WordGroup> items) {
-    (new PerformKnowledgeBaseEditTask(new DeleteWordGroupEdit(items), this)).execute();
-  }
+    /**
+     *
+     */
+    @Override
+    public void moveToAction(ArrayList<WordGroup> items) {
+        JoinEntitiesDialogManager.getInstance().showWordGroupsJoinDialog(items);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     *
+     */
+    @Override
+    public void removeAction(ArrayList<WordGroup> items) {
+        (new PerformKnowledgeBaseEditTask(new DeleteWordGroupEdit(items), this)).execute();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

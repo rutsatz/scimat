@@ -5,10 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.join;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeSet;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -19,275 +15,275 @@ import es.ugr.scimat.model.knowledgebase.entity.ReferenceGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
+
 /**
- *
  * @reference mjcobo
  */
 public class JoinReferenceGroupEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private ArrayList<ReferenceGroup> referenceGroupsToMove;
-  private ReferenceGroup targetReferenceGroup;
+    private ArrayList<ReferenceGroup> referenceGroupsToMove;
+    private ReferenceGroup targetReferenceGroup;
 
-  private ArrayList<ArrayList<Reference>> referencesOfSources = new ArrayList<ArrayList<Reference>>();
+    private ArrayList<ArrayList<Reference>> referencesOfSources = new ArrayList<ArrayList<Reference>>();
 
-  private TreeSet<Reference> referencesOfTarget = new TreeSet<Reference>();
+    private TreeSet<Reference> referencesOfTarget = new TreeSet<Reference>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param referenceGroupsToMove
-   * @param targetReferenceGroup
-   */
-  public JoinReferenceGroupEdit(ArrayList<ReferenceGroup> referenceGroupsToMove, ReferenceGroup targetReferenceGroup) {
+    /**
+     * @param referenceGroupsToMove
+     * @param targetReferenceGroup
+     */
+    public JoinReferenceGroupEdit(ArrayList<ReferenceGroup> referenceGroupsToMove, ReferenceGroup targetReferenceGroup) {
 
-    this.referenceGroupsToMove = referenceGroupsToMove;
-    this.targetReferenceGroup = targetReferenceGroup;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = true;
-    int i, j;
-    ReferenceDAO referenceDAO;
-    ReferenceGroupDAO referenceGroupDAO;
-    ReferenceGroup referenceGroup;
-    ArrayList<Reference> references;
-
-    try {
-
-      i = 0;
-
-      referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
-      referenceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceGroupDAO();
-
-      // Retrieve the realations of the target item.
-      this.referencesOfTarget = new TreeSet<Reference>(referenceGroupDAO.getReferences(this.targetReferenceGroup.getReferenceGroupID()));
-
-      while ((i < this.referenceGroupsToMove.size()) && (successful)) {
-
-        referenceGroup = this.referenceGroupsToMove.get(i);
-
-        // Retrieve the relations of the source items
-        references = referenceGroupDAO.getReferences(referenceGroup.getReferenceGroupID());
-        this.referencesOfSources.add(references);
-
-        // Do the join
-        j = 0;
-
-        successful = referenceGroupDAO.removeReferenceGroup(referenceGroup.getReferenceGroupID(), true);
-
-        while ((j < references.size()) && (successful)) {
-          
-          successful = referenceDAO.setReferenceGroup(references.get(j).getReferenceID(), 
-                  this.targetReferenceGroup.getReferenceGroupID(), true);
-
-          j ++;
-        }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.referenceGroupsToMove = referenceGroupsToMove;
+        this.targetReferenceGroup = targetReferenceGroup;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = true;
+        int i, j;
+        ReferenceDAO referenceDAO;
+        ReferenceGroupDAO referenceGroupDAO;
+        ReferenceGroup referenceGroup;
+        ArrayList<Reference> references;
 
-    int i, j;
-    boolean successful = true;
-    TreeSet<Reference> tmpReferences;
-    ReferenceGroupDAO referenceGroupDAO;
-    ReferenceDAO referenceDAO;
-    ReferenceGroup referenceGroup;
-    Reference reference;
-    Iterator<Reference> itReference;
+        try {
 
-    try {
+            i = 0;
 
-      referenceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceGroupDAO();
-      referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
-      
+            referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
+            referenceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceGroupDAO();
 
-      tmpReferences = new TreeSet<Reference>(referenceGroupDAO.getReferences(this.targetReferenceGroup.getReferenceGroupID()));
-      tmpReferences.removeAll(this.referencesOfTarget);
+            // Retrieve the realations of the target item.
+            this.referencesOfTarget = new TreeSet<Reference>(referenceGroupDAO.getReferences(this.targetReferenceGroup.getReferenceGroupID()));
 
-      itReference = tmpReferences.iterator();
+            while ((i < this.referenceGroupsToMove.size()) && (successful)) {
 
-      while ((itReference.hasNext()) && (successful)) {
+                referenceGroup = this.referenceGroupsToMove.get(i);
 
-        successful = referenceDAO.setReferenceGroup(itReference.next().getReferenceID(), null, true);
-      }
+                // Retrieve the relations of the source items
+                references = referenceGroupDAO.getReferences(referenceGroup.getReferenceGroupID());
+                this.referencesOfSources.add(references);
 
-      i = 0;
+                // Do the join
+                j = 0;
 
-      while ((i < this.referenceGroupsToMove.size()) && (successful)) {
+                successful = referenceGroupDAO.removeReferenceGroup(referenceGroup.getReferenceGroupID(), true);
 
-        referenceGroup = this.referenceGroupsToMove.get(i);
+                while ((j < references.size()) && (successful)) {
 
-        successful = referenceGroupDAO.addReferenceGroup(referenceGroup, true);
+                    successful = referenceDAO.setReferenceGroup(references.get(j).getReferenceID(),
+                            this.targetReferenceGroup.getReferenceGroupID(), true);
 
-        j = 0;
+                    j++;
+                }
 
-        while ((j < this.referencesOfSources.get(i).size()) && (successful)) {
+                i++;
+            }
 
-          reference = this.referencesOfSources.get(i).get(j);
+            if (successful) {
 
-          successful = referenceDAO.setReferenceGroup(reference.getReferenceID(),
-                                                referenceGroup.getReferenceGroupID(), true);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-          j++;
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
 
-        i++;
-      }
+        return successful;
 
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean successful = true;
-    int i, j;
-    ReferenceDAO referenceDAO;
-    ReferenceGroupDAO referenceGroupDAO;
-    ReferenceGroup referenceGroup;
-    ArrayList<Reference> references;
+        int i, j;
+        boolean successful = true;
+        TreeSet<Reference> tmpReferences;
+        ReferenceGroupDAO referenceGroupDAO;
+        ReferenceDAO referenceDAO;
+        ReferenceGroup referenceGroup;
+        Reference reference;
+        Iterator<Reference> itReference;
 
-    try {
+        try {
 
-      i = 0;
+            referenceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceGroupDAO();
+            referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
 
-      referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
-      referenceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceGroupDAO();
 
-      while ((i < this.referenceGroupsToMove.size()) && (successful)) {
+            tmpReferences = new TreeSet<Reference>(referenceGroupDAO.getReferences(this.targetReferenceGroup.getReferenceGroupID()));
+            tmpReferences.removeAll(this.referencesOfTarget);
 
-        referenceGroup = this.referenceGroupsToMove.get(i);
+            itReference = tmpReferences.iterator();
 
-        // Retrieve the relations of the source items
-        references = this.referencesOfSources.get(i) ;
+            while ((itReference.hasNext()) && (successful)) {
 
-        // Do the join
-        j = 0;
+                successful = referenceDAO.setReferenceGroup(itReference.next().getReferenceID(), null, true);
+            }
 
-        successful = referenceGroupDAO.removeReferenceGroup(referenceGroup.getReferenceGroupID(), true);
+            i = 0;
 
-        while ((j < references.size()) && (successful)) {
-          
-          successful = referenceDAO.setReferenceGroup(references.get(j).getReferenceID(), 
-                  this.targetReferenceGroup.getReferenceGroupID(), true);
+            while ((i < this.referenceGroupsToMove.size()) && (successful)) {
 
-          j ++;
+                referenceGroup = this.referenceGroupsToMove.get(i);
+
+                successful = referenceGroupDAO.addReferenceGroup(referenceGroup, true);
+
+                j = 0;
+
+                while ((j < this.referencesOfSources.get(i).size()) && (successful)) {
+
+                    reference = this.referencesOfSources.get(i).get(j);
+
+                    successful = referenceDAO.setReferenceGroup(reference.getReferenceID(),
+                            referenceGroup.getReferenceGroupID(), true);
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
         }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        int i, j;
+        ReferenceDAO referenceDAO;
+        ReferenceGroupDAO referenceGroupDAO;
+        ReferenceGroup referenceGroup;
+        ArrayList<Reference> references;
+
+        try {
+
+            i = 0;
+
+            referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
+            referenceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceGroupDAO();
+
+            while ((i < this.referenceGroupsToMove.size()) && (successful)) {
+
+                referenceGroup = this.referenceGroupsToMove.get(i);
+
+                // Retrieve the relations of the source items
+                references = this.referencesOfSources.get(i);
+
+                // Do the join
+                j = 0;
+
+                successful = referenceGroupDAO.removeReferenceGroup(referenceGroup.getReferenceGroupID(), true);
+
+                while ((j < references.size()) && (successful)) {
+
+                    successful = referenceDAO.setReferenceGroup(references.get(j).getReferenceID(),
+                            this.targetReferenceGroup.getReferenceGroupID(), true);
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -5,81 +5,75 @@
  */
 package es.ugr.scimat.gui.components.itemslist;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.components.tablemodel.AffiliationsTableModel;
 import es.ugr.scimat.model.knowledgebase.entity.Affiliation;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 import es.ugr.scimat.project.observer.EntityObserver;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
-public class AffiliationsListPanel 
-extends GenericDynamicItemsListPanel<Affiliation>
-implements EntityObserver<Affiliation> {
+public class AffiliationsListPanel
+        extends GenericDynamicItemsListPanel<Affiliation>
+        implements EntityObserver<Affiliation> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/  
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param tableModel 
-   */
-  public AffiliationsListPanel() {
-    super(new AffiliationsTableModel());
-    
-    CurrentProject.getInstance().getKbObserver().addAffiliationObserver(this);
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityAdded(ArrayList<Affiliation> items) throws KnowledgeBaseException {
-    
-    addItems(items);
-  }
+    /**
+     * @param tableModel
+     */
+    public AffiliationsListPanel() {
+        super(new AffiliationsTableModel());
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException 
-   */
-  public void entityRemoved(ArrayList<Affiliation> items) throws KnowledgeBaseException {
-    removeItems(items);
-  }
+        CurrentProject.getInstance().getKbObserver().addAffiliationObserver(this);
+    }
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException 
-   */
-  public void entityUpdated(ArrayList<Affiliation> items) throws KnowledgeBaseException {
-    updateItems(items);
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws KnowledgeBaseException 
-   */
-  public void entityRefresh() throws KnowledgeBaseException {
-    refreshItems(CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().getAffiliations());
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityAdded(ArrayList<Affiliation> items) throws KnowledgeBaseException {
+
+        addItems(items);
+    }
+
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityRemoved(ArrayList<Affiliation> items) throws KnowledgeBaseException {
+        removeItems(items);
+    }
+
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityUpdated(ArrayList<Affiliation> items) throws KnowledgeBaseException {
+        updateItems(items);
+    }
+
+    /**
+     * @throws KnowledgeBaseException
+     */
+    public void entityRefresh() throws KnowledgeBaseException {
+        refreshItems(CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().getAffiliations());
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

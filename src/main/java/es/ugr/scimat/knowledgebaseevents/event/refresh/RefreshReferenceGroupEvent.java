@@ -10,41 +10,38 @@ import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
 /**
- *
  * @author mjcobo
  */
 public class RefreshReferenceGroupEvent implements KnowledgeBaseEvent {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param referenceGroups 
-   */
-  public RefreshReferenceGroupEvent() {
-  
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @throws KnowledgeBaseException 
-   */
-  public void fireEvent() throws KnowledgeBaseException {
-    
-    CurrentProject.getInstance().getKbObserver().fireReferenceGroupRefresh();
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
+
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
+
+    /**
+     * @param referenceGroups
+     */
+    public RefreshReferenceGroupEvent() {
+
+    }
+
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @throws KnowledgeBaseException
+     */
+    public void fireEvent() throws KnowledgeBaseException {
+
+        CurrentProject.getInstance().getKbObserver().fireReferenceGroupRefresh();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

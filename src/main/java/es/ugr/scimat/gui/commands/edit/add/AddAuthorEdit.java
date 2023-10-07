@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.add;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,200 +12,198 @@ import es.ugr.scimat.model.knowledgebase.entity.Author;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AddAuthorEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The author's ID
-   */
-  private Integer authorID;
+    /**
+     * The author's ID
+     */
+    private Integer authorID;
 
-  /**
-   * The author's name.
-   */
-  private String authorName;
+    /**
+     * The author's name.
+     */
+    private String authorName;
 
-  /**
-   * The author's full name when available
-   */
-  private String fullAuthorName;
+    /**
+     * The author's full name when available
+     */
+    private String fullAuthorName;
 
-  /**
-   * The elements added
-   */
-  private ArrayList<Author> authorsAdded;
+    /**
+     * The elements added
+     */
+    private ArrayList<Author> authorsAdded;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param authorName
-   * @param fullAuthorName
-   */
-  public AddAuthorEdit(String authorName, String fullAuthorName) {
-    super();
-    
-    this.authorName = authorName;
-    this.fullAuthorName = fullAuthorName;
-    this.authorsAdded = new ArrayList<Author>();
-  }
+    /**
+     * @param authorName
+     * @param fullAuthorName
+     */
+    public AddAuthorEdit(String authorName, String fullAuthorName) {
+        super();
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        this.authorName = authorName;
+        this.fullAuthorName = fullAuthorName;
+        this.authorsAdded = new ArrayList<Author>();
+    }
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    boolean successful = false;
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-    try {
+        boolean successful = false;
 
-      if ((this.authorName == null) || (this.fullAuthorName == null)) {
+        try {
 
-        successful = false;
-        this.errorMessage = "The name and full name can not be null.";
+            if ((this.authorName == null) || (this.fullAuthorName == null)) {
 
-      } else if (CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().checkAuthor(authorName, fullAuthorName)) {
+                successful = false;
+                this.errorMessage = "The name and full name can not be null.";
 
-        successful = false;
-        this.errorMessage = "An Author yet exists with this name and full name.";
+            } else if (CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().checkAuthor(authorName, fullAuthorName)) {
 
-      } else {
+                successful = false;
+                this.errorMessage = "An Author yet exists with this name and full name.";
 
-        this.authorID = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().addAuthor(authorName, fullAuthorName, true);
+            } else {
 
-        if (this.authorID != null) {
+                this.authorID = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().addAuthor(authorName, fullAuthorName, true);
 
-          CurrentProject.getInstance().getKnowledgeBase().commit();
+                if (this.authorID != null) {
 
-          this.authorsAdded.add(CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().getAuthor(this.authorID));
+                    CurrentProject.getInstance().getKnowledgeBase().commit();
 
-          KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                    this.authorsAdded.add(CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().getAuthor(this.authorID));
 
-          successful = true;
+                    KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-          UndoStack.addEdit(this);
+                    successful = true;
 
-        } else {
+                    UndoStack.addEdit(this);
 
-          CurrentProject.getInstance().getKnowledgeBase().rollback();
+                } else {
 
-          successful = false;
-          this.errorMessage = "An error happened.";
+                    CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                    successful = false;
+                    this.errorMessage = "An error happened.";
+                }
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
-      }
 
-    } catch (KnowledgeBaseException e) {
+        return successful;
 
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
     }
 
-    return successful;
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-  }
+        boolean flag;
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
-    
-    boolean flag;
+        try {
 
-    try {
+            flag = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().removeAuthor(this.authorID, true);
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().removeAuthor(this.authorID, true);
+            if (flag) {
 
-      if (flag) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+            } else {
 
-      } else {
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+        } catch (KnowledgeBaseException e) {
 
-    } catch (KnowledgeBaseException e) {
+            e.printStackTrace(System.err);
 
-      e.printStackTrace(System.err);
+            try {
 
-      try{
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            } catch (KnowledgeBaseException e2) {
 
-      } catch (KnowledgeBaseException e2) {
+                e2.printStackTrace(System.err);
 
-        e2.printStackTrace(System.err);
-
-      }
+            }
+        }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().addAuthor(authorID, authorName, fullAuthorName, true);
+            flag = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().addAuthor(authorID, authorName, fullAuthorName, true);
 
-      if (flag) {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

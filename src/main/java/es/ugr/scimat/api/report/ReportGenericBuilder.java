@@ -6,10 +6,9 @@
 package es.ugr.scimat.api.report;
 
 /**
- *
  * @author mjcobo
  */
 public interface ReportGenericBuilder {
- 
-  public void execute() throws ReportBuilderException;
+
+    public void execute() throws ReportBuilderException;
 }

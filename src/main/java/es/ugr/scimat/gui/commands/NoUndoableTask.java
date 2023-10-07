@@ -13,6 +13,6 @@ package es.ugr.scimat.gui.commands;
  * @author mjcobo
  */
 public interface NoUndoableTask {
-  
-  public void execute();
+
+    public void execute();
 }

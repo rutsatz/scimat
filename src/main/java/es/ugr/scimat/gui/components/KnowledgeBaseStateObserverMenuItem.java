@@ -5,9 +5,10 @@
  */
 package es.ugr.scimat.gui.components;
 
-import javax.swing.JMenuItem;
 import es.ugr.scimat.project.CurrentProject;
 import es.ugr.scimat.project.observer.KnowledgeBaseStateObserver;
+
+import javax.swing.*;
 
 /**
  * Extiende la funcionalidad de JMenuItem.
@@ -18,47 +19,47 @@ import es.ugr.scimat.project.observer.KnowledgeBaseStateObserver;
 public class KnowledgeBaseStateObserverMenuItem extends JMenuItem
         implements KnowledgeBaseStateObserver {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  public KnowledgeBaseStateObserverMenuItem() {
-    super();
+    /**
+     *
+     */
+    public KnowledgeBaseStateObserverMenuItem() {
+        super();
 
-    init();
-  }
+        init();
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * Cuando ocurra un cambio en el estado de la base de conocimiento, este
-   * objeto sera notificado a traves de este metodo.
-   *
-   * @param loaded nuevo estado de la base de conocimiento.
-   */
-  public void knowledgeBaseStateChanged(boolean loaded) {
-    setEnabled(loaded);
-  }
+    /**
+     * Cuando ocurra un cambio en el estado de la base de conocimiento, este
+     * objeto sera notificado a traves de este metodo.
+     *
+     * @param loaded nuevo estado de la base de conocimiento.
+     */
+    public void knowledgeBaseStateChanged(boolean loaded) {
+        setEnabled(loaded);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 
-  /**
-   * Initialize the object.
-   */
-  private void init() {
+    /**
+     * Initialize the object.
+     */
+    private void init() {
 
-    // Insertamos al objeto como observador del estado de la base de conocimiento.
-    CurrentProject.getInstance().addKnowledgeBaseStateObserver(this);
-  }
+        // Insertamos al objeto como observador del estado de la base de conocimiento.
+        CurrentProject.getInstance().addKnowledgeBaseStateObserver(this);
+    }
 }

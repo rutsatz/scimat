@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -15,191 +13,188 @@ import es.ugr.scimat.model.knowledgebase.entity.DocumentWord;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateDocumentWordRolEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private Integer documentID;
-  private Integer wordID;
-  private boolean authorKeyword;
-  private boolean sourceKeyword;
-  private boolean addedKeyword;
-  private DocumentWord oldDocumentWord;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param documentID
-   * @param wordID
-   * @param authorKeyword
-   * @param sourceKeyword
-   * @param addedKeyword 
-   */
-  public UpdateDocumentWordRolEdit(Integer documentID, Integer wordID, 
-          boolean authorKeyword, boolean sourceKeyword, 
-          boolean addedKeyword) {
-    
-    this.documentID = documentID;
-    this.wordID = wordID;
-    this.authorKeyword = authorKeyword;
-    this.sourceKeyword = sourceKeyword;
-    this.addedKeyword = addedKeyword;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-    
-    boolean successful = true;
-    DocumentWordDAO documentWordDAO;
-    
-    try {
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-      documentWordDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentWordDAO();
-      
-      this.oldDocumentWord = documentWordDAO.getDocumentWord(this.documentID, this.wordID);
-      
-      successful = documentWordDAO.setAuthorWord(this.documentID, this.wordID, this.authorKeyword, true);
-      successful = documentWordDAO.setSourceWord(this.documentID, this.wordID, this.sourceKeyword, true);
-      successful = documentWordDAO.setAddedWord(this.documentID, this.wordID, this.addedKeyword, true);
-      
-      if (successful) {
+    private Integer documentID;
+    private Integer wordID;
+    private boolean authorKeyword;
+    private boolean sourceKeyword;
+    private boolean addedKeyword;
+    private DocumentWord oldDocumentWord;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-        UndoStack.addEdit(this);
+    /**
+     * @param documentID
+     * @param wordID
+     * @param authorKeyword
+     * @param sourceKeyword
+     * @param addedKeyword
+     */
+    public UpdateDocumentWordRolEdit(Integer documentID, Integer wordID,
+                                     boolean authorKeyword, boolean sourceKeyword,
+                                     boolean addedKeyword) {
 
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.documentID = documentID;
+        this.wordID = wordID;
+        this.authorKeyword = authorKeyword;
+        this.sourceKeyword = sourceKeyword;
+        this.addedKeyword = addedKeyword;
     }
 
-    return successful;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
-    
-    boolean successful = true; 
-    DocumentWordDAO documentWordDAO;
-    
-    try {
+    /**
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-      documentWordDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentWordDAO();
-      
-      successful = documentWordDAO.setAuthorWord(this.documentID, this.wordID, this.oldDocumentWord.isAuthorKeyword(), true);
-      successful = documentWordDAO.setSourceWord(this.documentID, this.wordID, this.oldDocumentWord.isSourceKeyword(), true);
-      successful = documentWordDAO.setAddedWord(this.documentID, this.wordID, this.oldDocumentWord.isAddedKeyword(), true);
-      
-      if (successful) {
+        boolean successful = true;
+        DocumentWordDAO documentWordDAO;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        try {
 
-      } else {
+            documentWordDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentWordDAO();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            this.oldDocumentWord = documentWordDAO.getDocumentWord(this.documentID, this.wordID);
 
-    } catch (KnowledgeBaseException e) {
+            successful = documentWordDAO.setAuthorWord(this.documentID, this.wordID, this.authorKeyword, true);
+            successful = documentWordDAO.setSourceWord(this.documentID, this.wordID, this.sourceKeyword, true);
+            successful = documentWordDAO.setAddedWord(this.documentID, this.wordID, this.addedKeyword, true);
 
-      e.printStackTrace(System.err);
+            if (successful) {
 
-      try{
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                UndoStack.addEdit(this);
 
-      } catch (KnowledgeBaseException e2) {
+            } else {
 
-        e2.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      }
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
     }
-  }
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
-    
-    boolean successful = true;
-    DocumentWordDAO documentWordDAO;
-    
-    try {
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-      documentWordDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentWordDAO();
-      
-      successful = documentWordDAO.setAuthorWord(this.documentID, this.wordID, this.authorKeyword, true);
-      successful = documentWordDAO.setSourceWord(this.documentID, this.wordID, this.sourceKeyword, true);
-      successful = documentWordDAO.setAddedWord(this.documentID, this.wordID, this.addedKeyword, true);
-      
-      if (successful) {
+        boolean successful = true;
+        DocumentWordDAO documentWordDAO;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        try {
 
-      } else {
+            documentWordDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentWordDAO();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            successful = documentWordDAO.setAuthorWord(this.documentID, this.wordID, this.oldDocumentWord.isAuthorKeyword(), true);
+            successful = documentWordDAO.setSourceWord(this.documentID, this.wordID, this.oldDocumentWord.isSourceKeyword(), true);
+            successful = documentWordDAO.setAddedWord(this.documentID, this.wordID, this.oldDocumentWord.isAddedKeyword(), true);
 
-    } catch (KnowledgeBaseException e) {
+            if (successful) {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      try{
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } catch (KnowledgeBaseException e2) {
+        } catch (KnowledgeBaseException e) {
 
-        e2.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      }
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        DocumentWordDAO documentWordDAO;
+
+        try {
+
+            documentWordDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentWordDAO();
+
+            successful = documentWordDAO.setAuthorWord(this.documentID, this.wordID, this.authorKeyword, true);
+            successful = documentWordDAO.setSourceWord(this.documentID, this.wordID, this.sourceKeyword, true);
+            successful = documentWordDAO.setAddedWord(this.documentID, this.wordID, this.addedKeyword, true);
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -9,53 +9,49 @@ import es.ugr.scimat.api.analysis.statistic.StatisticBasedFrequency;
 import es.ugr.scimat.model.knowledgebase.entity.Period;
 
 /**
- *
  * @author mjcobo
  */
 public class FrequencyDistributionPerPeriod {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private Period period;
-  private StatisticBasedFrequency stats;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param period
-   * @param stats 
-   */
-  public FrequencyDistributionPerPeriod(Period period, StatisticBasedFrequency stats) {
-    this.period = period;
-    this.stats = stats;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    private Period period;
+    private StatisticBasedFrequency stats;
 
-  /**
-   * 
-   * @return 
-   */
-  public Period getPeriod() {
-    return period;
-  }
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @return 
-   */
-  public StatisticBasedFrequency getStats() {
-    return stats;
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param period
+     * @param stats
+     */
+    public FrequencyDistributionPerPeriod(Period period, StatisticBasedFrequency stats) {
+        this.period = period;
+        this.stats = stats;
+    }
+
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @return
+     */
+    public Period getPeriod() {
+        return period;
+    }
+
+    /**
+     * @return
+     */
+    public StatisticBasedFrequency getStats() {
+        return stats;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

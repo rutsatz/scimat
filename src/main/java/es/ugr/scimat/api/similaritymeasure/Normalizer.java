@@ -11,17 +11,14 @@ import es.ugr.scimat.api.dataset.UndirectNetworkMatrix;
 import es.ugr.scimat.api.dataset.exception.NotExistsItemException;
 
 /**
- *
  * @author mjcobo
  */
 public interface Normalizer {
 
-  /**
-   *
-   * @param dataset
-   * @param network
-   *
-   * @throws NotExistsItemException
-   */
-  public void execute(Dataset dataset, UndirectNetworkMatrix network) throws NotExistsItemException;
+    /**
+     * @param dataset
+     * @param network
+     * @throws NotExistsItemException
+     */
+    public void execute(Dataset dataset, UndirectNetworkMatrix network) throws NotExistsItemException;
 }

@@ -5,237 +5,226 @@
  */
 package es.ugr.scimat.api.mapping.clustering.result;
 
-import java.io.Serializable;
-import es.ugr.scimat.api.mapping.Node;
-import es.ugr.scimat.api.mapping.WholeNetwork;
-import java.util.ArrayList;
-import java.util.TreeMap;
 import es.ugr.scimat.api.dataset.NetworkPair;
 import es.ugr.scimat.api.dataset.UndirectNetworkMatrix;
+import es.ugr.scimat.api.mapping.Node;
+import es.ugr.scimat.api.mapping.WholeNetwork;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.TreeMap;
 
 /**
- *
  * @author mjcobo
  */
 public class ClusterSet implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The whole network. This network is an undirect weighted network, and it is
-   * represented as an adjacency matrix.
-   */
-  private WholeNetwork wholeNetwork;
+    /**
+     * The whole network. This network is an undirect weighted network, and it is
+     * represented as an adjacency matrix.
+     */
+    private WholeNetwork wholeNetwork;
 
-  /**
-   * The clusters list.
-   */
-  private ArrayList<Cluster> clusterList;
+    /**
+     * The clusters list.
+     */
+    private ArrayList<Cluster> clusterList;
 
-  /**
-   * 
-   */
-  private TreeMap<Integer, Integer> clusterOfNodes;
+    /**
+     *
+     */
+    private TreeMap<Integer, Integer> clusterOfNodes;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param network
-   */
-  public ClusterSet(UndirectNetworkMatrix network) {
+    /**
+     * @param network
+     */
+    public ClusterSet(UndirectNetworkMatrix network) {
 
-    this.wholeNetwork = new WholeNetwork(network);
+        this.wholeNetwork = new WholeNetwork(network);
 
-    this.clusterList = new ArrayList<Cluster>();
+        this.clusterList = new ArrayList<Cluster>();
 
-    this.clusterOfNodes = new TreeMap<Integer, Integer>();
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @return
-   */
-  public WholeNetwork getWholeNetwork() {
-
-    return this.wholeNetwork;
-  }
-
-  /**
-   * 
-   * @return
-   */
-  public int getClustersCount() {
-
-    return this.clusterList.size();
-  }
-
-  /**
-   * 
-   * @return
-   */
-  public ArrayList<Cluster> getClusters() {
-
-    return new ArrayList<Cluster>(clusterList);
-  }
-
-  /**
-   * 
-   * @param cluster
-   * @return
-   */
-  public Cluster getCluster(int cluster) {
-
-    return this.clusterList.get(cluster);
-  }
-
-  /**
-   * 
-   * @param nodes
-   * @return
-   */
-  public boolean addCluster(ArrayList<Integer> nodes) {
-
-    int i, clusterPosition;
-    Node node;
-    Cluster cluter;
-
-    // Check if all the nodes belong to the wholenetwork and the nodes do not
-    // belong yet to any cluster.
-    for (i = 0; i < nodes.size(); i++) {
-      
-      node = this.wholeNetwork.getNode(nodes.get(i));
-
-      if ((node == null) || (getClusterOfNode(node.getNodeID()) != -1)) {
-
-        return false;
-      }
+        this.clusterOfNodes = new TreeMap<Integer, Integer>();
     }
 
-    cluter = new Cluster(nodes);
-    this.clusterList.add(cluter);
-    clusterPosition = this.clusterList.size() - 1;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    for (i = 0; i < nodes.size(); i++) {
+    /**
+     * @return
+     */
+    public WholeNetwork getWholeNetwork() {
 
-      addClusterToNode(nodes.get(i), clusterPosition);
+        return this.wholeNetwork;
     }
 
-    return true;
-  }
+    /**
+     * @return
+     */
+    public int getClustersCount() {
 
-  /**
-   *
-   * @param nodes
-   * @return
-   */
-  public boolean addCluster(ArrayList<Integer> nodes, Integer mainNode) {
-
-    int i, clusterPosition;
-    boolean containMainNode;
-    Node node;
-    Cluster cluter;
-
-    containMainNode = false;
-
-    // Check if all the nodes belong to the wholenetwork and the nodes do not
-    // belong yet to any cluster.
-    for (i = 0; i < nodes.size(); i++) {
-
-      node = this.wholeNetwork.getNode(nodes.get(i));
-
-      if ((node == null) || (getClusterOfNode(node.getNodeID()) != -1)) {
-
-        return false;
-      }
-
-      if (node.getNodeID().intValue() == mainNode.intValue()) {
-
-        containMainNode = true;
-      }
+        return this.clusterList.size();
     }
 
-    if (containMainNode) {
+    /**
+     * @return
+     */
+    public ArrayList<Cluster> getClusters() {
 
-      cluter = new Cluster(nodes, mainNode);
-      this.clusterList.add(cluter);
-      clusterPosition = this.clusterList.size() - 1;
-
-      for (i = 0; i < nodes.size(); i++) {
-
-        addClusterToNode(nodes.get(i), clusterPosition);
-      }
-
-      return true;
-
-    } else {
-
-      return false;
+        return new ArrayList<Cluster>(clusterList);
     }
-  }
 
-  /**
-   * 
-   * @param node
-   * @return the cluster index of the Node of -1 if the node is not 
-   * associated with any cluster.
-   */
-  public int getClusterOfNode(int node) {
+    /**
+     * @param cluster
+     * @return
+     */
+    public Cluster getCluster(int cluster) {
 
-    Integer cluster;
-
-    cluster = this.clusterOfNodes.get(node);
-
-    if (cluster != null) {
-
-      return cluster;
-      
-    } else {
-
-      return -1;
+        return this.clusterList.get(cluster);
     }
-  }
 
-  /**
-   * 
-   * @param cluster
-   * @return
-   */
-  public ArrayList<NetworkPair> getClusterInternalPairs(int cluster) {
+    /**
+     * @param nodes
+     * @return
+     */
+    public boolean addCluster(ArrayList<Integer> nodes) {
 
-    return this.wholeNetwork.getInternalPairs(this.clusterList.get(cluster).getNodes());
-  }
+        int i, clusterPosition;
+        Node node;
+        Cluster cluter;
 
-  /**
-   * 
-   * @param cluster
-   * @return
-   */
-  public ArrayList<NetworkPair> getClusterExternalPairs(int cluster) {
+        // Check if all the nodes belong to the wholenetwork and the nodes do not
+        // belong yet to any cluster.
+        for (i = 0; i < nodes.size(); i++) {
 
-    return this.wholeNetwork.getExternalPairs(this.clusterList.get(cluster).getNodes());
-  }
+            node = this.wholeNetwork.getNode(nodes.get(i));
 
-  /**
-   * Return a list with the pairs between the nodes of the two clusters.
-   *
-   * @param cluster1 the position of the first cluster in the cluster set.
-   * @param cluster2 the position of the second cluster in the cluster set.
-   *
-   * @return the list with the pairs between the two cluster.
-   */
-  public ArrayList<NetworkPair> getIntraClusterPairs(int cluster1, int cluster2) {
+            if ((node == null) || (getClusterOfNode(node.getNodeID()) != -1)) {
 
-    return this.wholeNetwork.getIntraNodesPairs(this.getCluster(cluster1).getNodes(), 
-            this.getCluster(cluster2).getNodes());
+                return false;
+            }
+        }
+
+        cluter = new Cluster(nodes);
+        this.clusterList.add(cluter);
+        clusterPosition = this.clusterList.size() - 1;
+
+        for (i = 0; i < nodes.size(); i++) {
+
+            addClusterToNode(nodes.get(i), clusterPosition);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param nodes
+     * @return
+     */
+    public boolean addCluster(ArrayList<Integer> nodes, Integer mainNode) {
+
+        int i, clusterPosition;
+        boolean containMainNode;
+        Node node;
+        Cluster cluter;
+
+        containMainNode = false;
+
+        // Check if all the nodes belong to the wholenetwork and the nodes do not
+        // belong yet to any cluster.
+        for (i = 0; i < nodes.size(); i++) {
+
+            node = this.wholeNetwork.getNode(nodes.get(i));
+
+            if ((node == null) || (getClusterOfNode(node.getNodeID()) != -1)) {
+
+                return false;
+            }
+
+            if (node.getNodeID().intValue() == mainNode.intValue()) {
+
+                containMainNode = true;
+            }
+        }
+
+        if (containMainNode) {
+
+            cluter = new Cluster(nodes, mainNode);
+            this.clusterList.add(cluter);
+            clusterPosition = this.clusterList.size() - 1;
+
+            for (i = 0; i < nodes.size(); i++) {
+
+                addClusterToNode(nodes.get(i), clusterPosition);
+            }
+
+            return true;
+
+        } else {
+
+            return false;
+        }
+    }
+
+    /**
+     * @param node
+     * @return the cluster index of the Node of -1 if the node is not
+     * associated with any cluster.
+     */
+    public int getClusterOfNode(int node) {
+
+        Integer cluster;
+
+        cluster = this.clusterOfNodes.get(node);
+
+        if (cluster != null) {
+
+            return cluster;
+
+        } else {
+
+            return -1;
+        }
+    }
+
+    /**
+     * @param cluster
+     * @return
+     */
+    public ArrayList<NetworkPair> getClusterInternalPairs(int cluster) {
+
+        return this.wholeNetwork.getInternalPairs(this.clusterList.get(cluster).getNodes());
+    }
+
+    /**
+     * @param cluster
+     * @return
+     */
+    public ArrayList<NetworkPair> getClusterExternalPairs(int cluster) {
+
+        return this.wholeNetwork.getExternalPairs(this.clusterList.get(cluster).getNodes());
+    }
+
+    /**
+     * Return a list with the pairs between the nodes of the two clusters.
+     *
+     * @param cluster1 the position of the first cluster in the cluster set.
+     * @param cluster2 the position of the second cluster in the cluster set.
+     * @return the list with the pairs between the two cluster.
+     */
+    public ArrayList<NetworkPair> getIntraClusterPairs(int cluster1, int cluster2) {
+
+        return this.wholeNetwork.getIntraNodesPairs(this.getCluster(cluster1).getNodes(),
+                this.getCluster(cluster2).getNodes());
     
     /*int i, j;
     Integer nodeCluster1ID, nodeCluster2ID;
@@ -266,19 +255,18 @@ public class ClusterSet implements Serializable {
     }
 
     return pairs;*/
-  }
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param nodeID
-   * @param cluster
-   */
-  private void addClusterToNode(Integer nodeID, int cluster) {
+    /**
+     * @param nodeID
+     * @param cluster
+     */
+    private void addClusterToNode(Integer nodeID, int cluster) {
 
-    this.clusterOfNodes.put(nodeID, cluster);
-  }
+        this.clusterOfNodes.put(nodeID, cluster);
+    }
 }

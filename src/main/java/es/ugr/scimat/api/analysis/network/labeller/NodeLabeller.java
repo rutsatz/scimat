@@ -8,10 +8,9 @@ package es.ugr.scimat.api.analysis.network.labeller;
 import es.ugr.scimat.api.mapping.Node;
 
 /**
- *
  * @author mjcobo
  */
 public interface NodeLabeller {
 
-  public String execute(Node node);
+    public String execute(Node node);
 }

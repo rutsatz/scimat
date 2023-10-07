@@ -5,20 +5,18 @@
  */
 package es.ugr.scimat.api.analysis.network.aggregation;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.api.dataset.NetworkPair;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public interface EdgeAggregation {
 
-  /**
-   * 
-   * @param pairs
-   * @return
-   */
-  public double aggregate(ArrayList<NetworkPair> pairs);
+    /**
+     * @param pairs
+     * @return
+     */
+    public double aggregate(ArrayList<NetworkPair> pairs);
 }

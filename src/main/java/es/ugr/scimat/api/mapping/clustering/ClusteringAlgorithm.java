@@ -5,19 +5,17 @@
  */
 package es.ugr.scimat.api.mapping.clustering;
 
-import es.ugr.scimat.api.mapping.clustering.result.ClusterSet;
 import es.ugr.scimat.api.dataset.UndirectNetworkMatrix;
+import es.ugr.scimat.api.mapping.clustering.result.ClusterSet;
 
 /**
- *
  * @author mjcobo
  */
 public interface ClusteringAlgorithm {
 
-  /**
-   * 
-   * @param network
-   * @return
-   */
-  public ClusterSet execute(UndirectNetworkMatrix network);
+    /**
+     * @param network
+     * @return
+     */
+    public ClusterSet execute(UndirectNetworkMatrix network);
 }

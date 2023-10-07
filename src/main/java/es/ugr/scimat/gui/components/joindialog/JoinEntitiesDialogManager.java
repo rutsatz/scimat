@@ -5,285 +5,253 @@
  */
 package es.ugr.scimat.gui.components.joindialog;
 
+import es.ugr.scimat.model.knowledgebase.entity.*;
+
+import javax.swing.*;
 import java.util.ArrayList;
-import javax.swing.JFrame;
-import es.ugr.scimat.model.knowledgebase.entity.Affiliation;
-import es.ugr.scimat.model.knowledgebase.entity.Author;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorGroup;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorReference;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceGroup;
-import es.ugr.scimat.model.knowledgebase.entity.Document;
-import es.ugr.scimat.model.knowledgebase.entity.Journal;
-import es.ugr.scimat.model.knowledgebase.entity.Period;
-import es.ugr.scimat.model.knowledgebase.entity.PublishDate;
-import es.ugr.scimat.model.knowledgebase.entity.Reference;
-import es.ugr.scimat.model.knowledgebase.entity.ReferenceGroup;
-import es.ugr.scimat.model.knowledgebase.entity.ReferenceSource;
-import es.ugr.scimat.model.knowledgebase.entity.ReferenceSourceGroup;
-import es.ugr.scimat.model.knowledgebase.entity.SubjectCategory;
-import es.ugr.scimat.model.knowledgebase.entity.Word;
-import es.ugr.scimat.model.knowledgebase.entity.WordGroup;
 
 /**
- *
  * @author mjcobo
  */
 public class JoinEntitiesDialogManager {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private AffiliationsJoinDialog affiliationsJoinDialog;
-  private AuthorsJoinDialog authorsJoinDialog;
-  private AuthorGroupsJoinDialog authorGroupsJoinDialog;
-  private AuthorReferencesJoinDialog authorReferencesJoinDialog;
-  private AuthorReferenceGroupsJoinDialog authorReferenceGroupsJoinDialog;
-  private DocumentsJoinDialog documentsJoinDialog;
-  private JournalsJoinDialog journalsJoinDialog;
-  private PeriodsJoinDialog periodsJoinDialog;
-  private PublishDatesJoinDialog publishDatesJoinDialog;
-  private ReferencesJoinDialog referencesJoinDialog;
-  private ReferenceGroupsJoinDialog referenceGroupsJoinDialog;
-  private ReferenceSourcesJoinDialog referenceSourcesJoinDialog;
-  private ReferenceSourceGroupsJoinDialog referenceSourceGroupsJoinDialog;
-  private SubjectCategoriesJoinDialog subjectCategoriesJoinDialog;
-  private WordsJoinDialog wordsJoinDialog;
-  private WordGroupsJoinDialog wordGroupsJoinDialog;
+    /**
+     *
+     */
+    private AffiliationsJoinDialog affiliationsJoinDialog;
+    private AuthorsJoinDialog authorsJoinDialog;
+    private AuthorGroupsJoinDialog authorGroupsJoinDialog;
+    private AuthorReferencesJoinDialog authorReferencesJoinDialog;
+    private AuthorReferenceGroupsJoinDialog authorReferenceGroupsJoinDialog;
+    private DocumentsJoinDialog documentsJoinDialog;
+    private JournalsJoinDialog journalsJoinDialog;
+    private PeriodsJoinDialog periodsJoinDialog;
+    private PublishDatesJoinDialog publishDatesJoinDialog;
+    private ReferencesJoinDialog referencesJoinDialog;
+    private ReferenceGroupsJoinDialog referenceGroupsJoinDialog;
+    private ReferenceSourcesJoinDialog referenceSourcesJoinDialog;
+    private ReferenceSourceGroupsJoinDialog referenceSourceGroupsJoinDialog;
+    private SubjectCategoriesJoinDialog subjectCategoriesJoinDialog;
+    private WordsJoinDialog wordsJoinDialog;
+    private WordGroupsJoinDialog wordGroupsJoinDialog;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  private JoinEntitiesDialogManager() {
-    
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    private JoinEntitiesDialogManager() {
 
-  /**
-   * 
-   * @return
-   */
-  public static JoinEntitiesDialogManager getInstance() {
+    }
 
-    return AddDialogManagerHolder.INSTANCE;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private static class AddDialogManagerHolder {
+    /**
+     * @return
+     */
+    public static JoinEntitiesDialogManager getInstance() {
 
-    private static final JoinEntitiesDialogManager INSTANCE = new JoinEntitiesDialogManager();
-  }
+        return AddDialogManagerHolder.INSTANCE;
+    }
 
-  /**
-   *
-   * @param frame
-   */
-  public void init(JFrame frame) {
+    /**
+     *
+     */
+    private static class AddDialogManagerHolder {
 
-    this.affiliationsJoinDialog = new AffiliationsJoinDialog(frame);
-    this.authorsJoinDialog = new AuthorsJoinDialog(frame);
-    this.authorGroupsJoinDialog = new AuthorGroupsJoinDialog(frame);
-    this.authorReferencesJoinDialog = new AuthorReferencesJoinDialog(frame);
-    this.authorReferenceGroupsJoinDialog = new AuthorReferenceGroupsJoinDialog(frame);
-    this.documentsJoinDialog = new DocumentsJoinDialog(frame);
-    this.journalsJoinDialog = new JournalsJoinDialog(frame);
-    this.periodsJoinDialog = new PeriodsJoinDialog(frame);
-    this.publishDatesJoinDialog = new PublishDatesJoinDialog(frame);
-    this.referencesJoinDialog = new ReferencesJoinDialog(frame);
-    this.referenceGroupsJoinDialog = new ReferenceGroupsJoinDialog(frame);
-    this.referenceSourcesJoinDialog = new ReferenceSourcesJoinDialog(frame);
-    this.referenceSourceGroupsJoinDialog = new ReferenceSourceGroupsJoinDialog(frame);
-    this.subjectCategoriesJoinDialog = new SubjectCategoriesJoinDialog(frame);
-    this.wordsJoinDialog = new WordsJoinDialog(frame);
-    this.wordGroupsJoinDialog = new WordGroupsJoinDialog(frame);
-  }
+        private static final JoinEntitiesDialogManager INSTANCE = new JoinEntitiesDialogManager();
+    }
 
-  /**
-   * 
-   * @param items 
-   */
-  public void showAffiliationsJoinDialog(ArrayList<Affiliation> items) {
+    /**
+     * @param frame
+     */
+    public void init(JFrame frame) {
 
-    this.affiliationsJoinDialog.reset();
-    this.affiliationsJoinDialog.refreshData(items);
-    this.affiliationsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showAuthorsJoinDialog(ArrayList<Author> items) {
+        this.affiliationsJoinDialog = new AffiliationsJoinDialog(frame);
+        this.authorsJoinDialog = new AuthorsJoinDialog(frame);
+        this.authorGroupsJoinDialog = new AuthorGroupsJoinDialog(frame);
+        this.authorReferencesJoinDialog = new AuthorReferencesJoinDialog(frame);
+        this.authorReferenceGroupsJoinDialog = new AuthorReferenceGroupsJoinDialog(frame);
+        this.documentsJoinDialog = new DocumentsJoinDialog(frame);
+        this.journalsJoinDialog = new JournalsJoinDialog(frame);
+        this.periodsJoinDialog = new PeriodsJoinDialog(frame);
+        this.publishDatesJoinDialog = new PublishDatesJoinDialog(frame);
+        this.referencesJoinDialog = new ReferencesJoinDialog(frame);
+        this.referenceGroupsJoinDialog = new ReferenceGroupsJoinDialog(frame);
+        this.referenceSourcesJoinDialog = new ReferenceSourcesJoinDialog(frame);
+        this.referenceSourceGroupsJoinDialog = new ReferenceSourceGroupsJoinDialog(frame);
+        this.subjectCategoriesJoinDialog = new SubjectCategoriesJoinDialog(frame);
+        this.wordsJoinDialog = new WordsJoinDialog(frame);
+        this.wordGroupsJoinDialog = new WordGroupsJoinDialog(frame);
+    }
 
-    this.authorsJoinDialog.reset();
-    this.authorsJoinDialog.refreshData(items);
-    this.authorsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showAuthorGroupsJoinDialog(ArrayList<AuthorGroup> items) {
+    /**
+     * @param items
+     */
+    public void showAffiliationsJoinDialog(ArrayList<Affiliation> items) {
 
-    this.authorGroupsJoinDialog.reset();
-    this.authorGroupsJoinDialog.refreshData(items);
-    this.authorGroupsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showAuthorReferencesJoinDialog(ArrayList<AuthorReference> items) {
+        this.affiliationsJoinDialog.reset();
+        this.affiliationsJoinDialog.refreshData(items);
+        this.affiliationsJoinDialog.setVisible(true);
+    }
 
-    this.authorReferencesJoinDialog.reset();
-    this.authorReferencesJoinDialog.refreshData(items);
-    this.authorReferencesJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showAuthorReferenceGroupsJoinDialog(ArrayList<AuthorReferenceGroup> items) {
+    /**
+     * @param items
+     */
+    public void showAuthorsJoinDialog(ArrayList<Author> items) {
 
-    this.authorReferenceGroupsJoinDialog.reset();
-    this.authorReferenceGroupsJoinDialog.refreshData(items);
-    this.authorReferenceGroupsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showDocumentsJoinDialog(ArrayList<Document> items) {
+        this.authorsJoinDialog.reset();
+        this.authorsJoinDialog.refreshData(items);
+        this.authorsJoinDialog.setVisible(true);
+    }
 
-    this.documentsJoinDialog.reset();
-    this.documentsJoinDialog.refreshData(items);
-    this.documentsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showJournalsJoinDialog(ArrayList<Journal> items) {
+    /**
+     * @param items
+     */
+    public void showAuthorGroupsJoinDialog(ArrayList<AuthorGroup> items) {
 
-    this.journalsJoinDialog.reset();
-    this.journalsJoinDialog.refreshData(items);
-    this.journalsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showPeriodsJoinDialog(ArrayList<Period> items) {
+        this.authorGroupsJoinDialog.reset();
+        this.authorGroupsJoinDialog.refreshData(items);
+        this.authorGroupsJoinDialog.setVisible(true);
+    }
 
-    this.periodsJoinDialog.reset();
-    this.periodsJoinDialog.refreshData(items);
-    this.periodsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showPublishDatesJoinDialog(ArrayList<PublishDate> items) {
+    /**
+     * @param items
+     */
+    public void showAuthorReferencesJoinDialog(ArrayList<AuthorReference> items) {
 
-    this.publishDatesJoinDialog.reset();
-    this.publishDatesJoinDialog.refreshData(items);
-    this.publishDatesJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showReferencesJoinDialog(ArrayList<Reference> items) {
+        this.authorReferencesJoinDialog.reset();
+        this.authorReferencesJoinDialog.refreshData(items);
+        this.authorReferencesJoinDialog.setVisible(true);
+    }
 
-    this.referencesJoinDialog.reset();
-    this.referencesJoinDialog.refreshData(items);
-    this.referencesJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showReferenceGroupsJoinDialog(ArrayList<ReferenceGroup> items) {
+    /**
+     * @param items
+     */
+    public void showAuthorReferenceGroupsJoinDialog(ArrayList<AuthorReferenceGroup> items) {
 
-    this.referenceGroupsJoinDialog.reset();
-    this.referenceGroupsJoinDialog.refreshData(items);
-    this.referenceGroupsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showReferenceSourcesJoinDialog(ArrayList<ReferenceSource> items) {
+        this.authorReferenceGroupsJoinDialog.reset();
+        this.authorReferenceGroupsJoinDialog.refreshData(items);
+        this.authorReferenceGroupsJoinDialog.setVisible(true);
+    }
 
-    this.referenceSourcesJoinDialog.reset();
-    this.referenceSourcesJoinDialog.refreshData(items);
-    this.referenceSourcesJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showReferenceSourceGroupsJoinDialog(ArrayList<ReferenceSourceGroup> items) {
+    /**
+     * @param items
+     */
+    public void showDocumentsJoinDialog(ArrayList<Document> items) {
 
-    this.referenceSourceGroupsJoinDialog.reset();
-    this.referenceSourceGroupsJoinDialog.refreshData(items);
-    this.referenceSourceGroupsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showSubjectCategoriesJoinDialog(ArrayList<SubjectCategory> items) {
+        this.documentsJoinDialog.reset();
+        this.documentsJoinDialog.refreshData(items);
+        this.documentsJoinDialog.setVisible(true);
+    }
 
-    this.subjectCategoriesJoinDialog.reset();
-    this.subjectCategoriesJoinDialog.refreshData(items);
-    this.subjectCategoriesJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showWordsJoinDialog(ArrayList<Word> items) {
+    /**
+     * @param items
+     */
+    public void showJournalsJoinDialog(ArrayList<Journal> items) {
 
-    this.wordsJoinDialog.reset();
-    this.wordsJoinDialog.refreshData(items);
-    this.wordsJoinDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param items 
-   */
-  public void showWordGroupsJoinDialog(ArrayList<WordGroup> items) {
+        this.journalsJoinDialog.reset();
+        this.journalsJoinDialog.refreshData(items);
+        this.journalsJoinDialog.setVisible(true);
+    }
 
-    this.wordGroupsJoinDialog.reset();
-    this.wordGroupsJoinDialog.refreshData(items);
-    this.wordGroupsJoinDialog.setVisible(true);
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param items
+     */
+    public void showPeriodsJoinDialog(ArrayList<Period> items) {
+
+        this.periodsJoinDialog.reset();
+        this.periodsJoinDialog.refreshData(items);
+        this.periodsJoinDialog.setVisible(true);
+    }
+
+    /**
+     * @param items
+     */
+    public void showPublishDatesJoinDialog(ArrayList<PublishDate> items) {
+
+        this.publishDatesJoinDialog.reset();
+        this.publishDatesJoinDialog.refreshData(items);
+        this.publishDatesJoinDialog.setVisible(true);
+    }
+
+    /**
+     * @param items
+     */
+    public void showReferencesJoinDialog(ArrayList<Reference> items) {
+
+        this.referencesJoinDialog.reset();
+        this.referencesJoinDialog.refreshData(items);
+        this.referencesJoinDialog.setVisible(true);
+    }
+
+    /**
+     * @param items
+     */
+    public void showReferenceGroupsJoinDialog(ArrayList<ReferenceGroup> items) {
+
+        this.referenceGroupsJoinDialog.reset();
+        this.referenceGroupsJoinDialog.refreshData(items);
+        this.referenceGroupsJoinDialog.setVisible(true);
+    }
+
+    /**
+     * @param items
+     */
+    public void showReferenceSourcesJoinDialog(ArrayList<ReferenceSource> items) {
+
+        this.referenceSourcesJoinDialog.reset();
+        this.referenceSourcesJoinDialog.refreshData(items);
+        this.referenceSourcesJoinDialog.setVisible(true);
+    }
+
+    /**
+     * @param items
+     */
+    public void showReferenceSourceGroupsJoinDialog(ArrayList<ReferenceSourceGroup> items) {
+
+        this.referenceSourceGroupsJoinDialog.reset();
+        this.referenceSourceGroupsJoinDialog.refreshData(items);
+        this.referenceSourceGroupsJoinDialog.setVisible(true);
+    }
+
+    /**
+     * @param items
+     */
+    public void showSubjectCategoriesJoinDialog(ArrayList<SubjectCategory> items) {
+
+        this.subjectCategoriesJoinDialog.reset();
+        this.subjectCategoriesJoinDialog.refreshData(items);
+        this.subjectCategoriesJoinDialog.setVisible(true);
+    }
+
+    /**
+     * @param items
+     */
+    public void showWordsJoinDialog(ArrayList<Word> items) {
+
+        this.wordsJoinDialog.reset();
+        this.wordsJoinDialog.refreshData(items);
+        this.wordsJoinDialog.setVisible(true);
+    }
+
+    /**
+     * @param items
+     */
+    public void showWordGroupsJoinDialog(ArrayList<WordGroup> items) {
+
+        this.wordGroupsJoinDialog.reset();
+        this.wordGroupsJoinDialog.refreshData(items);
+        this.wordGroupsJoinDialog.setVisible(true);
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

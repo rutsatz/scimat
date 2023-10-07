@@ -5,85 +5,80 @@
  */
 package es.ugr.scimat.analysis;
 
-import java.io.Serializable;
 import es.ugr.scimat.api.dataset.Dataset;
 import es.ugr.scimat.api.dataset.UndirectNetworkMatrix;
 import es.ugr.scimat.api.mapping.clustering.result.ClusterSet;
 
+import java.io.Serializable;
+
 /**
- *
  * @author mjcobo
  */
 public class AnalysisPeriodResult implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private Dataset originalDataset;
-  private Dataset preprocessedDataset;
-  private UndirectNetworkMatrix networkMatrix;
-  private ClusterSet clusterSet;
+    private Dataset originalDataset;
+    private Dataset preprocessedDataset;
+    private UndirectNetworkMatrix networkMatrix;
+    private ClusterSet clusterSet;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param originalDataset
-   * @param preprocessedDataset
-   * @param networkMatrix
-   * @param clusterSet
-   */
-  public AnalysisPeriodResult(Dataset originalDataset,
-          Dataset preprocessedDataset,
-          UndirectNetworkMatrix networkMatrix,
-          ClusterSet clusterSet) {
-    
-    this.originalDataset = originalDataset;
-    this.preprocessedDataset = preprocessedDataset;
-    this.networkMatrix = networkMatrix;
-    this.clusterSet = clusterSet;
-  }
+    /**
+     * @param originalDataset
+     * @param preprocessedDataset
+     * @param networkMatrix
+     * @param clusterSet
+     */
+    public AnalysisPeriodResult(Dataset originalDataset,
+                                Dataset preprocessedDataset,
+                                UndirectNetworkMatrix networkMatrix,
+                                ClusterSet clusterSet) {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        this.originalDataset = originalDataset;
+        this.preprocessedDataset = preprocessedDataset;
+        this.networkMatrix = networkMatrix;
+        this.clusterSet = clusterSet;
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public Dataset getOriginalDataset() {
-    return originalDataset;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   * @return
-   */
-  public Dataset getPreprocessedDataset() {
-    return preprocessedDataset;
-  }
+    /**
+     * @return
+     */
+    public Dataset getOriginalDataset() {
+        return originalDataset;
+    }
 
-  /**
-   *
-   * @return
-   */
-  public UndirectNetworkMatrix getNetworkMatrix() {
-    return networkMatrix;
-  }
+    /**
+     * @return
+     */
+    public Dataset getPreprocessedDataset() {
+        return preprocessedDataset;
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public ClusterSet getClusterSet() {
-    return clusterSet;
-  }
+    /**
+     * @return
+     */
+    public UndirectNetworkMatrix getNetworkMatrix() {
+        return networkMatrix;
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @return
+     */
+    public ClusterSet getClusterSet() {
+        return clusterSet;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

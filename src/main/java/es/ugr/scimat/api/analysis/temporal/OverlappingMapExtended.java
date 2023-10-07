@@ -10,154 +10,146 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 /**
- *
  * @author mjcobo
  */
 public class OverlappingMapExtended implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private ArrayList<OverlappingMapItem> overlappingMapItems;
-  private ArrayList<ArrayList<Integer>> sharedItems;
-  private ArrayList<Double> overlappingWeights;
+    private ArrayList<OverlappingMapItem> overlappingMapItems;
+    private ArrayList<ArrayList<Integer>> sharedItems;
+    private ArrayList<Double> overlappingWeights;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param overlappingMapItem
-   */
-  public OverlappingMapExtended() {
+    /**
+     * @param overlappingMapItem
+     */
+    public OverlappingMapExtended() {
 
-    this.overlappingMapItems = new ArrayList<OverlappingMapItem>();
-    this.sharedItems = new ArrayList<ArrayList<Integer>>();
-    this.overlappingWeights = new ArrayList<Double>();
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @param items
-   * @param measure
-   */
-  public void addItem(ArrayList<Integer> items, OverlappingMeasure measure) {
-
-    OverlappingMapItem itemToAdd, lastItem;
-    TreeSet<Integer> shared, dissapeared, newItems;
-
-    if (this.overlappingMapItems.isEmpty()) {
-
-      this.overlappingMapItems.add(new OverlappingMapItem(items, null, null));
-      
-    } else {
-
-      lastItem = this.overlappingMapItems.get(this.overlappingMapItems.size() - 1);
-      
-      itemToAdd = new OverlappingMapItem(items, null, null);
-      this.overlappingMapItems.add(itemToAdd);
-
-      // Shared elements
-      shared = new TreeSet<Integer>(lastItem.getItems());
-      shared.retainAll(itemToAdd.getItems());
-
-      // New items
-      newItems = new TreeSet<Integer>(itemToAdd.getItems());
-      newItems.removeAll(lastItem.getItems());
-
-      // Dissapeared items
-      dissapeared = new TreeSet<Integer>(lastItem.getItems());
-      dissapeared.removeAll(itemToAdd.getItems());
-
-      lastItem.setDissapearedItems(new ArrayList<Integer>(dissapeared));
-      itemToAdd.setNewItems(new ArrayList<Integer>(newItems));
-      this.sharedItems.add(new ArrayList<Integer>(shared));
-      this.overlappingWeights.add(measure.calculateOverlapping(lastItem.getItems(), itemToAdd.getItems()));
+        this.overlappingMapItems = new ArrayList<OverlappingMapItem>();
+        this.sharedItems = new ArrayList<ArrayList<Integer>>();
+        this.overlappingWeights = new ArrayList<Double>();
     }
-  }
-  
-  public int getPeriodCount() {
-   
-    return this.overlappingMapItems.size();
-  }
 
-  /**
-   * 
-   * @param sourcePeriod
-   * @return
-   */
-  public int getItemsCountInPeriod(int sourcePeriod) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    return this.overlappingMapItems.get(sourcePeriod).getItemsCount();
-  }
-  
-  public ArrayList<Integer> getItemsInPeriod(int sourcePeriod) {
+    /**
+     * @param items
+     * @param measure
+     */
+    public void addItem(ArrayList<Integer> items, OverlappingMeasure measure) {
 
-    return this.overlappingMapItems.get(sourcePeriod).getItems();
-  }
+        OverlappingMapItem itemToAdd, lastItem;
+        TreeSet<Integer> shared, dissapeared, newItems;
 
-  /**
-   *
-   * @param sourcePeriod
-   * @return
-   */
-  public int getNewItemsCountInPeriod(int sourcePeriod) {
+        if (this.overlappingMapItems.isEmpty()) {
 
-    return this.overlappingMapItems.get(sourcePeriod).getNewItemsCount();
-  }
-  
-  public ArrayList<Integer> getNewItemsInPeriod(int sourcePeriod) {
+            this.overlappingMapItems.add(new OverlappingMapItem(items, null, null));
 
-    return this.overlappingMapItems.get(sourcePeriod).getNewItems();
-  }
+        } else {
 
-  /**
-   *
-   * @param sourcePeriod
-   * @return
-   */
-  public int getDissapearedItemsCountInPeriod(int sourcePeriod) {
+            lastItem = this.overlappingMapItems.get(this.overlappingMapItems.size() - 1);
 
-    return this.overlappingMapItems.get(sourcePeriod).getDissapearedItemsCount();
-  }
-  
-  public ArrayList<Integer> getDissapearedItemsInPeriod(int sourcePeriod) {
+            itemToAdd = new OverlappingMapItem(items, null, null);
+            this.overlappingMapItems.add(itemToAdd);
 
-    return this.overlappingMapItems.get(sourcePeriod).getDissapearedItems();
-  }
+            // Shared elements
+            shared = new TreeSet<Integer>(lastItem.getItems());
+            shared.retainAll(itemToAdd.getItems());
 
-  /**
-   * 
-   * @param sourcePeriod
-   * @return
-   */
-  public double getOverlappingWeight(int sourcePeriod) {
+            // New items
+            newItems = new TreeSet<Integer>(itemToAdd.getItems());
+            newItems.removeAll(lastItem.getItems());
 
-    return this.overlappingWeights.get(sourcePeriod);
-  }
+            // Dissapeared items
+            dissapeared = new TreeSet<Integer>(lastItem.getItems());
+            dissapeared.removeAll(itemToAdd.getItems());
 
-  /**
-   * 
-   * @param sourcePeriod
-   * @return
-   */
-  public int getOverlappedItemsCountInPeriod(int sourcePeriod) {
+            lastItem.setDissapearedItems(new ArrayList<Integer>(dissapeared));
+            itemToAdd.setNewItems(new ArrayList<Integer>(newItems));
+            this.sharedItems.add(new ArrayList<Integer>(shared));
+            this.overlappingWeights.add(measure.calculateOverlapping(lastItem.getItems(), itemToAdd.getItems()));
+        }
+    }
 
-    return this.sharedItems.get(sourcePeriod).size();
-  }
-  
-  public ArrayList<Integer> getOverlappedItemsInPeriod(int sourcePeriod) {
+    public int getPeriodCount() {
 
-    return this.sharedItems.get(sourcePeriod);
-  }
+        return this.overlappingMapItems.size();
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param sourcePeriod
+     * @return
+     */
+    public int getItemsCountInPeriod(int sourcePeriod) {
+
+        return this.overlappingMapItems.get(sourcePeriod).getItemsCount();
+    }
+
+    public ArrayList<Integer> getItemsInPeriod(int sourcePeriod) {
+
+        return this.overlappingMapItems.get(sourcePeriod).getItems();
+    }
+
+    /**
+     * @param sourcePeriod
+     * @return
+     */
+    public int getNewItemsCountInPeriod(int sourcePeriod) {
+
+        return this.overlappingMapItems.get(sourcePeriod).getNewItemsCount();
+    }
+
+    public ArrayList<Integer> getNewItemsInPeriod(int sourcePeriod) {
+
+        return this.overlappingMapItems.get(sourcePeriod).getNewItems();
+    }
+
+    /**
+     * @param sourcePeriod
+     * @return
+     */
+    public int getDissapearedItemsCountInPeriod(int sourcePeriod) {
+
+        return this.overlappingMapItems.get(sourcePeriod).getDissapearedItemsCount();
+    }
+
+    public ArrayList<Integer> getDissapearedItemsInPeriod(int sourcePeriod) {
+
+        return this.overlappingMapItems.get(sourcePeriod).getDissapearedItems();
+    }
+
+    /**
+     * @param sourcePeriod
+     * @return
+     */
+    public double getOverlappingWeight(int sourcePeriod) {
+
+        return this.overlappingWeights.get(sourcePeriod);
+    }
+
+    /**
+     * @param sourcePeriod
+     * @return
+     */
+    public int getOverlappedItemsCountInPeriod(int sourcePeriod) {
+
+        return this.sharedItems.get(sourcePeriod).size();
+    }
+
+    public ArrayList<Integer> getOverlappedItemsInPeriod(int sourcePeriod) {
+
+        return this.sharedItems.get(sourcePeriod);
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

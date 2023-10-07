@@ -7,14 +7,12 @@
 package es.ugr.scimat.observabletask;
 
 /**
- *
  * @author MJCobo
  */
 public interface InterimResultTaskObserver<V> {
 
-  /**
-   * 
-   * @param iterimResult
-   */
-  public void interimResultChanged(V iterimResult);
+    /**
+     * @param iterimResult
+     */
+    public void interimResultChanged(V iterimResult);
 }

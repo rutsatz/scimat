@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,220 +12,219 @@ import es.ugr.scimat.model.knowledgebase.entity.Period;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdatePeriodEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer periodID;
+    /**
+     *
+     */
+    private Integer periodID;
 
-  /**
-   *
-   */
-  private String name;
-  
-  /**
-   * 
-   */
-  private int position;
+    /**
+     *
+     */
+    private String name;
 
-  /**
-   * The elements added
-   */
-  private Period periodOld;
-  
-  private Period periodUpdated;
+    /**
+     *
+     */
+    private int position;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /**
+     * The elements added
+     */
+    private Period periodOld;
 
-  public UpdatePeriodEdit(Integer periodID, String name, int position) {
-    super();
+    private Period periodUpdated;
 
-    this.periodID = periodID;
-    this.name = name;
-    this.position = position;
-  }
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+    public UpdatePeriodEdit(Integer periodID, String name, int position) {
+        super();
 
-    boolean successful = false;
-
-    try {
-
-      this.periodOld = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getPeriod(periodID);
-
-      if (this.periodOld.getName().equals(this.name)) {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(periodID, position, true);
-
-        this.periodUpdated = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getPeriod(periodID);
-
-      } else if (this.name == null) {
-
-        successful = false;
-        this.errorMessage = "The name can not be null.";
-
-      } else if (CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().checkPeriod(name)) {
-
-        successful = false;
-        this.errorMessage = "A period yet exists with this name.";
-
-      } else {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setName(periodID, name, true);
-        successful = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(periodID, position, true);
-
-        this.periodUpdated = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getPeriod(periodID);
-
-      }
-      
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        successful = true;
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.periodID = periodID;
+        this.name = name;
+        this.position = position;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = false;
 
-    boolean flag;
+        try {
 
-    try {
-      
-      if (this.periodOld.getName().equals(this.periodUpdated.getName())) {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(periodOld.getPeriodID(), periodOld.getPosition(), true);
-        
-      } else {
+            this.periodOld = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getPeriod(periodID);
 
-        flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setName(periodOld.getPeriodID(), periodOld.getName(), true);
-        flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(periodOld.getPeriodID(), periodOld.getPosition(), true);
-      }
+            if (this.periodOld.getName().equals(this.name)) {
 
-      if (flag) {
+                successful = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(periodID, position, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                this.periodUpdated = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getPeriod(periodID);
 
-      } else {
+            } else if (this.name == null) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                successful = false;
+                this.errorMessage = "The name can not be null.";
 
-    } catch (KnowledgeBaseException e) {
+            } else if (CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().checkPeriod(name)) {
 
-      e.printStackTrace(System.err);
+                successful = false;
+                this.errorMessage = "A period yet exists with this name.";
 
-      try{
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                successful = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setName(periodID, name, true);
+                successful = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(periodID, position, true);
 
-      } catch (KnowledgeBaseException e2) {
+                this.periodUpdated = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getPeriod(periodID);
 
-        e2.printStackTrace(System.err);
+            }
 
-      }
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                successful = true;
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
+
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      if (this.periodOld.getName().equals(this.name)) {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(this.periodID, this.position, true);
-        
-      } else {
+            if (this.periodOld.getName().equals(this.periodUpdated.getName())) {
 
-        flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setName(this.periodID, this.name, true);
-        flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(this.periodID, this.position, true);
-      }
+                flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(periodOld.getPeriodID(), periodOld.getPosition(), true);
 
-      if (flag) {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setName(periodOld.getPeriodID(), periodOld.getName(), true);
+                flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(periodOld.getPeriodID(), periodOld.getPosition(), true);
+            }
 
-      } else {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-    } catch (KnowledgeBaseException e) {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      e.printStackTrace(System.err);
+            } else {
 
-      try{
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+        } catch (KnowledgeBaseException e) {
 
-      } catch (KnowledgeBaseException e2) {
+            e.printStackTrace(System.err);
 
-        e2.printStackTrace(System.err);
+            try {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean flag;
+
+        try {
+
+            if (this.periodOld.getName().equals(this.name)) {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(this.periodID, this.position, true);
+
+            } else {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setName(this.periodID, this.name, true);
+                flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().setPosition(this.periodID, this.position, true);
+            }
+
+            if (flag) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,218 +12,217 @@ import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateAuthorReferenceGroupEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer authorReferenceGroupID;
+    /**
+     *
+     */
+    private Integer authorReferenceGroupID;
 
-  /**
-   *
-   */
-  private String groupName;
+    /**
+     *
+     */
+    private String groupName;
 
-  /**
-   *
-   */
-  private boolean stopGroup;
+    /**
+     *
+     */
+    private boolean stopGroup;
 
-  /**
-   * The elements added
-   */
-  private AuthorReferenceGroup authorReferenceGroupOld;
-  
-  private AuthorReferenceGroup authorReferenceGroupUpdated;
+    /**
+     * The elements added
+     */
+    private AuthorReferenceGroup authorReferenceGroupOld;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private AuthorReferenceGroup authorReferenceGroupUpdated;
 
-  public UpdateAuthorReferenceGroupEdit(Integer authorReferenceGroupID, String groupName, boolean stopGroup) {
-    super();
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-    this.authorReferenceGroupID = authorReferenceGroupID;
-    this.groupName = groupName;
-    this.stopGroup = stopGroup;
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public UpdateAuthorReferenceGroupEdit(Integer authorReferenceGroupID, String groupName, boolean stopGroup) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = false;
-
-    try {
-
-      this.authorReferenceGroupOld = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().getAuthorReferenceGroup(authorReferenceGroupID);
-      
-      if (this.authorReferenceGroupOld.getGroupName().equals(this.groupName)) {
-      
-        successful = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().setStopGroup(authorReferenceGroupID, stopGroup, true);
-        
-        this.authorReferenceGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().getAuthorReferenceGroup(authorReferenceGroupID);
-        
-      } else if (this.groupName == null) {
-
-        successful = false;
-        this.errorMessage = "The name can not be null.";
-
-      } else if (CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().checkAuthorReferenceGroup(groupName)) {
-
-        successful = false;
-        this.errorMessage = "An Author reference group yet exists with this name.";
-
-      } else {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().updateAuthorReferenceGroup(authorReferenceGroupID, groupName, stopGroup, true);
-        
-        this.authorReferenceGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().getAuthorReferenceGroup(authorReferenceGroupID);
-      }
-      
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        successful = true;
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.authorReferenceGroupID = authorReferenceGroupID;
+        this.groupName = groupName;
+        this.stopGroup = stopGroup;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = false;
 
-    boolean flag;
+        try {
 
-    try {
+            this.authorReferenceGroupOld = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().getAuthorReferenceGroup(authorReferenceGroupID);
 
-      if (this.authorReferenceGroupOld.getGroupName().equals(this.authorReferenceGroupUpdated.getGroupName())) {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().setStopGroup(this.authorReferenceGroupOld.getAuthorReferenceGroupID(), this.authorReferenceGroupOld.isStopGroup(), true);
-        
-      } else {
+            if (this.authorReferenceGroupOld.getGroupName().equals(this.groupName)) {
 
-        flag = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().updateAuthorReferenceGroup(this.authorReferenceGroupOld.getAuthorReferenceGroupID(),
-              this.authorReferenceGroupOld.getGroupName(), this.authorReferenceGroupOld.isStopGroup(), true);
-      }
+                successful = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().setStopGroup(authorReferenceGroupID, stopGroup, true);
 
-      if (flag) {
+                this.authorReferenceGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().getAuthorReferenceGroup(authorReferenceGroupID);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+            } else if (this.groupName == null) {
 
-      } else {
+                successful = false;
+                this.errorMessage = "The name can not be null.";
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            } else if (CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().checkAuthorReferenceGroup(groupName)) {
 
-    } catch (KnowledgeBaseException e) {
+                successful = false;
+                this.errorMessage = "An Author reference group yet exists with this name.";
 
-      e.printStackTrace(System.err);
+            } else {
 
-      try{
+                successful = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().updateAuthorReferenceGroup(authorReferenceGroupID, groupName, stopGroup, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                this.authorReferenceGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().getAuthorReferenceGroup(authorReferenceGroupID);
+            }
 
-      } catch (KnowledgeBaseException e2) {
+            if (successful) {
 
-        e2.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      }
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                successful = true;
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
+
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      if (this.authorReferenceGroupOld.getGroupName().equals(this.groupName)) {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().setStopGroup(this.authorReferenceGroupID, this.stopGroup, true);
-        
-      } else {
-       
-        flag = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().updateAuthorReferenceGroup(this.authorReferenceGroupID, this.groupName, this.stopGroup, true);
-      }
+            if (this.authorReferenceGroupOld.getGroupName().equals(this.authorReferenceGroupUpdated.getGroupName())) {
 
-      if (flag) {
+                flag = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().setStopGroup(this.authorReferenceGroupOld.getAuthorReferenceGroupID(), this.authorReferenceGroupOld.isStopGroup(), true);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+            } else {
 
-      } else {
+                flag = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().updateAuthorReferenceGroup(this.authorReferenceGroupOld.getAuthorReferenceGroupID(),
+                        this.authorReferenceGroupOld.getGroupName(), this.authorReferenceGroupOld.isStopGroup(), true);
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            if (flag) {
 
-    } catch (KnowledgeBaseException e) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      e.printStackTrace(System.err);
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      try{
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } catch (KnowledgeBaseException e2) {
+        } catch (KnowledgeBaseException e) {
 
-        e2.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      }
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean flag;
+
+        try {
+
+            if (this.authorReferenceGroupOld.getGroupName().equals(this.groupName)) {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().setStopGroup(this.authorReferenceGroupID, this.stopGroup, true);
+
+            } else {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().updateAuthorReferenceGroup(this.authorReferenceGroupID, this.groupName, this.stopGroup, true);
+            }
+
+            if (flag) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

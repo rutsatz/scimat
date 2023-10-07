@@ -5,87 +5,83 @@
  */
 package es.ugr.scimat.gui.components.wizard;
 
-import javax.swing.JFrame;
-
 import es.ugr.scimat.gui.components.wizard.Analysis.MakeAnalysisDialog;
 
+import javax.swing.*;
+
 /**
- *
  * @author mjcobo
  */
 public class WizardManager {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private NewProjectDialog newProjectDialog;
-  private MakeAnalysisDialog makeAnalysisDialog;
-  private UpgradeKnowledgeBaseDialog upgradeKnowledgeBaseDialog;
+    private NewProjectDialog newProjectDialog;
+    private MakeAnalysisDialog makeAnalysisDialog;
+    private UpgradeKnowledgeBaseDialog upgradeKnowledgeBaseDialog;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   * @param frame
-   */
-  private WizardManager() {
-  }
+    /**
+     * @param frame
+     */
+    private WizardManager() {
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   * @return
-   */
-  public static WizardManager getInstance() {
-    return WizardManagerHolder.INSTANCE;
-  }
+    /**
+     * @return
+     */
+    public static WizardManager getInstance() {
+        return WizardManagerHolder.INSTANCE;
+    }
 
-  /**
-   *
-   */
-  private static class WizardManagerHolder {
+    /**
+     *
+     */
+    private static class WizardManagerHolder {
 
-    private static final WizardManager INSTANCE = new WizardManager();
-  }
+        private static final WizardManager INSTANCE = new WizardManager();
+    }
 
-  /**
-   * 
-   * @param frame
-   */
-  public void init(JFrame frame) {
+    /**
+     * @param frame
+     */
+    public void init(JFrame frame) {
 
-    this.newProjectDialog = new NewProjectDialog(frame, true);
-    this.makeAnalysisDialog = new MakeAnalysisDialog(frame, true);
-    this.upgradeKnowledgeBaseDialog = new UpgradeKnowledgeBaseDialog(frame, true);
-  }
+        this.newProjectDialog = new NewProjectDialog(frame, true);
+        this.makeAnalysisDialog = new MakeAnalysisDialog(frame, true);
+        this.upgradeKnowledgeBaseDialog = new UpgradeKnowledgeBaseDialog(frame, true);
+    }
 
-  /**
-   * 
-   */
-  public void showNewProject() {
+    /**
+     *
+     */
+    public void showNewProject() {
 
-    this.newProjectDialog.refresh();
-    this.newProjectDialog.setVisible(true);
-  }
+        this.newProjectDialog.refresh();
+        this.newProjectDialog.setVisible(true);
+    }
 
-  public void showMakeAnalysis() {
+    public void showMakeAnalysis() {
 
-    this.makeAnalysisDialog.refresh();
-    this.makeAnalysisDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   */
-  public void showUpdgradeKnowledgeBaseDialog(String oldKnowledgeBasePath) {
-  
-    this.upgradeKnowledgeBaseDialog.refresh(oldKnowledgeBasePath);
-    this.upgradeKnowledgeBaseDialog.setVisible(true);
-  }
+        this.makeAnalysisDialog.refresh();
+        this.makeAnalysisDialog.setVisible(true);
+    }
+
+    /**
+     *
+     */
+    public void showUpdgradeKnowledgeBaseDialog(String oldKnowledgeBasePath) {
+
+        this.upgradeKnowledgeBaseDialog.refresh(oldKnowledgeBasePath);
+        this.upgradeKnowledgeBaseDialog.setVisible(true);
+    }
 }

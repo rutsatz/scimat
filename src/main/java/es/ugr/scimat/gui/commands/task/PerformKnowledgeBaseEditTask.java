@@ -5,88 +5,85 @@
  */
 package es.ugr.scimat.gui.commands.task;
 
-import javax.swing.JComponent;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.components.ErrorDialogManager;
 import es.ugr.scimat.gui.components.cursor.CursorManager;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 
+import javax.swing.*;
+
 /**
- *
  * @author mjcobo
  */
 public class PerformKnowledgeBaseEditTask {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  private KnowledgeBaseEdit edit;
-  private JComponent component;
+    /**
+     *
+     */
+    private KnowledgeBaseEdit edit;
+    private JComponent component;
 
-  private boolean successful;
+    private boolean successful;
 
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param edit
-   * @param compenent
-   */
-  public PerformKnowledgeBaseEditTask(KnowledgeBaseEdit edit, JComponent compenent) {
+    /**
+     * @param edit
+     * @param compenent
+     */
+    public PerformKnowledgeBaseEditTask(KnowledgeBaseEdit edit, JComponent compenent) {
 
-    this.edit = edit;
-    this.component = compenent;
-    this.successful = false;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   */
-  public void execute() {
-
-    try {
-      
-      CursorManager.getInstance().setWaitCursor();
-      this.successful = this.edit.execute();
-      CursorManager.getInstance().setNormalCursor();
-
-      if (! this.successful) {
-
-        ErrorDialogManager.getInstance().showError(edit.getErrorMessage());
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      this.successful = false;
-
-      ErrorDialogManager.getInstance().showException(e);
-
-      e.printStackTrace(System.err);
-
+        this.edit = edit;
+        this.component = compenent;
+        this.successful = false;
     }
-  }
 
-  /**
-   * 
-   * @return
-   */
-  public boolean isSuccessful() {
-    return successful;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     *
+     */
+    public void execute() {
+
+        try {
+
+            CursorManager.getInstance().setWaitCursor();
+            this.successful = this.edit.execute();
+            CursorManager.getInstance().setNormalCursor();
+
+            if (!this.successful) {
+
+                ErrorDialogManager.getInstance().showError(edit.getErrorMessage());
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            this.successful = false;
+
+            ErrorDialogManager.getInstance().showException(e);
+
+            e.printStackTrace(System.err);
+
+        }
+    }
+
+    /**
+     * @return
+     */
+    public boolean isSuccessful() {
+        return successful;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

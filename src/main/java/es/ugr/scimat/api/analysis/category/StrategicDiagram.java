@@ -8,80 +8,76 @@ package es.ugr.scimat.api.analysis.category;
 import java.util.ArrayList;
 
 /**
- *
  * @author mjcobo
  */
 public class StrategicDiagram {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  private ArrayList<StrategicDiagramItem> items =  new ArrayList<StrategicDiagramItem>();
+    /**
+     *
+     */
+    private ArrayList<StrategicDiagramItem> items = new ArrayList<StrategicDiagramItem>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param items
-   */
-  public StrategicDiagram() {
-    
-  }
+    /**
+     * @param items
+     */
+    public StrategicDiagram() {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    }
 
-  /**
-   * 
-   * @param label
-   * @param valueAxisX
-   * @param valueAxisY
-   * @param volume
-   */
-  public void addItem(String label, double valueAxisX, double valueAxisY, double volume) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    this.items.add(new StrategicDiagramItem(label, valueAxisX, valueAxisY, volume));
-  }
+    /**
+     * @param label
+     * @param valueAxisX
+     * @param valueAxisY
+     * @param volume
+     */
+    public void addItem(String label, double valueAxisX, double valueAxisY, double volume) {
 
-  /**
-   * 
-   * @param item
-   */
-  public void addItem(StrategicDiagramItem item) {
+        this.items.add(new StrategicDiagramItem(label, valueAxisX, valueAxisY, volume));
+    }
 
-    this.items.add(item);
-  }
+    /**
+     * @param item
+     */
+    public void addItem(StrategicDiagramItem item) {
 
-  /**
-   * Returns the list of items. The list backed by this strategic diagram, so
-   * changes to the strategic diagram are reflected in the returned list, and
-   * vice-versa.
-   *
-   * @return the list of items.
-   */
-  public ArrayList<StrategicDiagramItem> getItems() {
+        this.items.add(item);
+    }
 
-    return this.items;
-  }
+    /**
+     * Returns the list of items. The list backed by this strategic diagram, so
+     * changes to the strategic diagram are reflected in the returned list, and
+     * vice-versa.
+     *
+     * @return the list of items.
+     */
+    public ArrayList<StrategicDiagramItem> getItems() {
 
-  /**
-   * The numner of elements in the strategic diagram.
-   *
-   * @return the numner of elements in the strategic diagram.
-   */
-  public int getItemsCount() {
+        return this.items;
+    }
 
-    return this.items.size();
-  }
+    /**
+     * The numner of elements in the strategic diagram.
+     *
+     * @return the numner of elements in the strategic diagram.
+     */
+    public int getItemsCount() {
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+        return this.items.size();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

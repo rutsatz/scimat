@@ -7,9 +7,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -17,198 +14,198 @@ import es.ugr.scimat.model.knowledgebase.entity.Word;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateWordEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer wordID;
+    /**
+     *
+     */
+    private Integer wordID;
 
-  /**
-   *
-   */
-  private String wordName;
+    /**
+     *
+     */
+    private String wordName;
 
-  /**
-   * The elements added
-   */
-  private ArrayList<Word> wordsOld;
-  
-  private ArrayList<Word> wordsUpdated;
+    /**
+     * The elements added
+     */
+    private ArrayList<Word> wordsOld;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private ArrayList<Word> wordsUpdated;
 
-  public UpdateWordEdit(Integer wordID, String wordName) {
-    super();
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-    this.wordID = wordID;
-    this.wordName = wordName;
-    this.wordsOld = new ArrayList<Word>();
-    this.wordsUpdated = new ArrayList<Word>();
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public UpdateWordEdit(Integer wordID, String wordName) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+        this.wordID = wordID;
+        this.wordName = wordName;
+        this.wordsOld = new ArrayList<Word>();
+        this.wordsUpdated = new ArrayList<Word>();
+    }
 
-    boolean successful = false;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    try {
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-      if (this.wordName == null) {
+        boolean successful = false;
 
-        successful = false;
-        this.errorMessage = "The name can not be null.";
+        try {
 
-      } else if (CurrentProject.getInstance().getFactoryDAO().getWordDAO().checkWord(wordName)) {
+            if (this.wordName == null) {
 
-        successful = false;
-        this.errorMessage = "A word yet exists with this name.";
+                successful = false;
+                this.errorMessage = "The name can not be null.";
 
-      } else {
+            } else if (CurrentProject.getInstance().getFactoryDAO().getWordDAO().checkWord(wordName)) {
 
-        this.wordsOld.add(CurrentProject.getInstance().getFactoryDAO().getWordDAO().getWord(wordID));
+                successful = false;
+                this.errorMessage = "A word yet exists with this name.";
 
-        successful = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordName(wordID, wordName, true);
-        
-        this.wordsUpdated.add(CurrentProject.getInstance().getFactoryDAO().getWordDAO().getWord(wordID));
+            } else {
 
-        if (successful) {
+                this.wordsOld.add(CurrentProject.getInstance().getFactoryDAO().getWordDAO().getWord(wordID));
 
-          CurrentProject.getInstance().getKnowledgeBase().commit();
+                successful = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordName(wordID, wordName, true);
 
-          KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                this.wordsUpdated.add(CurrentProject.getInstance().getFactoryDAO().getWordDAO().getWord(wordID));
 
-          successful = true;
+                if (successful) {
 
-          UndoStack.addEdit(this);
+                    CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        } else {
+                    KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-          CurrentProject.getInstance().getKnowledgeBase().rollback();
+                    successful = true;
 
-          successful = false;
-          this.errorMessage = "An error happened.";
+                    UndoStack.addEdit(this);
+
+                } else {
+
+                    CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                    successful = false;
+                    this.errorMessage = "An error happened.";
+                }
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
-      }
 
-    } catch (KnowledgeBaseException e) {
+        return successful;
 
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
     }
 
-    return successful;
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-  }
+        boolean flag;
+        Word word;
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        try {
 
-    boolean flag;
-    Word word;
+            word = this.wordsOld.get(0);
 
-    try {
+            flag = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordName(word.getWordID(), word.getWordName(), true);
 
-      word = this.wordsOld.get(0);
+            if (flag) {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordName(word.getWordID(), word.getWordName(), true);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      if (flag) {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+            } else {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } else {
+        } catch (KnowledgeBaseException e) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            e.printStackTrace(System.err);
 
-    } catch (KnowledgeBaseException e) {
+            try {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      try{
+            } catch (KnowledgeBaseException e2) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                e2.printStackTrace(System.err);
 
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
+            }
+        }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordName(wordID, wordName, true);
+            flag = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordName(wordID, wordName, true);
 
-      if (flag) {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

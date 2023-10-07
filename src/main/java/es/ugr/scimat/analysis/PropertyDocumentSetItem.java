@@ -6,52 +6,51 @@
 package es.ugr.scimat.analysis;
 
 /**
- *
  * @author mjcobo
  */
 public class PropertyDocumentSetItem {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private String mapper;
-  private String propertyKey;
-  private double value;
+    private String mapper;
+    private String propertyKey;
+    private double value;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param mapper
-   * @param propertyKey
-   * @param value
-   */
-  public PropertyDocumentSetItem(String mapper, String propertyKey, double value) {
-    this.mapper = mapper;
-    this.propertyKey = propertyKey;
-    this.value = value;
-  }
+    /**
+     * @param mapper
+     * @param propertyKey
+     * @param value
+     */
+    public PropertyDocumentSetItem(String mapper, String propertyKey, double value) {
+        this.mapper = mapper;
+        this.propertyKey = propertyKey;
+        this.value = value;
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
 
-  public String getMapper() {
-    return mapper;
-  }
+    /***************************************************************************/
 
-  public String getPropertyKey() {
-    return propertyKey;
-  }
+    public String getMapper() {
+        return mapper;
+    }
 
-  public double getValue() {
-    return value;
-  }
+    public String getPropertyKey() {
+        return propertyKey;
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    public double getValue() {
+        return value;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

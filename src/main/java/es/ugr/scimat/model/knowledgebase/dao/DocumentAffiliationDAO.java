@@ -5,9 +5,6 @@
  */
 package es.ugr.scimat.model.knowledgebase.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
 import es.ugr.scimat.knowledgebaseevents.event.relation.DocumentRelationAffiliationEvent;
 import es.ugr.scimat.knowledgebaseevents.event.update.UpdateAffiliationEvent;
@@ -16,187 +13,185 @@ import es.ugr.scimat.model.knowledgebase.KnowledgeBaseManager;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
- *
  * @author mjcobo
  */
 public class DocumentAffiliationDAO {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The knowlege base manager
-   */
-  private KnowledgeBaseManager kbm;
+    /**
+     * The knowlege base manager
+     */
+    private KnowledgeBaseManager kbm;
 
-  /**
-   * <pre>
-   * INSERT INTO Document_Affiliation(Affiliation_idAffiliation,Document_idDocument) VALUES(?,?);
-   * </pre>
-   */
-  private final static String __ADD_DOCUMENT_AFFILIATION = "INSERT INTO Document_Affiliation(Affiliation_idAffiliation,Document_idDocument) VALUES(?,?);";
+    /**
+     * <pre>
+     * INSERT INTO Document_Affiliation(Affiliation_idAffiliation,Document_idDocument) VALUES(?,?);
+     * </pre>
+     */
+    private final static String __ADD_DOCUMENT_AFFILIATION = "INSERT INTO Document_Affiliation(Affiliation_idAffiliation,Document_idDocument) VALUES(?,?);";
 
-  /**
-   * <pre>
-   * DELETE Document_Affiliation </br>
-   * WHERE Affiliation_idAffiliation = ? AND
-   *       Document_idDocument = ?;
-   * </pre>
-   */
-  private final static String __REMOVE_DOCUMENT_AFFILIATION = "DELETE FROM Document_Affiliation "
-                                                            + "WHERE Affiliation_idAffiliation = ? AND "
-                                                            + "      Document_idDocument = ?;";
-  
-  private final static String __CHECK_DOCUMENT_AFFILIATION = "SELECT "
-              + "Affiliation_idAffiliation FROM Document_Affiliation WHERE "
-              + "Affiliation_idAffiliation = ? AND Document_idDocument = ?;";
-  
-  private PreparedStatement statAddDocumentAffiliation;
-  private PreparedStatement statCheckDocumentAffiliation;
-  private PreparedStatement statRemoveDocumentAffiliation;
+    /**
+     * <pre>
+     * DELETE Document_Affiliation </br>
+     * WHERE Affiliation_idAffiliation = ? AND
+     *       Document_idDocument = ?;
+     * </pre>
+     */
+    private final static String __REMOVE_DOCUMENT_AFFILIATION = "DELETE FROM Document_Affiliation "
+            + "WHERE Affiliation_idAffiliation = ? AND "
+            + "      Document_idDocument = ?;";
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private final static String __CHECK_DOCUMENT_AFFILIATION = "SELECT "
+            + "Affiliation_idAffiliation FROM Document_Affiliation WHERE "
+            + "Affiliation_idAffiliation = ? AND Document_idDocument = ?;";
 
-  /**
-   * 
-   * @param kbm
-   */
-  public DocumentAffiliationDAO(KnowledgeBaseManager kbm) throws KnowledgeBaseException {
-    
-    this.kbm = kbm;
-    
-    try {
-      
-      this.statAddDocumentAffiliation = this.kbm.getConnection().prepareStatement(__ADD_DOCUMENT_AFFILIATION);
-      this.statCheckDocumentAffiliation = this.kbm.getConnection().prepareStatement(__CHECK_DOCUMENT_AFFILIATION);
-      this.statRemoveDocumentAffiliation = this.kbm.getConnection().prepareStatement(__REMOVE_DOCUMENT_AFFILIATION);
-      
-    } catch (SQLException e) {
-    
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
-    }
-  }
+    private PreparedStatement statAddDocumentAffiliation;
+    private PreparedStatement statCheckDocumentAffiliation;
+    private PreparedStatement statRemoveDocumentAffiliation;
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   * @param documentID
-   * @param affiliationID
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  public boolean addDocumentAffiliation(Integer documentID, Integer affiliationID, boolean notifyObservers) throws KnowledgeBaseException {
-    
-    boolean result = false;
+    /**
+     * @param kbm
+     */
+    public DocumentAffiliationDAO(KnowledgeBaseManager kbm) throws KnowledgeBaseException {
 
-    try {
+        this.kbm = kbm;
 
-      this.statAddDocumentAffiliation.clearParameters();
+        try {
 
-      this.statAddDocumentAffiliation.setInt(1, affiliationID);
-      this.statAddDocumentAffiliation.setInt(2, documentID);
+            this.statAddDocumentAffiliation = this.kbm.getConnection().prepareStatement(__ADD_DOCUMENT_AFFILIATION);
+            this.statCheckDocumentAffiliation = this.kbm.getConnection().prepareStatement(__CHECK_DOCUMENT_AFFILIATION);
+            this.statRemoveDocumentAffiliation = this.kbm.getConnection().prepareStatement(__REMOVE_DOCUMENT_AFFILIATION);
 
-      result = this.statAddDocumentAffiliation.executeUpdate() > 0;
+        } catch (SQLException e) {
 
-    } catch (SQLException e) {
-
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
     }
 
-    // Notify to the observer
-    if (notifyObservers) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAffiliationEvent(CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().getAffiliation(affiliationID)));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAffiliationEvent());
+    /**
+     * @param documentID
+     * @param affiliationID
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public boolean addDocumentAffiliation(Integer documentID, Integer affiliationID, boolean notifyObservers) throws KnowledgeBaseException {
+
+        boolean result = false;
+
+        try {
+
+            this.statAddDocumentAffiliation.clearParameters();
+
+            this.statAddDocumentAffiliation.setInt(1, affiliationID);
+            this.statAddDocumentAffiliation.setInt(2, documentID);
+
+            result = this.statAddDocumentAffiliation.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
+
+        // Notify to the observer
+        if (notifyObservers) {
+
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAffiliationEvent(CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().getAffiliation(affiliationID)));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAffiliationEvent());
+        }
+
+        return result;
     }
-      
-    return result;
-  }
 
-  /**
-   * 
-   * @param documentID
-   * @param affiliationID
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  public boolean removeDocumentAffiliation(Integer documentID, Integer affiliationID, boolean notifyObservers)
-          throws KnowledgeBaseException {
+    /**
+     * @param documentID
+     * @param affiliationID
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public boolean removeDocumentAffiliation(Integer documentID, Integer affiliationID, boolean notifyObservers)
+            throws KnowledgeBaseException {
 
-    boolean result = false;
-    
-    try {
+        boolean result = false;
 
-      this.statRemoveDocumentAffiliation.clearParameters();
+        try {
 
-      this.statRemoveDocumentAffiliation.setInt(1, affiliationID);
-      this.statRemoveDocumentAffiliation.setInt(2, documentID);
+            this.statRemoveDocumentAffiliation.clearParameters();
 
-      result = this.statRemoveDocumentAffiliation.executeUpdate() > 0;
+            this.statRemoveDocumentAffiliation.setInt(1, affiliationID);
+            this.statRemoveDocumentAffiliation.setInt(2, documentID);
 
-    } catch (SQLException e) {
+            result = this.statRemoveDocumentAffiliation.executeUpdate() > 0;
 
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        } catch (SQLException e) {
+
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
+
+        // Notify to the observer
+        if (notifyObservers) {
+
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAffiliationEvent(CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().getAffiliation(affiliationID)));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAffiliationEvent());
+        }
+
+        return result;
     }
 
-    // Notify to the observer
-    if (notifyObservers) {
+    /**
+     * <p>Check if the <code>Document</code> and <Code>Affiliation<Code>
+     * are associated.</p>
+     *
+     * @param idDocument    the document's ID
+     * @param idAffiliation the affiliation's ID
+     * @return true if there is an association between both items.
+     * @throws KnowledgeBaseException if a database access error occurs
+     */
+    public boolean checkDocumentAffiliation(Integer idDocument, Integer idAffiliation)
+            throws KnowledgeBaseException {
 
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAffiliationEvent(CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().getAffiliation(affiliationID)));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAffiliationEvent());
+        boolean result = false;
+        ResultSet rs;
+
+        try {
+
+            this.statCheckDocumentAffiliation.clearParameters();
+
+            this.statCheckDocumentAffiliation.setInt(1, idAffiliation);
+            this.statCheckDocumentAffiliation.setInt(2, idDocument);
+
+            rs = this.statCheckDocumentAffiliation.executeQuery();
+
+            result = rs.next();
+
+            rs.close();
+
+            return result;
+
+        } catch (SQLException e) {
+
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
     }
-      
-    return result;
-  }
 
-  /**
-   * <p>Check if the <code>Document</code> and <Code>Affiliation<Code>
-   * are associated.</p>
-   *
-   * @param idDocument the document's ID
-   * @param idAffiliation the affiliation's ID
-   *
-   * @return true if there is an association between both items.
-   *
-   * @throws KnowledgeBaseException if a database access error occurs
-   */
-  public boolean checkDocumentAffiliation(Integer idDocument, Integer idAffiliation)
-          throws KnowledgeBaseException {
-
-    boolean result = false;
-    ResultSet rs;
-
-    try {
-
-      this.statCheckDocumentAffiliation.clearParameters();
-
-      this.statCheckDocumentAffiliation.setInt(1, idAffiliation);
-      this.statCheckDocumentAffiliation.setInt(2, idDocument);
-      
-      rs = this.statCheckDocumentAffiliation.executeQuery();
-      
-      result = rs.next();
-      
-      rs.close();
-      
-      return result;
-
-    } catch (SQLException e) {
-
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
-    }
-  }
-
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

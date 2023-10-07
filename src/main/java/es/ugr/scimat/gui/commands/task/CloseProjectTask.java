@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.task;
 
-import javax.swing.JOptionPane;
-
 import es.ugr.scimat.gui.MainFrame;
 import es.ugr.scimat.gui.commands.NoUndoableTask;
 import es.ugr.scimat.gui.components.ErrorDialogManager;
@@ -14,66 +12,66 @@ import es.ugr.scimat.gui.components.cursor.CursorManager;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.*;
+
 /**
- *
  * @author mjcobo
  */
 public class CloseProjectTask implements NoUndoableTask {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private MainFrame mainFrame;
+    private MainFrame mainFrame;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   * @param mainFrame
-   */
-  public CloseProjectTask(MainFrame mainFrame) {
-    
-    this.mainFrame = mainFrame;
-  }
+    /**
+     * @param mainFrame
+     */
+    public CloseProjectTask(MainFrame mainFrame) {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   */
-  public void execute() {
-
-    int returnVal;
-
-    returnVal = JOptionPane.showConfirmDialog(this.mainFrame,
-            "Do you want to close the project?", "Close project",
-            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-    if (returnVal == JOptionPane.OK_OPTION) {
-
-      try {
-
-        CursorManager.getInstance().setWaitCursor();
-        CurrentProject.getInstance().close();
-        CursorManager.getInstance().setNormalCursor();
-
-        this.mainFrame.clearMainPanel();
-
-      } catch (KnowledgeBaseException e) {
-    
-        ErrorDialogManager.getInstance().showException(e);
-      
-      }
+        this.mainFrame = mainFrame;
     }
-    
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     *
+     */
+    public void execute() {
+
+        int returnVal;
+
+        returnVal = JOptionPane.showConfirmDialog(this.mainFrame,
+                "Do you want to close the project?", "Close project",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (returnVal == JOptionPane.OK_OPTION) {
+
+            try {
+
+                CursorManager.getInstance().setWaitCursor();
+                CurrentProject.getInstance().close();
+                CursorManager.getInstance().setNormalCursor();
+
+                this.mainFrame.clearMainPanel();
+
+            } catch (KnowledgeBaseException e) {
+
+                ErrorDialogManager.getInstance().showException(e);
+
+            }
+        }
+
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.delete;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -15,177 +13,175 @@ import es.ugr.scimat.model.knowledgebase.entity.WordGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @word mjcobo
  */
 public class DeleteWordsFromWordGroupEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private ArrayList<Word> wordsToDeleteFromWordGroup;
-  private WordGroup wordGroupToDeleteFromWord;
+    private ArrayList<Word> wordsToDeleteFromWordGroup;
+    private WordGroup wordGroupToDeleteFromWord;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param wordsToDeleteFromWordGroup
-   * @param wordGroupToDeleteFromWord
-   */
-  public DeleteWordsFromWordGroupEdit(ArrayList<Word> wordsToDeleteFromWordGroup, WordGroup wordGroupToDeleteFromWord) {
-    
-    this.wordsToDeleteFromWordGroup = wordsToDeleteFromWordGroup;
-    this.wordGroupToDeleteFromWord = wordGroupToDeleteFromWord;
-  }
+    /**
+     * @param wordsToDeleteFromWordGroup
+     * @param wordGroupToDeleteFromWord
+     */
+    public DeleteWordsFromWordGroupEdit(ArrayList<Word> wordsToDeleteFromWordGroup, WordGroup wordGroupToDeleteFromWord) {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    int i;
-    boolean successful = false;
-
-    try {
-
-      for (i = 0; i < this.wordsToDeleteFromWordGroup.size(); i++) {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordGroup(this.wordsToDeleteFromWordGroup.get(i).getWordID(),
-                null, true);
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.wordsToDeleteFromWordGroup = wordsToDeleteFromWordGroup;
+        this.wordGroupToDeleteFromWord = wordGroupToDeleteFromWord;
     }
 
-    return successful;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+    /**
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-    int i;
-    boolean successful = false;
+        int i;
+        boolean successful = false;
 
-    try {
+        try {
 
-      for (i = 0; i < this.wordsToDeleteFromWordGroup.size(); i++) {
+            for (i = 0; i < this.wordsToDeleteFromWordGroup.size(); i++) {
 
-        successful = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordGroup(this.wordsToDeleteFromWordGroup.get(i).getWordID(),
-                this.wordGroupToDeleteFromWord.getWordGroupID(), true);
-      }
+                successful = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordGroup(this.wordsToDeleteFromWordGroup.get(i).getWordID(),
+                        null, true);
+            }
 
-      if (successful) {
+            if (successful) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                UndoStack.addEdit(this);
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-    } catch (KnowledgeBaseException e) {
+                this.errorMessage = "An error happened";
 
-      e.printStackTrace(System.err);
+            }
 
-      try{
+        } catch (KnowledgeBaseException e) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            successful = false;
+            this.errorMessage = "An exception happened.";
 
-        e2.printStackTrace(System.err);
+            throw e;
+        }
 
-      }
+        return successful;
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    int i;
-    boolean successful = false;
+        int i;
+        boolean successful = false;
 
-    try {
+        try {
 
-      for (i = 0; i < this.wordsToDeleteFromWordGroup.size(); i++) {
+            for (i = 0; i < this.wordsToDeleteFromWordGroup.size(); i++) {
 
-        successful = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordGroup(this.wordsToDeleteFromWordGroup.get(i).getWordID(), null, true);
-      }
+                successful = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordGroup(this.wordsToDeleteFromWordGroup.get(i).getWordID(),
+                        this.wordGroupToDeleteFromWord.getWordGroupID(), true);
+            }
 
-      if (successful) {
+            if (successful) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        int i;
+        boolean successful = false;
+
+        try {
+
+            for (i = 0; i < this.wordsToDeleteFromWordGroup.size(); i++) {
+
+                successful = CurrentProject.getInstance().getFactoryDAO().getWordDAO().setWordGroup(this.wordsToDeleteFromWordGroup.get(i).getWordID(), null, true);
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

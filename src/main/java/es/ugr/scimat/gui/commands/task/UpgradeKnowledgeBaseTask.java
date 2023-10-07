@@ -5,10 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.task;
 
-import java.io.File;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-
 import es.ugr.scimat.gui.commands.NoUndoableTask;
 import es.ugr.scimat.gui.components.ErrorDialogManager;
 import es.ugr.scimat.gui.components.cursor.CursorManager;
@@ -16,98 +12,99 @@ import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.model.upgrade.UpgradeKnowledgeBaseVersion;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.*;
+import java.io.File;
+
 /**
- *
  * @author mjcobo
  */
 public class UpgradeKnowledgeBaseTask implements NoUndoableTask {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private String oldKnowledgeBasePath;
-  private String newKnowledgeBaseFolderPath;
-  private String newKnowledgeBaseFile;
-  
-  /**
-   * 
-   */
-  private JComponent receiver;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param oldKnowledgeBasePath
-   * @param newKnowledgeBaseFolderPath
-   * @param newKnowledgeBaseFile
-   * @param receiver 
-   */
-  public UpgradeKnowledgeBaseTask(String oldKnowledgeBasePath, 
-          String newKnowledgeBaseFolderPath, String newKnowledgeBaseFile,
-          JComponent receiver) {
-    
-    this.oldKnowledgeBasePath = oldKnowledgeBasePath;
-    this.newKnowledgeBaseFolderPath = newKnowledgeBaseFolderPath;
-    this.newKnowledgeBaseFile = newKnowledgeBaseFile;
-    this.receiver = receiver;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   */
-  public void execute() {
-    
-    File file;
-    String fullPath;
-    int returnVal;
-    boolean flag = true;
+    private String oldKnowledgeBasePath;
+    private String newKnowledgeBaseFolderPath;
+    private String newKnowledgeBaseFile;
 
-    fullPath = this.newKnowledgeBaseFolderPath + File.separator + this.newKnowledgeBaseFile;
-    
-    file = new File(fullPath);
+    /**
+     *
+     */
+    private JComponent receiver;
 
-    if (file.exists()) {
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-      returnVal = JOptionPane.showConfirmDialog(this.receiver, "The file already exist. "
-              + "Would you like to override it?", "Existing file",
-              JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+    /**
+     * @param oldKnowledgeBasePath
+     * @param newKnowledgeBaseFolderPath
+     * @param newKnowledgeBaseFile
+     * @param receiver
+     */
+    public UpgradeKnowledgeBaseTask(String oldKnowledgeBasePath,
+                                    String newKnowledgeBaseFolderPath, String newKnowledgeBaseFile,
+                                    JComponent receiver) {
 
-      if (returnVal == JOptionPane.OK_OPTION) {
-
-        flag = true;
-
-      } else {
-
-        flag = false;
-      }
+        this.oldKnowledgeBasePath = oldKnowledgeBasePath;
+        this.newKnowledgeBaseFolderPath = newKnowledgeBaseFolderPath;
+        this.newKnowledgeBaseFile = newKnowledgeBaseFile;
+        this.receiver = receiver;
     }
 
-    if (flag) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-      try {
+    /**
+     *
+     */
+    public void execute() {
 
-        CursorManager.getInstance().setWaitCursor();
-        
-        (new UpgradeKnowledgeBaseVersion(fullPath, this.oldKnowledgeBasePath)).execute();
-        CurrentProject.getInstance().loadProyect(fullPath);
-        CursorManager.getInstance().setNormalCursor();
+        File file;
+        String fullPath;
+        int returnVal;
+        boolean flag = true;
 
-      } catch (KnowledgeBaseException e) {
-    
-        ErrorDialogManager.getInstance().showException(e);
-      }
+        fullPath = this.newKnowledgeBaseFolderPath + File.separator + this.newKnowledgeBaseFile;
+
+        file = new File(fullPath);
+
+        if (file.exists()) {
+
+            returnVal = JOptionPane.showConfirmDialog(this.receiver, "The file already exist. "
+                            + "Would you like to override it?", "Existing file",
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+            if (returnVal == JOptionPane.OK_OPTION) {
+
+                flag = true;
+
+            } else {
+
+                flag = false;
+            }
+        }
+
+        if (flag) {
+
+            try {
+
+                CursorManager.getInstance().setWaitCursor();
+
+                (new UpgradeKnowledgeBaseVersion(fullPath, this.oldKnowledgeBasePath)).execute();
+                CurrentProject.getInstance().loadProyect(fullPath);
+                CursorManager.getInstance().setNormalCursor();
+
+            } catch (KnowledgeBaseException e) {
+
+                ErrorDialogManager.getInstance().showException(e);
+            }
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

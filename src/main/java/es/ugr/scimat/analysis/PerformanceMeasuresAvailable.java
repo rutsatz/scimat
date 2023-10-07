@@ -6,51 +6,48 @@
 package es.ugr.scimat.analysis;
 
 /**
- *
  * @author mjcobo
  */
 public class PerformanceMeasuresAvailable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private String mapper;
-  private String propertyKey;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   */
-  public PerformanceMeasuresAvailable(String mapper, String propertyKey) {
-    this.mapper = mapper;
-    this.propertyKey = propertyKey;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @return 
-   */
-  public String getMapper() {
-    return mapper;
-  }
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @return 
-   */
-  public String getPropertyKey() {
-    return propertyKey;
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    private String mapper;
+    private String propertyKey;
+
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
+
+    /**
+     *
+     */
+    public PerformanceMeasuresAvailable(String mapper, String propertyKey) {
+        this.mapper = mapper;
+        this.propertyKey = propertyKey;
+    }
+
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @return
+     */
+    public String getMapper() {
+        return mapper;
+    }
+
+    /**
+     * @return
+     */
+    public String getPropertyKey() {
+        return propertyKey;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -6,176 +6,165 @@
 package es.ugr.scimat.gui.components.editdialog;
 
 
-import javax.swing.JFrame;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorGroup;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceGroup;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceReference;
-import es.ugr.scimat.model.knowledgebase.entity.DocumentAuthor;
-import es.ugr.scimat.model.knowledgebase.entity.DocumentWord;
-import es.ugr.scimat.model.knowledgebase.entity.ReferenceGroup;
-import es.ugr.scimat.model.knowledgebase.entity.ReferenceSourceGroup;
-import es.ugr.scimat.model.knowledgebase.entity.WordGroup;
+import es.ugr.scimat.model.knowledgebase.entity.*;
+
+import javax.swing.*;
 
 /**
- *
  * @author mjcobo
  */
 public class EditDialogManager {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private EditAuthorGroupDialog editAuthorGroupDialog;
+    /**
+     *
+     */
+    private EditAuthorGroupDialog editAuthorGroupDialog;
 
-  /**
-   *
-   */
-  private EditAuthorReferenceGroupDialog editAuthorReferenceGroupDialog;
+    /**
+     *
+     */
+    private EditAuthorReferenceGroupDialog editAuthorReferenceGroupDialog;
 
-  /**
-   *
-   */
-  private EditReferenceGroupDialog editReferenceGroupDialog;
+    /**
+     *
+     */
+    private EditReferenceGroupDialog editReferenceGroupDialog;
 
-  /**
-   *
-   */
-  private EditReferenceSourceGroupDialog editReferenceSourceGroupDialog;
+    /**
+     *
+     */
+    private EditReferenceSourceGroupDialog editReferenceSourceGroupDialog;
 
-  /**
-   *
-   */
-  private EditWordGroupDialog editWordGroupDialog;
-  
-  private UpdateAuthorReferenceReferencePositionDialog updateAuthorReferenceReferencePositionDialog;
-  private UpdateDocumentAuthorPositionDialog updateDocumentAuthorPositionDialog;
-  private UpdateDocumentWordRolDialog updateDocumentWordRolDialog;
+    /**
+     *
+     */
+    private EditWordGroupDialog editWordGroupDialog;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private UpdateAuthorReferenceReferencePositionDialog updateAuthorReferenceReferencePositionDialog;
+    private UpdateDocumentAuthorPositionDialog updateDocumentAuthorPositionDialog;
+    private UpdateDocumentWordRolDialog updateDocumentWordRolDialog;
 
-  private EditDialogManager() {
-    
-  }
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
 
-  /**
-   * 
-   * @return
-   */
-  public static EditDialogManager getInstance() {
+    private EditDialogManager() {
 
-    return EditDialogManagerHolder.INSTANCE;
-  }
+    }
 
-  /**
-   *
-   */
-  private static class EditDialogManagerHolder {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    private static final EditDialogManager INSTANCE = new EditDialogManager();
-  }
+    /**
+     * @return
+     */
+    public static EditDialogManager getInstance() {
 
-  /**
-   *
-   * @param frame
-   */
-  public void init(JFrame frame) {
-    
-    this.editAuthorGroupDialog = new EditAuthorGroupDialog(frame);
-    this.editAuthorReferenceGroupDialog = new EditAuthorReferenceGroupDialog(frame);
-    this.editReferenceGroupDialog = new EditReferenceGroupDialog(frame);
-    this.editReferenceSourceGroupDialog = new EditReferenceSourceGroupDialog(frame);
-    this.editWordGroupDialog = new EditWordGroupDialog(frame);
-    this.updateAuthorReferenceReferencePositionDialog = new UpdateAuthorReferenceReferencePositionDialog(frame);
-    this.updateDocumentAuthorPositionDialog = new UpdateDocumentAuthorPositionDialog(frame);
-    this.updateDocumentWordRolDialog = new UpdateDocumentWordRolDialog(frame);
-  }
-  
-  /**
-   *
-   */
-  public void showEditAuthorGroupDialog(AuthorGroup authorGroup) {
+        return EditDialogManagerHolder.INSTANCE;
+    }
 
-    this.editAuthorGroupDialog.refreshData(authorGroup);
-    this.editAuthorGroupDialog.setVisible(true);
-  }
+    /**
+     *
+     */
+    private static class EditDialogManagerHolder {
 
-  /**
-   *
-   */
-  public void showEditAuthorReferenceGroupDialog(AuthorReferenceGroup authorReferenceGroup) {
+        private static final EditDialogManager INSTANCE = new EditDialogManager();
+    }
 
-    this.editAuthorReferenceGroupDialog.refreshData(authorReferenceGroup);
-    this.editAuthorReferenceGroupDialog.setVisible(true);
-  }
+    /**
+     * @param frame
+     */
+    public void init(JFrame frame) {
 
-  /**
-   *
-   */
-  public void showEditReferenceGroupDialog(ReferenceGroup referenceGroup) {
+        this.editAuthorGroupDialog = new EditAuthorGroupDialog(frame);
+        this.editAuthorReferenceGroupDialog = new EditAuthorReferenceGroupDialog(frame);
+        this.editReferenceGroupDialog = new EditReferenceGroupDialog(frame);
+        this.editReferenceSourceGroupDialog = new EditReferenceSourceGroupDialog(frame);
+        this.editWordGroupDialog = new EditWordGroupDialog(frame);
+        this.updateAuthorReferenceReferencePositionDialog = new UpdateAuthorReferenceReferencePositionDialog(frame);
+        this.updateDocumentAuthorPositionDialog = new UpdateDocumentAuthorPositionDialog(frame);
+        this.updateDocumentWordRolDialog = new UpdateDocumentWordRolDialog(frame);
+    }
 
-    this.editReferenceGroupDialog.refreshData(referenceGroup);
-    this.editReferenceGroupDialog.setVisible(true);
-  }
-  
-  /**
-   *
-   */
-  public void showEditReferenceSourceGroupDialog(ReferenceSourceGroup referenceSourceGroup) {
+    /**
+     *
+     */
+    public void showEditAuthorGroupDialog(AuthorGroup authorGroup) {
 
-    this.editReferenceSourceGroupDialog.refreshData(referenceSourceGroup);
-    this.editReferenceSourceGroupDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   */
-  public void showEditWordGroupDialog(WordGroup wordGroup) {
+        this.editAuthorGroupDialog.refreshData(authorGroup);
+        this.editAuthorGroupDialog.setVisible(true);
+    }
 
-    this.editWordGroupDialog.refreshData(wordGroup);
-    this.editWordGroupDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param authorReferenceReference 
-   */
-  public void showUpdateAuthorReferenceReferencePositionDialog(AuthorReferenceReference authorReferenceReference) {
+    /**
+     *
+     */
+    public void showEditAuthorReferenceGroupDialog(AuthorReferenceGroup authorReferenceGroup) {
 
-    this.updateAuthorReferenceReferencePositionDialog.refreshData(authorReferenceReference);
-    this.updateAuthorReferenceReferencePositionDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param documentAuthor 
-   */
-  public void showUpdateDocumentAuthorPositionDialog(DocumentAuthor documentAuthor) {
+        this.editAuthorReferenceGroupDialog.refreshData(authorReferenceGroup);
+        this.editAuthorReferenceGroupDialog.setVisible(true);
+    }
 
-    this.updateDocumentAuthorPositionDialog.refreshData(documentAuthor);
-    this.updateDocumentAuthorPositionDialog.setVisible(true);
-  }
-  
-  /**
-   * 
-   * @param documentWord 
-   */
-  public void showUpdateDocumentWordRolDialog(DocumentWord documentWord) {
+    /**
+     *
+     */
+    public void showEditReferenceGroupDialog(ReferenceGroup referenceGroup) {
 
-    this.updateDocumentWordRolDialog.refreshData(documentWord);
-    this.updateDocumentWordRolDialog.setVisible(true);
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+        this.editReferenceGroupDialog.refreshData(referenceGroup);
+        this.editReferenceGroupDialog.setVisible(true);
+    }
+
+    /**
+     *
+     */
+    public void showEditReferenceSourceGroupDialog(ReferenceSourceGroup referenceSourceGroup) {
+
+        this.editReferenceSourceGroupDialog.refreshData(referenceSourceGroup);
+        this.editReferenceSourceGroupDialog.setVisible(true);
+    }
+
+    /**
+     *
+     */
+    public void showEditWordGroupDialog(WordGroup wordGroup) {
+
+        this.editWordGroupDialog.refreshData(wordGroup);
+        this.editWordGroupDialog.setVisible(true);
+    }
+
+    /**
+     * @param authorReferenceReference
+     */
+    public void showUpdateAuthorReferenceReferencePositionDialog(AuthorReferenceReference authorReferenceReference) {
+
+        this.updateAuthorReferenceReferencePositionDialog.refreshData(authorReferenceReference);
+        this.updateAuthorReferenceReferencePositionDialog.setVisible(true);
+    }
+
+    /**
+     * @param documentAuthor
+     */
+    public void showUpdateDocumentAuthorPositionDialog(DocumentAuthor documentAuthor) {
+
+        this.updateDocumentAuthorPositionDialog.refreshData(documentAuthor);
+        this.updateDocumentAuthorPositionDialog.setVisible(true);
+    }
+
+    /**
+     * @param documentWord
+     */
+    public void showUpdateDocumentWordRolDialog(DocumentWord documentWord) {
+
+        this.updateDocumentWordRolDialog.refreshData(documentWord);
+        this.updateDocumentWordRolDialog.setVisible(true);
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

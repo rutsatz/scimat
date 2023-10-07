@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,224 +12,221 @@ import es.ugr.scimat.model.knowledgebase.entity.WordGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateWordGroupEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer wordGroupID;
+    /**
+     *
+     */
+    private Integer wordGroupID;
 
-  /**
-   *
-   */
-  private String groupName;
+    /**
+     *
+     */
+    private String groupName;
 
-  /**
-   *
-   */
-  private boolean stopGroup;
+    /**
+     *
+     */
+    private boolean stopGroup;
 
-  /**
-   * The elements added
-   */
-  private WordGroup wordGroupOld;
-  
-  private WordGroup wordGroupUpdated;
+    /**
+     * The elements added
+     */
+    private WordGroup wordGroupOld;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private WordGroup wordGroupUpdated;
 
-  /**
-   * 
-   * @param wordGroupID
-   * @param groupName
-   * @param stopGroup
-   */
-  public UpdateWordGroupEdit(Integer wordGroupID, String groupName, boolean stopGroup) {
-    super();
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-    this.wordGroupID = wordGroupID;
-    this.groupName = groupName;
-    this.stopGroup = stopGroup;
-  }
+    /**
+     * @param wordGroupID
+     * @param groupName
+     * @param stopGroup
+     */
+    public UpdateWordGroupEdit(Integer wordGroupID, String groupName, boolean stopGroup) {
+        super();
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = false;
-
-    try {
-
-      this.wordGroupOld = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().getWordGroup(this.wordGroupID);
-
-      if (this.wordGroupOld.getGroupName().equals(this.groupName)) {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().setStopGroup(wordGroupID, stopGroup, true);
-
-        this.wordGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().getWordGroup(wordGroupID);
-
-      } else if (this.groupName == null) {
-
-        successful = false;
-        this.errorMessage = "The name can not be null.";
-
-      } else if (CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().checkWordGroup(this.groupName)) {
-
-        successful = false;
-        this.errorMessage = "A word group yet exists with this name.";
-
-      } else {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().updateWordGroup(wordGroupID, groupName, stopGroup, true);
-
-        this.wordGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().getWordGroup(wordGroupID);
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        successful = true;
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.wordGroupID = wordGroupID;
+        this.groupName = groupName;
+        this.stopGroup = stopGroup;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = false;
 
-    boolean flag;
+        try {
 
-    try {
+            this.wordGroupOld = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().getWordGroup(this.wordGroupID);
 
-      if (this.wordGroupOld.getGroupName().equals(this.wordGroupUpdated.getGroupName())) {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().setStopGroup(wordGroupOld.getWordGroupID(),
-                wordGroupOld.isStopGroup(), true);
-        
-      } else {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().updateWordGroup(wordGroupOld.getWordGroupID(),
-              wordGroupOld.getGroupName(), wordGroupOld.isStopGroup(), true);
-      }
+            if (this.wordGroupOld.getGroupName().equals(this.groupName)) {
 
-      if (flag) {
+                successful = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().setStopGroup(wordGroupID, stopGroup, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                this.wordGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().getWordGroup(wordGroupID);
 
-      } else {
+            } else if (this.groupName == null) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                successful = false;
+                this.errorMessage = "The name can not be null.";
 
-    } catch (KnowledgeBaseException e) {
+            } else if (CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().checkWordGroup(this.groupName)) {
 
-      e.printStackTrace(System.err);
+                successful = false;
+                this.errorMessage = "A word group yet exists with this name.";
 
-      try{
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                successful = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().updateWordGroup(wordGroupID, groupName, stopGroup, true);
 
-      } catch (KnowledgeBaseException e2) {
+                this.wordGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().getWordGroup(wordGroupID);
+            }
 
-        e2.printStackTrace(System.err);
+            if (successful) {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                successful = true;
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
+
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      if (this.wordGroupOld.getGroupName().equals(groupName)) {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().setStopGroup(wordGroupID, stopGroup, true);
-        
-      } else {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().updateWordGroup(wordGroupID, groupName, stopGroup, true);
-      }
+            if (this.wordGroupOld.getGroupName().equals(this.wordGroupUpdated.getGroupName())) {
 
-      if (flag) {
+                flag = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().setStopGroup(wordGroupOld.getWordGroupID(),
+                        wordGroupOld.isStopGroup(), true);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+            } else {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                flag = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().updateWordGroup(wordGroupOld.getWordGroupID(),
+                        wordGroupOld.getGroupName(), wordGroupOld.isStopGroup(), true);
+            }
 
-      } else {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-    } catch (KnowledgeBaseException e) {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      e.printStackTrace(System.err);
+            } else {
 
-      try{
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+        } catch (KnowledgeBaseException e) {
 
-      } catch (KnowledgeBaseException e2) {
+            e.printStackTrace(System.err);
 
-        e2.printStackTrace(System.err);
+            try {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean flag;
+
+        try {
+
+            if (this.wordGroupOld.getGroupName().equals(groupName)) {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().setStopGroup(wordGroupID, stopGroup, true);
+
+            } else {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO().updateWordGroup(wordGroupID, groupName, stopGroup, true);
+            }
+
+            if (flag) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

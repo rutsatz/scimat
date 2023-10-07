@@ -6,13 +6,12 @@
 package es.ugr.scimat.gui.components.observer;
 
 /**
- *
  * @author mjcobo
  */
 public interface SlaveItemObserver {
 
-  /**
-   * 
-   */
-  public void slaveItemChanged(boolean isNotNull);
+    /**
+     *
+     */
+    public void slaveItemChanged(boolean isNotNull);
 }

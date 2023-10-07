@@ -5,62 +5,59 @@
  */
 package es.ugr.scimat.knowledgebaseevents.event.remove;
 
-import java.util.ArrayList;
 import es.ugr.scimat.knowledgebaseevents.event.KnowledgeBaseEvent;
 import es.ugr.scimat.model.knowledgebase.entity.ReferenceGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class RemoveReferenceGroupEvent implements KnowledgeBaseEvent {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /**
-   * 
-   */
-  private ArrayList<ReferenceGroup> referenceGroups;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param referenceGroups 
-   */
-  public RemoveReferenceGroupEvent(ArrayList<ReferenceGroup> referenceGroups) {
-    this.referenceGroups = referenceGroups;
-  }
-  
-  /**
-   * 
-   * @param referenceGroup 
-   */
-  public RemoveReferenceGroupEvent(ReferenceGroup referenceGroup) {
-    this.referenceGroups = new ArrayList<ReferenceGroup>();
-    this.referenceGroups.add(referenceGroup);
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @throws KnowledgeBaseException 
-   */
-  public void fireEvent() throws KnowledgeBaseException {
-    
-    CurrentProject.getInstance().getKbObserver().fireReferenceGroupRemoved(referenceGroups);
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
+
+    /**
+     *
+     */
+    private ArrayList<ReferenceGroup> referenceGroups;
+
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
+
+    /**
+     * @param referenceGroups
+     */
+    public RemoveReferenceGroupEvent(ArrayList<ReferenceGroup> referenceGroups) {
+        this.referenceGroups = referenceGroups;
+    }
+
+    /**
+     * @param referenceGroup
+     */
+    public RemoveReferenceGroupEvent(ReferenceGroup referenceGroup) {
+        this.referenceGroups = new ArrayList<ReferenceGroup>();
+        this.referenceGroups.add(referenceGroup);
+    }
+
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @throws KnowledgeBaseException
+     */
+    public void fireEvent() throws KnowledgeBaseException {
+
+        CurrentProject.getInstance().getKbObserver().fireReferenceGroupRemoved(referenceGroups);
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

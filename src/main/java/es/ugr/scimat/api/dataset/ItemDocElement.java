@@ -10,172 +10,164 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 /**
- *
  * @author Manuel Jesus Cobo Martin
  */
-public class ItemDocElement implements Serializable, Cloneable{
+public class ItemDocElement implements Serializable, Cloneable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The item's identifier.
-   */
-  private Integer itemID;
+    /**
+     * The item's identifier.
+     */
+    private Integer itemID;
 
-  /**
-   * The item's label.
-   */
-  private String label;
+    /**
+     * The item's label.
+     */
+    private String label;
 
-  /**
-   * List with the document associate with this item.
-   */
-  private TreeSet<Integer> docs = new TreeSet<Integer>();
+    /**
+     * List with the document associate with this item.
+     */
+    private TreeSet<Integer> docs = new TreeSet<Integer>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * <p>Create a new {@code ItemDocElement} with the specified parameters.</p>
-   *
-   * @param itemID the item's identifier
-   * @param label the item's label
-   */
-  public ItemDocElement(Integer itemID, String label) {
+    /**
+     * <p>Create a new {@code ItemDocElement} with the specified parameters.</p>
+     *
+     * @param itemID the item's identifier
+     * @param label  the item's label
+     */
+    public ItemDocElement(Integer itemID, String label) {
 
-    this.itemID = itemID;
-    this.label = label;
-  }
+        this.itemID = itemID;
+        this.label = label;
+    }
 
-  /**
-   * 
-   * @param itemDocElement
-   */
-  public ItemDocElement(ItemDocElement itemDocElement) {
+    /**
+     * @param itemDocElement
+     */
+    public ItemDocElement(ItemDocElement itemDocElement) {
 
-    this.itemID = itemDocElement.itemID;
-    this.label = itemDocElement.label;
-    this.docs = new TreeSet<Integer>(itemDocElement.docs);
-  }
+        this.itemID = itemDocElement.itemID;
+        this.label = itemDocElement.label;
+        this.docs = new TreeSet<Integer>(itemDocElement.docs);
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * @return the itemID
-   */
-  public Integer getItemID() {
-    return itemID;
-  }
+    /**
+     * @return the itemID
+     */
+    public Integer getItemID() {
+        return itemID;
+    }
 
-  /**
-   * @return the label
-   */
-  public String getLabel() {
-    return label;
-  }
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
 
-  /**
-   * @param label the label to set
-   */
-  public void setLabel(String label) {
-    this.label = label;
-  }
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-  /**
-   * Add a new document to the item.
-   *
-   * @param docID the document's identifier
-   *
-   * @return {@code true} if this item did not already contain the document
-   */
-  public boolean addDocument(Integer docID) {
+    /**
+     * Add a new document to the item.
+     *
+     * @param docID the document's identifier
+     * @return {@code true} if this item did not already contain the document
+     */
+    public boolean addDocument(Integer docID) {
 
-    return this.docs.add(docID);
-  }
+        return this.docs.add(docID);
+    }
 
-  /**
-   * Returns {@code true} if this item contains the specified document.
-   *
-   * @param docID the item's identifie
-   *
-   * @return {@code true} if this item contains the specified document
-   */
-  public boolean containsDocument(Integer docID) {
+    /**
+     * Returns {@code true} if this item contains the specified document.
+     *
+     * @param docID the item's identifie
+     * @return {@code true} if this item contains the specified document
+     */
+    public boolean containsDocument(Integer docID) {
 
-    return this.docs.contains(docID);
-  }
+        return this.docs.contains(docID);
+    }
 
-  /**
-   * Remove the document from the item.
-   *
-   * @param docID
-   *
-   * @return {@code true} if this item contain the document
-   */
-  public boolean removeDocument(Integer docID) {
+    /**
+     * Remove the document from the item.
+     *
+     * @param docID
+     * @return {@code true} if this item contain the document
+     */
+    public boolean removeDocument(Integer docID) {
 
-    return this.docs.remove(docID);
-  }
+        return this.docs.remove(docID);
+    }
 
-  /**
-   * Return the number of documents associated with the item (item's frequency).
-   *
-   * @return the numner of items of the document.
-   */
-  public int getDocumentsCount() {
+    /**
+     * Return the number of documents associated with the item (item's frequency).
+     *
+     * @return the numner of items of the document.
+     */
+    public int getDocumentsCount() {
 
-    return this.docs.size();
-  }
-  
-  /**
-   *
-   * @return
-   */
-  public ArrayList<Integer> getDocumentsList() {
+        return this.docs.size();
+    }
 
-    return new ArrayList<Integer>(this.docs);
-  }
+    /**
+     * @return
+     */
+    public ArrayList<Integer> getDocumentsList() {
 
-  /**
-   * 
-   * @return
-   * @throws CloneNotSupportedException
-   */
-  @Override
-  protected ItemDocElement clone() {
+        return new ArrayList<Integer>(this.docs);
+    }
 
-    ItemDocElement itemDocElement;
+    /**
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    @Override
+    protected ItemDocElement clone() {
 
-    itemDocElement = new ItemDocElement(itemID, label);
-    itemDocElement.docs = new TreeSet<Integer>(docs);
+        ItemDocElement itemDocElement;
 
-    return itemDocElement;
-  }
+        itemDocElement = new ItemDocElement(itemID, label);
+        itemDocElement.docs = new TreeSet<Integer>(docs);
 
-  /**
-   *
-   * @return
-   */
-  @Override
-  public String toString() {
+        return itemDocElement;
+    }
 
-    String result = "";
+    /**
+     * @return
+     */
+    @Override
+    public String toString() {
 
-    result += "(";
-    result += "ItemID: " + this.itemID;
-    result += "Label: " + this.label;
-    result += "Docs: " + this.docs;
-    result += ")";
+        String result = "";
 
-    return result;
-  }
+        result += "(";
+        result += "ItemID: " + this.itemID;
+        result += "Label: " + this.label;
+        result += "Docs: " + this.docs;
+        result += ")";
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+        return result;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

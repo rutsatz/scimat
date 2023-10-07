@@ -5,61 +5,60 @@
  */
 package es.ugr.scimat.api.analysis.performance.docmapper;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.api.mapping.Node;
 import es.ugr.scimat.api.mapping.WholeNetwork;
 import es.ugr.scimat.api.utils.property.DocumentsProperty;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class WholeNetworkDocumentsSetter {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  private NodeDocumentMapper nodeDocumentMapper;
+    /**
+     *
+     */
+    private NodeDocumentMapper nodeDocumentMapper;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param documentMapper
-   */
-  public WholeNetworkDocumentsSetter(NodeDocumentMapper documentMapper) {
-    this.nodeDocumentMapper = documentMapper;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  public void execute(WholeNetwork wholeNetwork, String newProperty) {
-
-    int i;
-    ArrayList<Node> nodes;
-    Node node;
-
-    nodes = wholeNetwork.getNodes();
-
-    for (i = 0; i < nodes.size(); i++) {
-
-      node = nodes.get(i);
-
-      node.getProperties().addProperty(newProperty,
-              new DocumentsProperty(this.nodeDocumentMapper.executeMapper(node.getNodeID())));
+    /**
+     * @param documentMapper
+     */
+    public WholeNetworkDocumentsSetter(NodeDocumentMapper documentMapper) {
+        this.nodeDocumentMapper = documentMapper;
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+
+    /***************************************************************************/
+
+    public void execute(WholeNetwork wholeNetwork, String newProperty) {
+
+        int i;
+        ArrayList<Node> nodes;
+        Node node;
+
+        nodes = wholeNetwork.getNodes();
+
+        for (i = 0; i < nodes.size(); i++) {
+
+            node = nodes.get(i);
+
+            node.getProperties().addProperty(newProperty,
+                    new DocumentsProperty(this.nodeDocumentMapper.executeMapper(node.getNodeID())));
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

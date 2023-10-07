@@ -6,7 +6,6 @@
 package es.ugr.scimat.gui.components.slavepanel;
 
 
-import java.util.ArrayList;
 import es.ugr.scimat.gui.components.ErrorDialogManager;
 import es.ugr.scimat.model.knowledgebase.entity.Reference;
 import es.ugr.scimat.model.knowledgebase.entity.ReferenceSource;
@@ -15,165 +14,166 @@ import es.ugr.scimat.project.CurrentProject;
 import es.ugr.scimat.project.observer.EntityObserver;
 import es.ugr.scimat.project.observer.ReferenceSourceRelationReferenceObserver;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class ReferenceSlaveReferenceSourcePanel extends GenericOneSlaveItemPanel
         implements ReferenceSourceRelationReferenceObserver, EntityObserver<ReferenceSource> {
 
-  /** Creates new form ReferenceSlaveReferenceSourcePanel */
-  public ReferenceSlaveReferenceSourcePanel() {
-    initComponents();
-  }
-
-  /**
-   *
-   */
-  private void refresh() {
-
-    if (this.referenceSource != null) {
-
-      this.sourceTextField.setText(this.referenceSource.getSource());
-      fireSlaveItemObserver(true);
-
-    } else {
-
-      this.sourceTextField.setText("");
+    /**
+     * Creates new form ReferenceSlaveReferenceSourcePanel
+     */
+    public ReferenceSlaveReferenceSourcePanel() {
+        initComponents();
     }
-  }
 
-  /**
-   *
-   */
-  public void setMasterItem(Reference reference) {
+    /**
+     *
+     */
+    private void refresh() {
 
-    this.reference = reference;
+        if (this.referenceSource != null) {
 
-    try {
+            this.sourceTextField.setText(this.referenceSource.getSource());
+            fireSlaveItemObserver(true);
 
-      if (this.reference != null) {
+        } else {
 
-        relationChanged();
+            this.sourceTextField.setText("");
+        }
+    }
 
-      } else {
+    /**
+     *
+     */
+    public void setMasterItem(Reference reference) {
 
-        this.referenceSource = null;
+        this.reference = reference;
+
+        try {
+
+            if (this.reference != null) {
+
+                relationChanged();
+
+            } else {
+
+                this.referenceSource = null;
+                refresh();
+
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            ErrorDialogManager.getInstance().showException(e);
+
+        }
+    }
+
+    /**
+     *
+     */
+    public void relationChanged() throws KnowledgeBaseException {
+
+        if (this.reference != null) {
+
+            this.referenceSource = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReferenceSource(this.reference.getReferenceID());
+
+        } else {
+
+            this.referenceSource = null;
+        }
+
         refresh();
-
-      }
-
-    } catch (KnowledgeBaseException e) {
-    
-      ErrorDialogManager.getInstance().showException(e);
-
     }
-  }
 
-  /**
-   *
-   */
-  public void relationChanged() throws KnowledgeBaseException {
-
-    if (this.reference != null) {
-      
-      this.referenceSource = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReferenceSource(this.reference.getReferenceID());
-      
-    } else {
-    
-      this.referenceSource = null;
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityAdded(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
+        // Do not do nothing
     }
-    
-    refresh();
-  }
 
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityAdded(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
-    // Do not do nothing
-  }
+    /**
+     * @param entity
+     * @throws KnowledgeBaseException
+     */
+    public void entityRefresh() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @param entity
-   * @throws KnowledgeBaseException
-   */
-  public void entityRefresh() throws KnowledgeBaseException {
+        if (this.referenceSource != null) {
 
-    if (this.referenceSource != null) {
-
-      this.referenceSource = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO().getReferenceSource(this.reference.getReferenceID());
-      refresh();
+            this.referenceSource = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO().getReferenceSource(this.reference.getReferenceID());
+            refresh();
+        }
     }
-  }
 
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityRemoved(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
-    // Do not do nothing
-  }
-
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityUpdated(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
-
-    int position;
-
-    if (this.referenceSource != null) {
-
-      position = items.indexOf(this.referenceSource);
-
-      if (position != -1) {
-
-        this.referenceSource = items.get(position);
-      }
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityRemoved(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
+        // Do not do nothing
     }
-  }
 
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityUpdated(ArrayList<ReferenceSource> items) throws KnowledgeBaseException {
 
-    sourceDescriptionLabel = new javax.swing.JLabel();
-    sourceTextField = new javax.swing.JTextField();
+        int position;
 
-    sourceDescriptionLabel.setLabelFor(sourceTextField);
-    sourceDescriptionLabel.setText("Source:");
+        if (this.referenceSource != null) {
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-    this.setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(sourceDescriptionLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(sourceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE))
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-        .addComponent(sourceDescriptionLabel)
-        .addComponent(sourceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-    );
-  }// </editor-fold>//GEN-END:initComponents
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel sourceDescriptionLabel;
-  private javax.swing.JTextField sourceTextField;
-  // End of variables declaration//GEN-END:variables
-  private Reference reference = null;
-  private ReferenceSource referenceSource = null;
+            position = items.indexOf(this.referenceSource);
+
+            if (position != -1) {
+
+                this.referenceSource = items.get(position);
+            }
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        sourceDescriptionLabel = new javax.swing.JLabel();
+        sourceTextField = new javax.swing.JTextField();
+
+        sourceDescriptionLabel.setLabelFor(sourceTextField);
+        sourceDescriptionLabel.setText("Source:");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(sourceDescriptionLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sourceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(sourceDescriptionLabel)
+                                .addComponent(sourceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel sourceDescriptionLabel;
+    private javax.swing.JTextField sourceTextField;
+    // End of variables declaration//GEN-END:variables
+    private Reference reference = null;
+    private ReferenceSource referenceSource = null;
 }

@@ -5,17 +5,20 @@
  */
 package es.ugr.scimat.project.observer;
 
-import java.util.ArrayList;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public interface EntityObserver<T extends Comparable<T>> {
 
-  public void entityUpdated(ArrayList<T> items) throws KnowledgeBaseException;
-  public void entityAdded(ArrayList<T> items) throws KnowledgeBaseException;
-  public void entityRemoved(ArrayList<T> items) throws KnowledgeBaseException;
-  public abstract void entityRefresh() throws KnowledgeBaseException;
+    public void entityUpdated(ArrayList<T> items) throws KnowledgeBaseException;
+
+    public void entityAdded(ArrayList<T> items) throws KnowledgeBaseException;
+
+    public void entityRemoved(ArrayList<T> items) throws KnowledgeBaseException;
+
+    public abstract void entityRefresh() throws KnowledgeBaseException;
 }

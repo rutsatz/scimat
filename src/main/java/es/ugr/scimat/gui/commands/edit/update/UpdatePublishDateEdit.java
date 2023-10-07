@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,197 +12,196 @@ import es.ugr.scimat.model.knowledgebase.entity.PublishDate;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdatePublishDateEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer publishDateID;
+    /**
+     *
+     */
+    private Integer publishDateID;
 
-  /**
-   *
-   */
-  private String year;
+    /**
+     *
+     */
+    private String year;
 
-  /**
-   *
-   */
-  private String date;
+    /**
+     *
+     */
+    private String date;
 
-  /**
-   * The elements added
-   */
-  private PublishDate publishDateOld;
-  
-  private PublishDate publishDateUpdated;
+    /**
+     * The elements added
+     */
+    private PublishDate publishDateOld;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private PublishDate publishDateUpdated;
 
-  public UpdatePublishDateEdit(Integer publishDateID, String year, String date) {
-    super();
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-    this.publishDateID = publishDateID;
-    this.year = year;
-    this.date = date;
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public UpdatePublishDateEdit(Integer publishDateID, String year, String date) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+        this.publishDateID = publishDateID;
+        this.year = year;
+        this.date = date;
+    }
 
-    boolean successful = false;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    try {
-      
-      if ((this.year == null) || (this.date == null)) {
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-        successful = false;
-        this.errorMessage = "The year and date can not be null.";
+        boolean successful = false;
 
-      } else if (CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().checkPublishDate(year, date)) {
+        try {
 
-        successful = false;
-        this.errorMessage = "A Publish date yet exists with this year.";
+            if ((this.year == null) || (this.date == null)) {
 
-      } else {
+                successful = false;
+                this.errorMessage = "The year and date can not be null.";
 
-        this.publishDateOld = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().getPublishDate(publishDateID);
+            } else if (CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().checkPublishDate(year, date)) {
 
-        successful = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().updatePublishDate(publishDateID, year, date, true);
-        
-        this.publishDateUpdated = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().getPublishDate(publishDateID);
+                successful = false;
+                this.errorMessage = "A Publish date yet exists with this year.";
 
-        if (successful) {
+            } else {
 
-          CurrentProject.getInstance().getKnowledgeBase().commit();
-          
-          KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                this.publishDateOld = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().getPublishDate(publishDateID);
 
-          successful = true;
+                successful = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().updatePublishDate(publishDateID, year, date, true);
 
-          UndoStack.addEdit(this);
+                this.publishDateUpdated = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().getPublishDate(publishDateID);
 
-        } else {
+                if (successful) {
 
-          CurrentProject.getInstance().getKnowledgeBase().rollback();
+                    CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                    KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                    successful = true;
+
+                    UndoStack.addEdit(this);
+
+                } else {
+
+                    CurrentProject.getInstance().getKnowledgeBase().rollback();
+                }
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
-      }
 
-    } catch (KnowledgeBaseException e) {
+        return successful;
 
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
     }
 
-    return successful;
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-  }
+        boolean flag;
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        try {
 
-    boolean flag;
+            flag = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().updatePublishDate(publishDateOld.getPublishDateID(),
+                    publishDateOld.getYear(), publishDateOld.getYear(), true);
 
-    try {
+            if (flag) {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().updatePublishDate(publishDateOld.getPublishDateID(),
-              publishDateOld.getYear(), publishDateOld.getYear(), true);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      if (flag) {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+            } else {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } else {
+        } catch (KnowledgeBaseException e) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            e.printStackTrace(System.err);
 
-    } catch (KnowledgeBaseException e) {
+            try {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      try{
+            } catch (KnowledgeBaseException e2) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                e2.printStackTrace(System.err);
 
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
+            }
+        }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().updatePublishDate(publishDateID, year, date, true);
+            flag = CurrentProject.getInstance().getFactoryDAO().getPublishDateDAO().updatePublishDate(publishDateID, year, date, true);
 
-      if (flag) {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

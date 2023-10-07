@@ -5,234 +5,230 @@
  */
 package es.ugr.scimat.gui.commands.edit.move;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
 import es.ugr.scimat.model.knowledgebase.dao.ReferenceSourceDAO;
 import es.ugr.scimat.model.knowledgebase.dao.ReferenceSourceGroupDAO;
-import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
-import es.ugr.scimat.model.knowledgebase.entity.ReferenceSourceGroup;
 import es.ugr.scimat.model.knowledgebase.entity.ReferenceSource;
+import es.ugr.scimat.model.knowledgebase.entity.ReferenceSourceGroup;
+import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class MoveReferenceSourcesToNewReferenceSourceGroupEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private ArrayList<ReferenceSource> referenceSourcesToMove;
-  private String groupName;
-  private ReferenceSourceGroup referenceSourceGroup;
-  private boolean groupNew; // true if the group has to be created.
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param referenceSourcesToMove
-   * @param groupName 
-   */
-  public MoveReferenceSourcesToNewReferenceSourceGroupEdit(ArrayList<ReferenceSource> referenceSourcesToMove, String groupName) {
-    this.referenceSourcesToMove = referenceSourcesToMove;
-    this.groupName = groupName;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @return
-   * @throws KnowledgeBaseException 
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-    
-    boolean successful = true;
-    int i;
-    Integer referenceSourceGroupID;
-    ReferenceSource referenceSource;
-    ReferenceSourceGroupDAO referenceSourceGroupDAO;
-    ReferenceSourceDAO referenceSourceDAO;
-    
-    try {
-      
-      referenceSourceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO();
-      referenceSourceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO();
-      
-      referenceSourceGroup = referenceSourceGroupDAO.getReferenceSourceGroup(this.groupName);
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-      if (referenceSourceGroup == null) {
+    private ArrayList<ReferenceSource> referenceSourcesToMove;
+    private String groupName;
+    private ReferenceSourceGroup referenceSourceGroup;
+    private boolean groupNew; // true if the group has to be created.
 
-        this.groupNew = true;
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-        referenceSourceGroupID = referenceSourceGroupDAO.addReferenceSourceGroup(this.groupName, false, true);
-
-        referenceSourceGroup = referenceSourceGroupDAO.getReferenceSourceGroup(referenceSourceGroupID);
-
-      } else {
-
-        this.groupNew = false;
-      }
-      
-      for (i = 0; i < this.referenceSourcesToMove.size(); i++) {
-      
-        referenceSource = this.referenceSourcesToMove.get(i);
-        
-        successful = referenceSourceDAO.setReferenceSourceGroup(referenceSource.getReferenceSourceID(), 
-                referenceSourceGroup.getReferenceSourceGroupID(), true);
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+    /**
+     * @param referenceSourcesToMove
+     * @param groupName
+     */
+    public MoveReferenceSourcesToNewReferenceSourceGroupEdit(ArrayList<ReferenceSource> referenceSourcesToMove, String groupName) {
+        this.referenceSourcesToMove = referenceSourcesToMove;
+        this.groupName = groupName;
     }
 
-    return successful;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
-    
-    boolean successful = true;
-    int i;
-    ReferenceSourceGroupDAO referenceSourceGroupDAO;
-    ReferenceSourceDAO referenceSourceDAO;
-    
-    try {
-      
-      referenceSourceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO();
-      referenceSourceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO();
-      
-      for (i = 0; i < this.referenceSourcesToMove.size(); i++) {
-        
-        successful = referenceSourceDAO.setReferenceSourceGroup(this.referenceSourcesToMove.get(i).getReferenceSourceID(), null, true);
-      }
-      
-      if (this.groupNew) {
-        
-        successful = referenceSourceGroupDAO.removeReferenceSourceGroup(this.referenceSourceGroup.getReferenceSourceGroupID(), true);
-      }
+    /**
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-      if (successful) {
+        boolean successful = true;
+        int i;
+        Integer referenceSourceGroupID;
+        ReferenceSource referenceSource;
+        ReferenceSourceGroupDAO referenceSourceGroupDAO;
+        ReferenceSourceDAO referenceSourceDAO;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        try {
 
-      } else {
+            referenceSourceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO();
+            referenceSourceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            referenceSourceGroup = referenceSourceGroupDAO.getReferenceSourceGroup(this.groupName);
 
-    } catch (KnowledgeBaseException e) {
+            if (referenceSourceGroup == null) {
 
-      e.printStackTrace(System.err);
+                this.groupNew = true;
 
-      try{
+                referenceSourceGroupID = referenceSourceGroupDAO.addReferenceSourceGroup(this.groupName, false, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                referenceSourceGroup = referenceSourceGroupDAO.getReferenceSourceGroup(referenceSourceGroupID);
 
-      } catch (KnowledgeBaseException e2) {
+            } else {
 
-        e2.printStackTrace(System.err);
+                this.groupNew = false;
+            }
 
-      }
+            for (i = 0; i < this.referenceSourcesToMove.size(); i++) {
+
+                referenceSource = this.referenceSourcesToMove.get(i);
+
+                successful = referenceSourceDAO.setReferenceSourceGroup(referenceSource.getReferenceSourceID(),
+                        referenceSourceGroup.getReferenceSourceGroupID(), true);
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                UndoStack.addEdit(this);
+
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
     }
-  }
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
-    
-    boolean successful = true;
-    int i;
-    ReferenceSourceGroupDAO referenceSourceGroupDAO;
-    ReferenceSourceDAO referenceSourceDAO;
-    
-    try {
-      
-      referenceSourceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO();
-      referenceSourceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO();
-      
-      if (groupNew) {
-        
-        successful = referenceSourceGroupDAO.addReferenceSourceGroup(this.referenceSourceGroup, true);
-      }
-      
-      for (i = 0; i < this.referenceSourcesToMove.size(); i++) {
-        
-        successful = referenceSourceDAO.setReferenceSourceGroup(this.referenceSourcesToMove.get(i).getReferenceSourceID(), 
-                referenceSourceGroup.getReferenceSourceGroupID(), true);
-      }
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-      if (successful) {
+        boolean successful = true;
+        int i;
+        ReferenceSourceGroupDAO referenceSourceGroupDAO;
+        ReferenceSourceDAO referenceSourceDAO;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        try {
 
-      } else {
+            referenceSourceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO();
+            referenceSourceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            for (i = 0; i < this.referenceSourcesToMove.size(); i++) {
 
-    } catch (KnowledgeBaseException e) {
+                successful = referenceSourceDAO.setReferenceSourceGroup(this.referenceSourcesToMove.get(i).getReferenceSourceID(), null, true);
+            }
 
-      e.printStackTrace(System.err);
+            if (this.groupNew) {
 
-      try{
+                successful = referenceSourceGroupDAO.removeReferenceSourceGroup(this.referenceSourceGroup.getReferenceSourceGroupID(), true);
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            if (successful) {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        e2.printStackTrace(System.err);
+            } else {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        int i;
+        ReferenceSourceGroupDAO referenceSourceGroupDAO;
+        ReferenceSourceDAO referenceSourceDAO;
+
+        try {
+
+            referenceSourceGroupDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO();
+            referenceSourceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO();
+
+            if (groupNew) {
+
+                successful = referenceSourceGroupDAO.addReferenceSourceGroup(this.referenceSourceGroup, true);
+            }
+
+            for (i = 0; i < this.referenceSourcesToMove.size(); i++) {
+
+                successful = referenceSourceDAO.setReferenceSourceGroup(this.referenceSourcesToMove.get(i).getReferenceSourceID(),
+                        referenceSourceGroup.getReferenceSourceGroupID(), true);
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

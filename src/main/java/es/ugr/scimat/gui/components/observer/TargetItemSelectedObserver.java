@@ -6,15 +6,14 @@
 package es.ugr.scimat.gui.components.observer;
 
 /**
- *
  * @author mjcobo
  */
 public interface TargetItemSelectedObserver {
- 
-  /**
-   * The observer must implements this method.
-   * 
-   * @param selected true if there is a target item != null selected.
-   */
-  public void targetItemSelectionChanged(boolean selected);
+
+    /**
+     * The observer must implements this method.
+     *
+     * @param selected true if there is a target item != null selected.
+     */
+    public void targetItemSelectionChanged(boolean selected);
 }

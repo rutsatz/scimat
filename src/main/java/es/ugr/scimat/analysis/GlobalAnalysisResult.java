@@ -9,102 +9,94 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- *
  * @author mjcobo
  */
 public class GlobalAnalysisResult implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private AnalysisConfiguration analysisConfiguration;
+    /**
+     *
+     */
+    private AnalysisConfiguration analysisConfiguration;
 
-  /**
-   *
-   */
-  private ArrayList<AnalysisPeriodResult> analysisPeriodResults;
+    /**
+     *
+     */
+    private ArrayList<AnalysisPeriodResult> analysisPeriodResults;
 
-  /**
-   * 
-   */
-  private LongitudinalResult longitudinalResult;
+    /**
+     *
+     */
+    private LongitudinalResult longitudinalResult;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param analysisConfiguration
-   */
-  public GlobalAnalysisResult(AnalysisConfiguration analysisConfiguration) {
-    
-    this.analysisPeriodResults = new ArrayList<AnalysisPeriodResult>();
-    this.analysisConfiguration = analysisConfiguration;
-  }
+    /**
+     * @param analysisConfiguration
+     */
+    public GlobalAnalysisResult(AnalysisConfiguration analysisConfiguration) {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        this.analysisPeriodResults = new ArrayList<AnalysisPeriodResult>();
+        this.analysisConfiguration = analysisConfiguration;
+    }
 
-  /**
-   * 
-   * @param analysisPeriodResult
-   */
-  public void addAnalysisPeriodResult(AnalysisPeriodResult analysisPeriodResult) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    this.analysisPeriodResults.add(analysisPeriodResult);
-  }
+    /**
+     * @param analysisPeriodResult
+     */
+    public void addAnalysisPeriodResult(AnalysisPeriodResult analysisPeriodResult) {
 
-  /**
-   * 
-   * @param index
-   * @return
-   */
-  public AnalysisPeriodResult getAnalysisPeriodResult(int index) {
+        this.analysisPeriodResults.add(analysisPeriodResult);
+    }
 
-    return this.analysisPeriodResults.get(index);
-  }
+    /**
+     * @param index
+     * @return
+     */
+    public AnalysisPeriodResult getAnalysisPeriodResult(int index) {
 
-  /**
-   * 
-   * @return
-   */
-  public int getAnalysisPeriodResultsCount() {
+        return this.analysisPeriodResults.get(index);
+    }
 
-    return this.analysisPeriodResults.size();
-  }
+    /**
+     * @return
+     */
+    public int getAnalysisPeriodResultsCount() {
 
-  /**
-   * 
-   * @return
-   */
-  public AnalysisConfiguration getAnalysisConfiguration() {
-    return analysisConfiguration;
-  }
+        return this.analysisPeriodResults.size();
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public LongitudinalResult getLongitudinalResult() {
-    return longitudinalResult;
-  }
+    /**
+     * @return
+     */
+    public AnalysisConfiguration getAnalysisConfiguration() {
+        return analysisConfiguration;
+    }
 
-  /**
-   * 
-   * @param longitudinalResult
-   */
-  public void setLongitudinalResult(LongitudinalResult longitudinalResult) {
-    this.longitudinalResult = longitudinalResult;
-  }
+    /**
+     * @return
+     */
+    public LongitudinalResult getLongitudinalResult() {
+        return longitudinalResult;
+    }
+
+    /**
+     * @param longitudinalResult
+     */
+    public void setLongitudinalResult(LongitudinalResult longitudinalResult) {
+        this.longitudinalResult = longitudinalResult;
+    }
 
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

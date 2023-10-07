@@ -8,98 +8,92 @@ package es.ugr.scimat.api.dataset;
 import java.io.Serializable;
 
 /**
- *
  * @author Manuel Jesus Cobo Martin
  */
 public class NetworkPair implements Serializable, Cloneable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  private NetworkPairID networkPairID;
+    /**
+     *
+     */
+    private NetworkPairID networkPairID;
 
-  /**
-   * 
-   */
-  private double value;
+    /**
+     *
+     */
+    private double value;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param associationPairID
-   */
-  public NetworkPair(Integer elementAid, Integer elementBid,
-          double value) {
+    /**
+     * @param associationPairID
+     */
+    public NetworkPair(Integer elementAid, Integer elementBid,
+                       double value) {
 
-    this.networkPairID = new NetworkPairID(elementAid, elementBid);
-    this.value = value;
-  }
+        this.networkPairID = new NetworkPairID(elementAid, elementBid);
+        this.value = value;
+    }
 
-  public NetworkPair(NetworkPair networkPair) {
+    public NetworkPair(NetworkPair networkPair) {
 
-    this.networkPairID = new NetworkPairID(networkPair.networkPairID);
-    this.value = networkPair.value;
-  }
+        this.networkPairID = new NetworkPairID(networkPair.networkPairID);
+        this.value = networkPair.value;
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @return
-   */
-  public NetworkPairID getID() {
+    /**
+     * @return
+     */
+    public NetworkPairID getID() {
 
-    return networkPairID;
-  }
+        return networkPairID;
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public double getValue() {
-    return this.value;
-  }
-  
-   /**
-    * 
-    * @return
-    */
-  @Override
-  @SuppressWarnings("unchecked")
-  public NetworkPair clone() {
+    /**
+     * @return
+     */
+    public double getValue() {
+        return this.value;
+    }
 
-    NetworkPair pair = new NetworkPair(this.networkPairID.getElementA(),
-            this.networkPairID.getElementB(), value);
+    /**
+     * @return
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public NetworkPair clone() {
 
-    return pair;
-  }
+        NetworkPair pair = new NetworkPair(this.networkPairID.getElementA(),
+                this.networkPairID.getElementB(), value);
 
-  /**
-   * 
-   * @return
-   */
-  @Override
-  public String toString() {
+        return pair;
+    }
 
-    String s;
+    /**
+     * @return
+     */
+    @Override
+    public String toString() {
 
-    s = "NetoworkPairList(" +
-            this.networkPairID  + "," +
-            this.value;
+        String s;
 
-    return s;
-  }
+        s = "NetoworkPairList(" +
+                this.networkPairID + "," +
+                this.value;
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+        return s;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

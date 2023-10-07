@@ -5,62 +5,59 @@
  */
 package es.ugr.scimat.knowledgebaseevents.event.update;
 
-import java.util.ArrayList;
 import es.ugr.scimat.knowledgebaseevents.event.KnowledgeBaseEvent;
 import es.ugr.scimat.model.knowledgebase.entity.ReferenceSource;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateReferenceSourceWithoutGroupEvent implements KnowledgeBaseEvent {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /**
-   * 
-   */
-  private ArrayList<ReferenceSource> referenceSources;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param referenceSources 
-   */
-  public UpdateReferenceSourceWithoutGroupEvent(ArrayList<ReferenceSource> referenceSources) {
-    this.referenceSources = referenceSources;
-  }
-  
-  /**
-   * 
-   * @param referenceSource 
-   */
-  public UpdateReferenceSourceWithoutGroupEvent(ReferenceSource referenceSource) {
-    this.referenceSources = new ArrayList<ReferenceSource>();
-    this.referenceSources.add(referenceSource);
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @throws KnowledgeBaseException 
-   */
-  public void fireEvent() throws KnowledgeBaseException {
-    
-    CurrentProject.getInstance().getKbObserver().fireReferenceSourceWithoutGroupUpdated(referenceSources);
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
+
+    /**
+     *
+     */
+    private ArrayList<ReferenceSource> referenceSources;
+
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
+
+    /**
+     * @param referenceSources
+     */
+    public UpdateReferenceSourceWithoutGroupEvent(ArrayList<ReferenceSource> referenceSources) {
+        this.referenceSources = referenceSources;
+    }
+
+    /**
+     * @param referenceSource
+     */
+    public UpdateReferenceSourceWithoutGroupEvent(ReferenceSource referenceSource) {
+        this.referenceSources = new ArrayList<ReferenceSource>();
+        this.referenceSources.add(referenceSource);
+    }
+
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @throws KnowledgeBaseException
+     */
+    public void fireEvent() throws KnowledgeBaseException {
+
+        CurrentProject.getInstance().getKbObserver().fireReferenceSourceWithoutGroupUpdated(referenceSources);
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -5,96 +5,96 @@
  */
 package es.ugr.scimat.gui.components.tablemodel;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import es.ugr.scimat.analysis.KeyProperties;
 import es.ugr.scimat.api.mapping.clustering.result.Cluster;
 import es.ugr.scimat.api.utils.property.Property;
-import es.ugr.scimat.analysis.KeyProperties;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /**
- *
  * @author mjcobo
  */
 public class ClusterTableModel extends GenericTableModel<Cluster> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private final NumberFormat numberFormatter = new DecimalFormat("0.##");
+    /**
+     *
+     */
+    private final NumberFormat numberFormatter = new DecimalFormat("0.##");
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public ClusterTableModel() {
-    super(new String[] {"Cluster", "Centrality", "Centrality range", "Density", "Density range"});
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @param rowIndex
-   * @param columnIndex
-   * @return
-   */
-  @Override
-  public Object getValueAt(int rowIndex, int columnIndex) {
-
-    if ((rowIndex >= 0) && (rowIndex < getRowCount())) {
-
-      Property property;
-
-      switch (columnIndex) {
-
-        case 0:
-
-          property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CLUSTER_LABEL);
-
-          return (property != null) ? property.toString() : "";
-
-        case 1:
-
-          property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CALLON_CENTRALITY);
-                    
-          return (property != null) ? this.numberFormatter.format((Double)property.getValue()) : "";
-
-        case 2:
-
-          property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CALLON_CENTRALITY_RANGE);
-          
-          return (property != null) ? this.numberFormatter.format((Double)property.getValue()) : "";
-
-        case 3:
-
-          property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CALLON_DENSITY);
-
-          return (property != null) ? this.numberFormatter.format((Double)property.getValue()) : "";
-
-        case 4:
-
-          property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CALLON_DENSITY_RANGE);
-
-          return (property != null) ? this.numberFormatter.format((Double)property.getValue()) : "";
-
-        default:
-          return "";
-      }
-
-    } else {
-
-      return "";
-
+    public ClusterTableModel() {
+        super(new String[]{"Cluster", "Centrality", "Centrality range", "Density", "Density range"});
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @param rowIndex
+     * @param columnIndex
+     * @return
+     */
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+
+        if ((rowIndex >= 0) && (rowIndex < getRowCount())) {
+
+            Property property;
+
+            switch (columnIndex) {
+
+                case 0:
+
+                    property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CLUSTER_LABEL);
+
+                    return (property != null) ? property.toString() : "";
+
+                case 1:
+
+                    property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CALLON_CENTRALITY);
+
+                    return (property != null) ? this.numberFormatter.format((Double) property.getValue()) : "";
+
+                case 2:
+
+                    property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CALLON_CENTRALITY_RANGE);
+
+                    return (property != null) ? this.numberFormatter.format((Double) property.getValue()) : "";
+
+                case 3:
+
+                    property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CALLON_DENSITY);
+
+                    return (property != null) ? this.numberFormatter.format((Double) property.getValue()) : "";
+
+                case 4:
+
+                    property = getItem(rowIndex).getProperties().getProperty(KeyProperties.__KEY_CALLON_DENSITY_RANGE);
+
+                    return (property != null) ? this.numberFormatter.format((Double) property.getValue()) : "";
+
+                default:
+                    return "";
+            }
+
+        } else {
+
+            return "";
+
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

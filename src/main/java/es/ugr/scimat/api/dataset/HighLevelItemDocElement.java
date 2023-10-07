@@ -11,148 +11,139 @@ import java.util.TreeSet;
 
 /**
  * This class represent an high level item which aggregates a set of documents.
- * 
+ *
  * @author mjcobo
  */
 public class HighLevelItemDocElement implements Serializable, Cloneable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * Document Identifier
-   */
-  private Integer highLevelItemID;
+    /**
+     * Document Identifier
+     */
+    private Integer highLevelItemID;
 
-  /**
-   * The item's label.
-   */
-  private String label;
+    /**
+     * The item's label.
+     */
+    private String label;
 
-  /**
-   * List with the document's items
-   */
-  private TreeSet<Integer> docs = new TreeSet<Integer>();
+    /**
+     * List with the document's items
+     */
+    private TreeSet<Integer> docs = new TreeSet<Integer>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param highLevelItemID
-   * @param label
-   */
-  public HighLevelItemDocElement(Integer highLevelItemID, String label) {
+    /**
+     * @param highLevelItemID
+     * @param label
+     */
+    public HighLevelItemDocElement(Integer highLevelItemID, String label) {
 
-    this.highLevelItemID = highLevelItemID;
-    this.label = label;
-  }
+        this.highLevelItemID = highLevelItemID;
+        this.label = label;
+    }
 
-  
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @return
-   */
-  public Integer getHighLevelItemID() {
-    return highLevelItemID;
-  }
+    /**
+     * @return
+     */
+    public Integer getHighLevelItemID() {
+        return highLevelItemID;
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public String getLabel() {
-    return this.label;
-  }
+    /**
+     * @return
+     */
+    public String getLabel() {
+        return this.label;
+    }
 
-  /**
-   * @param label the label to set
-   */
-  public void setLabel(String label) {
-    this.label = label;
-  }
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-  /**
-   * Add a new document to the item.
-   *
-   * @param docID the document's identifier
-   *
-   * @return {@code true} if this high level item do not already contain the
-   * document
-   */
-  public boolean addDocument(Integer docID) {
+    /**
+     * Add a new document to the item.
+     *
+     * @param docID the document's identifier
+     * @return {@code true} if this high level item do not already contain the
+     * document
+     */
+    public boolean addDocument(Integer docID) {
 
-    return this.docs.add(docID);
-  }
+        return this.docs.add(docID);
+    }
 
-  /**
-   * Returns {@code true} if this high level item contains the specified
-   * document.
-   *
-   * @param docID the item's identifie
-   *
-   * @return {@code true} if this high level item contains the specified document
-   */
-  public boolean containsDocument(Integer docID) {
+    /**
+     * Returns {@code true} if this high level item contains the specified
+     * document.
+     *
+     * @param docID the item's identifie
+     * @return {@code true} if this high level item contains the specified document
+     */
+    public boolean containsDocument(Integer docID) {
 
-    return this.docs.contains(docID);
-  }
+        return this.docs.contains(docID);
+    }
 
-  /**
-   * Remove the document from the high level item.
-   *
-   * @param docID
-   *
-   * @return {@code true} if this item contain the document
-   */
-  public boolean removeDocument(Integer docID) {
+    /**
+     * Remove the document from the high level item.
+     *
+     * @param docID
+     * @return {@code true} if this item contain the document
+     */
+    public boolean removeDocument(Integer docID) {
 
-    return this.docs.remove(docID);
-  }
+        return this.docs.remove(docID);
+    }
 
-  /**
-   * Return the number of documents associated with the high level item.
-   *
-   * @return the numner of items of the document.
-   */
-  public int getDocumentsCount() {
+    /**
+     * Return the number of documents associated with the high level item.
+     *
+     * @return the numner of items of the document.
+     */
+    public int getDocumentsCount() {
 
-    return this.docs.size();
-  }
+        return this.docs.size();
+    }
 
-  /**
-   *
-   * @return
-   */
-  public ArrayList<Integer> getDocumentsList() {
+    /**
+     * @return
+     */
+    public ArrayList<Integer> getDocumentsList() {
 
-    return new ArrayList<Integer>(this.docs);
-  }
+        return new ArrayList<Integer>(this.docs);
+    }
 
-  /**
-   * 
-   * @return
-   * @throws CloneNotSupportedException
-   */
-  @Override
-  protected HighLevelItemDocElement clone() {
+    /**
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    @Override
+    protected HighLevelItemDocElement clone() {
 
-    HighLevelItemDocElement highLevelItemDocElement;
+        HighLevelItemDocElement highLevelItemDocElement;
 
-    highLevelItemDocElement = new HighLevelItemDocElement(this.highLevelItemID, this.label);
-    highLevelItemDocElement.docs = new TreeSet<Integer>(this.docs);
+        highLevelItemDocElement = new HighLevelItemDocElement(this.highLevelItemID, this.label);
+        highLevelItemDocElement.docs = new TreeSet<Integer>(this.docs);
 
-    return highLevelItemDocElement;
-  }
+        return highLevelItemDocElement;
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

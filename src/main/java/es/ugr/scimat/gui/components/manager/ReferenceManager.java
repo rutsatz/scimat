@@ -5,67 +5,67 @@
  */
 package es.ugr.scimat.gui.components.manager;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.commands.edit.delete.DeleteReferenceEdit;
+import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
 import es.ugr.scimat.gui.components.adddialog.AddDialogManager;
+import es.ugr.scimat.gui.components.globalslavepanel.ReferenceGlobalSlavePanel;
 import es.ugr.scimat.gui.components.itemslist.ReferencesListPanel;
 import es.ugr.scimat.gui.components.joindialog.JoinEntitiesDialogManager;
-import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
-import es.ugr.scimat.gui.components.globalslavepanel.ReferenceGlobalSlavePanel;
 import es.ugr.scimat.model.knowledgebase.entity.Reference;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class ReferenceManager extends GenericItemManagerPanel<Reference> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public ReferenceManager() {
-    super(new ReferencesListPanel(),
-          new ReferenceGlobalSlavePanel());
+    /***************************************************************************/
 
-    setMasterPanelTitle("References list");
-    setSlavePanelTitle("Reference detail");
-  }
+    public ReferenceManager() {
+        super(new ReferencesListPanel(),
+                new ReferenceGlobalSlavePanel());
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        setMasterPanelTitle("References list");
+        setSlavePanelTitle("Reference detail");
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void addAction() {
-    AddDialogManager.getInstance().showAddReferenceDialog();
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  @Override
-  public void moveToAction(ArrayList<Reference> items) {
-    JoinEntitiesDialogManager.getInstance().showReferencesJoinDialog(items);
-  }
+    /**
+     *
+     */
+    @Override
+    public void addAction() {
+        AddDialogManager.getInstance().showAddReferenceDialog();
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void removeAction(ArrayList<Reference> items) {
-    (new PerformKnowledgeBaseEditTask(new DeleteReferenceEdit(items), this)).execute();
-  }
+    /**
+     *
+     */
+    @Override
+    public void moveToAction(ArrayList<Reference> items) {
+        JoinEntitiesDialogManager.getInstance().showReferencesJoinDialog(items);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     *
+     */
+    @Override
+    public void removeAction(ArrayList<Reference> items) {
+        (new PerformKnowledgeBaseEditTask(new DeleteReferenceEdit(items), this)).execute();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

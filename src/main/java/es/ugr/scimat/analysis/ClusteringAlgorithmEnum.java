@@ -8,9 +8,8 @@ package es.ugr.scimat.analysis;
 import java.io.Serializable;
 
 /**
- *
  * @author mjcobo
  */
 public enum ClusteringAlgorithmEnum implements Serializable {
-  CentersSimples, AverageLink, CompleteLink, SingleLink, SumLink
+    CentersSimples, AverageLink, CompleteLink, SingleLink, SumLink
 }

@@ -6,38 +6,35 @@
 package es.ugr.scimat.api.similaritymeasure.direct;
 
 /**
- *
  * @author mjcobo
  */
 public class EquivalenceIndexMeasure implements DirectSimilarityMeasure {
 
 
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /**
+     * @param frequencyNodeI
+     * @param frequencyNodeJ
+     * @param coOccurrenceIJ
+     * @return
+     */
+    public double calculateMeasure(int frequencyNodeI, int frequencyNodeJ, double coOccurrenceIJ) {
 
-  /**
-   * 
-   * @param frequencyNodeI
-   * @param frequencyNodeJ
-   * @param coOccurrenceIJ
-   * @return
-   */
-  public double calculateMeasure(int frequencyNodeI, int frequencyNodeJ, double coOccurrenceIJ) {
-    
-    return (coOccurrenceIJ * coOccurrenceIJ) / (frequencyNodeI * frequencyNodeJ);
-  }
+        return (coOccurrenceIJ * coOccurrenceIJ) / (frequencyNodeI * frequencyNodeJ);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.delete;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -17,222 +15,222 @@ import es.ugr.scimat.model.knowledgebase.entity.SubjectCategory;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class DeleteSubjectCategoryEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The elements delete
-   */
-  private ArrayList<SubjectCategory> subjectCategoriesToDelete;
-  private ArrayList<ArrayList<JournalSubjectCategoryPublishDate>> journalSubjectCategoryPublishDates = new ArrayList<ArrayList<JournalSubjectCategoryPublishDate>>();
+    /**
+     * The elements delete
+     */
+    private ArrayList<SubjectCategory> subjectCategoriesToDelete;
+    private ArrayList<ArrayList<JournalSubjectCategoryPublishDate>> journalSubjectCategoryPublishDates = new ArrayList<ArrayList<JournalSubjectCategoryPublishDate>>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public DeleteSubjectCategoryEdit(ArrayList<SubjectCategory> subjectCategoriesToDelete) {
-    super();
-    
-    this.subjectCategoriesToDelete = subjectCategoriesToDelete;
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public DeleteSubjectCategoryEdit(ArrayList<SubjectCategory> subjectCategoriesToDelete) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = true;
-    int i;
-    SubjectCategoryDAO subjectCategoryDAO;
-    SubjectCategory subjectCategory;
-
-    try {
-
-      i = 0;
-      subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
-
-      while ((i < this.subjectCategoriesToDelete.size()) && (successful)) {
-
-        subjectCategory = this.subjectCategoriesToDelete.get(i);
-
-        // Retrieve its relation
-        this.journalSubjectCategoryPublishDates.add(subjectCategoryDAO.getJournals(subjectCategory.getSubjectCategoryID()));
-
-        successful = subjectCategoryDAO.removeSubjectCategory(subjectCategory.getSubjectCategoryID(), true);
-
-        i++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.subjectCategoriesToDelete = subjectCategoriesToDelete;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = true;
+        int i;
+        SubjectCategoryDAO subjectCategoryDAO;
+        SubjectCategory subjectCategory;
 
-    int i, j;
-    boolean successful = true;
-    SubjectCategoryDAO subjectCategoryDAO;
-    JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
-    SubjectCategory subjectCategory;
-    JournalSubjectCategoryPublishDate jscp;
+        try {
 
-    try {
+            i = 0;
+            subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
 
-      subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
-      journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
+            while ((i < this.subjectCategoriesToDelete.size()) && (successful)) {
 
-      i = 0;
+                subjectCategory = this.subjectCategoriesToDelete.get(i);
 
-      while ((i < this.subjectCategoriesToDelete.size()) && (successful)) {
+                // Retrieve its relation
+                this.journalSubjectCategoryPublishDates.add(subjectCategoryDAO.getJournals(subjectCategory.getSubjectCategoryID()));
 
-        subjectCategory = this.subjectCategoriesToDelete.get(i);
+                successful = subjectCategoryDAO.removeSubjectCategory(subjectCategory.getSubjectCategoryID(), true);
 
-        successful = subjectCategoryDAO.addSubjectCategory(subjectCategory, true);
+                i++;
+            }
 
-        j = 0;
+            if (successful) {
 
-        while ((j < this.journalSubjectCategoryPublishDates.get(i).size()) && (successful)) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-          jscp = this.journalSubjectCategoryPublishDates.get(i).get(j);
+                UndoStack.addEdit(this);
 
-          successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(subjectCategory.getSubjectCategoryID(),
-                                                                                        jscp.getJournal().getJournalID(),
-                                                                                        jscp.getPublishDate().getPublishDateID(), true);
 
-          j++;
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
 
-        i++;
-      }
+        return successful;
 
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    int i;
-    boolean successful = true;
-    SubjectCategoryDAO subjectCategoryDAO;
-    SubjectCategory subjectCategory;
+        int i, j;
+        boolean successful = true;
+        SubjectCategoryDAO subjectCategoryDAO;
+        JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
+        SubjectCategory subjectCategory;
+        JournalSubjectCategoryPublishDate jscp;
 
-    try {
+        try {
 
-      i = 0;
-      subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
+            subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
+            journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
 
-      while ((i < this.subjectCategoriesToDelete.size()) && (successful)) {
+            i = 0;
 
-        subjectCategory = this.subjectCategoriesToDelete.get(i);
+            while ((i < this.subjectCategoriesToDelete.size()) && (successful)) {
 
-        successful = subjectCategoryDAO.removeSubjectCategory(subjectCategory.getSubjectCategoryID(), true);
+                subjectCategory = this.subjectCategoriesToDelete.get(i);
 
-        i++;
-      }
+                successful = subjectCategoryDAO.addSubjectCategory(subjectCategory, true);
 
-      if (successful) {
+                j = 0;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                while ((j < this.journalSubjectCategoryPublishDates.get(i).size()) && (successful)) {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                    jscp = this.journalSubjectCategoryPublishDates.get(i).get(j);
 
-      } else {
+                    successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(subjectCategory.getSubjectCategoryID(),
+                            jscp.getJournal().getJournalID(),
+                            jscp.getPublishDate().getPublishDateID(), true);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                    j++;
+                }
 
-    } catch (KnowledgeBaseException e) {
+                i++;
+            }
 
-      e.printStackTrace(System.err);
+            if (successful) {
 
-      try{
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } catch (KnowledgeBaseException e2) {
+            } else {
 
-        e2.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      }
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        int i;
+        boolean successful = true;
+        SubjectCategoryDAO subjectCategoryDAO;
+        SubjectCategory subjectCategory;
+
+        try {
+
+            i = 0;
+            subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
+
+            while ((i < this.subjectCategoriesToDelete.size()) && (successful)) {
+
+                subjectCategory = this.subjectCategoriesToDelete.get(i);
+
+                successful = subjectCategoryDAO.removeSubjectCategory(subjectCategory.getSubjectCategoryID(), true);
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

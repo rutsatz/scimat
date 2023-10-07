@@ -5,78 +5,72 @@
  */
 package es.ugr.scimat.gui.components.itemslist;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.components.tablemodel.AuthorReferenceGroupsTableModel;
 import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 import es.ugr.scimat.project.observer.EntityObserver;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AuthorReferenceGroupsListPanel extends GenericDynamicItemsListPanel<AuthorReferenceGroup> implements EntityObserver<AuthorReferenceGroup> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/  
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param tableModel 
-   */
-  public AuthorReferenceGroupsListPanel() {
-    super(new AuthorReferenceGroupsTableModel());
-    
-    CurrentProject.getInstance().getKbObserver().addAuthorReferenceGroupObserver(this);
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityAdded(ArrayList<AuthorReferenceGroup> items) throws KnowledgeBaseException {
-    addItems(items);
-  }
+    /**
+     * @param tableModel
+     */
+    public AuthorReferenceGroupsListPanel() {
+        super(new AuthorReferenceGroupsTableModel());
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException 
-   */
-  public void entityRemoved(ArrayList<AuthorReferenceGroup> items) throws KnowledgeBaseException {
-    removeItems(items);
-  }
+        CurrentProject.getInstance().getKbObserver().addAuthorReferenceGroupObserver(this);
+    }
 
-  /**
-   * 
-   * @param items
-   * @throws KnowledgeBaseException 
-   */
-  public void entityUpdated(ArrayList<AuthorReferenceGroup> items) throws KnowledgeBaseException {
-    updateItems(items);
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws KnowledgeBaseException 
-   */
-  public void entityRefresh() throws KnowledgeBaseException {
-    refreshItems(CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().getAuthorReferenceGroups());
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityAdded(ArrayList<AuthorReferenceGroup> items) throws KnowledgeBaseException {
+        addItems(items);
+    }
+
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityRemoved(ArrayList<AuthorReferenceGroup> items) throws KnowledgeBaseException {
+        removeItems(items);
+    }
+
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityUpdated(ArrayList<AuthorReferenceGroup> items) throws KnowledgeBaseException {
+        updateItems(items);
+    }
+
+    /**
+     * @throws KnowledgeBaseException
+     */
+    public void entityRefresh() throws KnowledgeBaseException {
+        refreshItems(CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceGroupDAO().getAuthorReferenceGroups());
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

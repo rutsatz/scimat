@@ -5,70 +5,71 @@
  */
 package es.ugr.scimat.gui.components.analysisview;
 
-import java.awt.Window;
-import javax.swing.JFrame;
 import es.ugr.scimat.gui.components.ErrorDialogManager;
 import es.ugr.scimat.gui.components.cursor.CursorManager;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
- *
  * @author mjcobo
  */
 public class AnalysisViewManager {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private AnalysisViewDialog analysisViewDialog;
+    private AnalysisViewDialog analysisViewDialog;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  private AnalysisViewManager() {
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    private AnalysisViewManager() {
+    }
 
-  public static AnalysisViewManager getInstance() {
-    return ExperimentViewManagerHolder.INSTANCE;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
 
-  private static class ExperimentViewManagerHolder {
+    /***************************************************************************/
 
-    private static final AnalysisViewManager INSTANCE = new AnalysisViewManager();
-  }
+    public static AnalysisViewManager getInstance() {
+        return ExperimentViewManagerHolder.INSTANCE;
+    }
 
-  /**
-   *
-   * @param frame
-   */
-  public void init(JFrame frame) {
+    private static class ExperimentViewManagerHolder {
 
-    this.analysisViewDialog = new AnalysisViewDialog(frame, true);
-  }
+        private static final AnalysisViewManager INSTANCE = new AnalysisViewManager();
+    }
 
-  /**
-   * 
-   */
-  public void showAnalysisViewDialog() {
+    /**
+     * @param frame
+     */
+    public void init(JFrame frame) {
 
-    Window oldWindow = CursorManager.getInstance().getWindow();
-    
-    CursorManager.getInstance().init(this.analysisViewDialog);
-    ErrorDialogManager.getInstance().init(this.analysisViewDialog);
-    
-    this.analysisViewDialog.refresh();
-    this.analysisViewDialog.setVisible(true);
-    
-    CursorManager.getInstance().init(oldWindow);
-    ErrorDialogManager.getInstance().init(oldWindow);
-  }
+        this.analysisViewDialog = new AnalysisViewDialog(frame, true);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     *
+     */
+    public void showAnalysisViewDialog() {
+
+        Window oldWindow = CursorManager.getInstance().getWindow();
+
+        CursorManager.getInstance().init(this.analysisViewDialog);
+        ErrorDialogManager.getInstance().init(this.analysisViewDialog);
+
+        this.analysisViewDialog.refresh();
+        this.analysisViewDialog.setVisible(true);
+
+        CursorManager.getInstance().init(oldWindow);
+        ErrorDialogManager.getInstance().init(oldWindow);
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

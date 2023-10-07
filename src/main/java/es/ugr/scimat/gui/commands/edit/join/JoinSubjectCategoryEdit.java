@@ -5,10 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.join;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeSet;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -19,296 +15,296 @@ import es.ugr.scimat.model.knowledgebase.entity.SubjectCategory;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
+
 /**
- *
  * @author mjcobo
  */
 public class JoinSubjectCategoryEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private ArrayList<SubjectCategory> subjectCategoriesToMove;
-  private SubjectCategory targetSubjectCategory;
-  
-  private ArrayList<ArrayList<JournalSubjectCategoryPublishDate>> journalSubjectCategoryPublishDatesOfSources = new ArrayList<ArrayList<JournalSubjectCategoryPublishDate>>();
-  
-  private TreeSet<JournalSubjectCategoryPublishDate> journalSubjectCategoryPublishDatesOfTarget = new TreeSet<JournalSubjectCategoryPublishDate>();
+    private ArrayList<SubjectCategory> subjectCategoriesToMove;
+    private SubjectCategory targetSubjectCategory;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private ArrayList<ArrayList<JournalSubjectCategoryPublishDate>> journalSubjectCategoryPublishDatesOfSources = new ArrayList<ArrayList<JournalSubjectCategoryPublishDate>>();
 
-  /**
-   * 
-   * @param subjectCategoriesToMove
-   * @param targetSubjectCategory
-   */
-  public JoinSubjectCategoryEdit(ArrayList<SubjectCategory> subjectCategoriesToMove, SubjectCategory targetSubjectCategory) {
+    private TreeSet<JournalSubjectCategoryPublishDate> journalSubjectCategoryPublishDatesOfTarget = new TreeSet<JournalSubjectCategoryPublishDate>();
 
-    this.subjectCategoriesToMove = subjectCategoriesToMove;
-    this.targetSubjectCategory = targetSubjectCategory;
-  }
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /**
+     * @param subjectCategoriesToMove
+     * @param targetSubjectCategory
+     */
+    public JoinSubjectCategoryEdit(ArrayList<SubjectCategory> subjectCategoriesToMove, SubjectCategory targetSubjectCategory) {
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = true;
-    int i, j;
-    SubjectCategory subjectCategory;
-    SubjectCategoryDAO subjectCategoryDAO;
-    JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
-    JournalSubjectCategoryPublishDate journalSubjectCategoryPublishDate;
-    ArrayList<JournalSubjectCategoryPublishDate> journalSubjectCategoryPublishDates;
-
-    try {
-
-      i = 0;
-      subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
-      journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
-
-      // Retrieve the realations of the target item.
-      this.journalSubjectCategoryPublishDatesOfTarget = new TreeSet<JournalSubjectCategoryPublishDate>(subjectCategoryDAO.getJournals(this.targetSubjectCategory.getSubjectCategoryID()));
-
-      while ((i < this.subjectCategoriesToMove.size()) && (successful)) {
-
-        subjectCategory = this.subjectCategoriesToMove.get(i);
-
-        // Retrieve the relations of the source items
-        journalSubjectCategoryPublishDates = subjectCategoryDAO.getJournals(subjectCategory.getSubjectCategoryID());
-        this.journalSubjectCategoryPublishDatesOfSources.add(journalSubjectCategoryPublishDates);
-
-        // Do the join
-        j = 0;
-
-        successful = subjectCategoryDAO.removeSubjectCategory(subjectCategory.getSubjectCategoryID(), true);
-
-        while ((j < journalSubjectCategoryPublishDates.size()) && (successful)) {
-
-          journalSubjectCategoryPublishDate = journalSubjectCategoryPublishDates.get(j);
-          
-          // If the target element is not associated with this element we perform the association.
-          if (! journalSubjectCategoryPublishDateDAO.checkJournalSubjectCategoryPublishDate(journalSubjectCategoryPublishDate.getJournal().getJournalID(), 
-                  this.targetSubjectCategory.getSubjectCategoryID(), 
-                  journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID())) {
-
-            successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(journalSubjectCategoryPublishDate.getJournal().getJournalID(), 
-                    this.targetSubjectCategory.getSubjectCategoryID(), 
-                    journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
-          }
-
-          j ++;
-        }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.subjectCategoriesToMove = subjectCategoriesToMove;
+        this.targetSubjectCategory = targetSubjectCategory;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = true;
+        int i, j;
+        SubjectCategory subjectCategory;
+        SubjectCategoryDAO subjectCategoryDAO;
+        JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
+        JournalSubjectCategoryPublishDate journalSubjectCategoryPublishDate;
+        ArrayList<JournalSubjectCategoryPublishDate> journalSubjectCategoryPublishDates;
 
-    int i, j;
-    boolean successful = true;
-    SubjectCategory subjectCategory;
-    SubjectCategoryDAO subjectCategoryDAO;
-    TreeSet<JournalSubjectCategoryPublishDate> tmpJournalSubjectCategoryPublishDates;
-    JournalSubjectCategoryPublishDate journalSubjectCategoryPublishDate;
-    JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
-    Iterator<JournalSubjectCategoryPublishDate> itJournalSubjectCategoryPublishDate;
+        try {
 
-    try {
+            i = 0;
+            subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
+            journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
 
-      subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
-      journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
+            // Retrieve the realations of the target item.
+            this.journalSubjectCategoryPublishDatesOfTarget = new TreeSet<JournalSubjectCategoryPublishDate>(subjectCategoryDAO.getJournals(this.targetSubjectCategory.getSubjectCategoryID()));
 
-      tmpJournalSubjectCategoryPublishDates = new TreeSet<JournalSubjectCategoryPublishDate>(subjectCategoryDAO.getJournals(this.targetSubjectCategory.getSubjectCategoryID()));
-      tmpJournalSubjectCategoryPublishDates.removeAll(this.journalSubjectCategoryPublishDatesOfTarget);
+            while ((i < this.subjectCategoriesToMove.size()) && (successful)) {
 
-      itJournalSubjectCategoryPublishDate = tmpJournalSubjectCategoryPublishDates.iterator();
+                subjectCategory = this.subjectCategoriesToMove.get(i);
 
-      while ((itJournalSubjectCategoryPublishDate.hasNext()) && (successful)) {
+                // Retrieve the relations of the source items
+                journalSubjectCategoryPublishDates = subjectCategoryDAO.getJournals(subjectCategory.getSubjectCategoryID());
+                this.journalSubjectCategoryPublishDatesOfSources.add(journalSubjectCategoryPublishDates);
 
-        journalSubjectCategoryPublishDate = itJournalSubjectCategoryPublishDate.next();
-        
-        successful = journalSubjectCategoryPublishDateDAO.removeSubjectCategoryFromJournal(this.targetSubjectCategory.getSubjectCategoryID(), 
-                journalSubjectCategoryPublishDate.getJournal().getJournalID(),
-                journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
-      }
+                // Do the join
+                j = 0;
 
-      i = 0;
+                successful = subjectCategoryDAO.removeSubjectCategory(subjectCategory.getSubjectCategoryID(), true);
 
-      while ((i < this.subjectCategoriesToMove.size()) && (successful)) {
+                while ((j < journalSubjectCategoryPublishDates.size()) && (successful)) {
 
-        subjectCategory = this.subjectCategoriesToMove.get(i);
+                    journalSubjectCategoryPublishDate = journalSubjectCategoryPublishDates.get(j);
 
-        successful = subjectCategoryDAO.addSubjectCategory(subjectCategory, true);
+                    // If the target element is not associated with this element we perform the association.
+                    if (!journalSubjectCategoryPublishDateDAO.checkJournalSubjectCategoryPublishDate(journalSubjectCategoryPublishDate.getJournal().getJournalID(),
+                            this.targetSubjectCategory.getSubjectCategoryID(),
+                            journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID())) {
 
-        j = 0;
+                        successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(journalSubjectCategoryPublishDate.getJournal().getJournalID(),
+                                this.targetSubjectCategory.getSubjectCategoryID(),
+                                journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
+                    }
 
-        while ((j < this.journalSubjectCategoryPublishDatesOfSources.get(i).size()) && (successful)) {
+                    j++;
+                }
 
-          journalSubjectCategoryPublishDate = this.journalSubjectCategoryPublishDatesOfSources.get(i).get(j);
-          
-          successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(subjectCategory.getSubjectCategoryID(),
-                  journalSubjectCategoryPublishDate.getJournal().getJournalID(), 
-                  journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
+                i++;
+            }
 
-          j++;
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                UndoStack.addEdit(this);
+
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
 
-        i++;
-      }
+        return successful;
 
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean successful = true;
-    int i, j;
-    SubjectCategory subjectCategory;
-    SubjectCategoryDAO subjectCategoryDAO;
-    JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
-    JournalSubjectCategoryPublishDate journalSubjectCategoryPublishDate;
-    ArrayList<JournalSubjectCategoryPublishDate> journalSubjectCategoryPublishDates;
+        int i, j;
+        boolean successful = true;
+        SubjectCategory subjectCategory;
+        SubjectCategoryDAO subjectCategoryDAO;
+        TreeSet<JournalSubjectCategoryPublishDate> tmpJournalSubjectCategoryPublishDates;
+        JournalSubjectCategoryPublishDate journalSubjectCategoryPublishDate;
+        JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
+        Iterator<JournalSubjectCategoryPublishDate> itJournalSubjectCategoryPublishDate;
 
-    try {
+        try {
 
-      i = 0;
-      subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
-      journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
-      
-      while ((i < this.subjectCategoriesToMove.size()) && (successful)) {
+            subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
+            journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
 
-        subjectCategory = this.subjectCategoriesToMove.get(i);
+            tmpJournalSubjectCategoryPublishDates = new TreeSet<JournalSubjectCategoryPublishDate>(subjectCategoryDAO.getJournals(this.targetSubjectCategory.getSubjectCategoryID()));
+            tmpJournalSubjectCategoryPublishDates.removeAll(this.journalSubjectCategoryPublishDatesOfTarget);
 
-        // Retrieve the relations of the source items
-        journalSubjectCategoryPublishDates = this.journalSubjectCategoryPublishDatesOfSources.get(i);
+            itJournalSubjectCategoryPublishDate = tmpJournalSubjectCategoryPublishDates.iterator();
 
-        // Do the join
-        j = 0;
+            while ((itJournalSubjectCategoryPublishDate.hasNext()) && (successful)) {
 
-        successful = subjectCategoryDAO.removeSubjectCategory(subjectCategory.getSubjectCategoryID(), true);
+                journalSubjectCategoryPublishDate = itJournalSubjectCategoryPublishDate.next();
 
-        while ((j < journalSubjectCategoryPublishDates.size()) && (successful)) {
+                successful = journalSubjectCategoryPublishDateDAO.removeSubjectCategoryFromJournal(this.targetSubjectCategory.getSubjectCategoryID(),
+                        journalSubjectCategoryPublishDate.getJournal().getJournalID(),
+                        journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
+            }
 
-          journalSubjectCategoryPublishDate = journalSubjectCategoryPublishDates.get(j);
-          
-          // If the target element is not associated with this element we perform the association.
-          if (! journalSubjectCategoryPublishDateDAO.checkJournalSubjectCategoryPublishDate(journalSubjectCategoryPublishDate.getJournal().getJournalID(), 
-                  this.targetSubjectCategory.getSubjectCategoryID(), 
-                  journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID())) {
+            i = 0;
 
-            successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(journalSubjectCategoryPublishDate.getJournal().getJournalID(), 
-                    this.targetSubjectCategory.getSubjectCategoryID(), 
-                    journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
-          }
+            while ((i < this.subjectCategoriesToMove.size()) && (successful)) {
 
-          j ++;
+                subjectCategory = this.subjectCategoriesToMove.get(i);
+
+                successful = subjectCategoryDAO.addSubjectCategory(subjectCategory, true);
+
+                j = 0;
+
+                while ((j < this.journalSubjectCategoryPublishDatesOfSources.get(i).size()) && (successful)) {
+
+                    journalSubjectCategoryPublishDate = this.journalSubjectCategoryPublishDatesOfSources.get(i).get(j);
+
+                    successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(subjectCategory.getSubjectCategoryID(),
+                            journalSubjectCategoryPublishDate.getJournal().getJournalID(),
+                            journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
         }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        int i, j;
+        SubjectCategory subjectCategory;
+        SubjectCategoryDAO subjectCategoryDAO;
+        JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
+        JournalSubjectCategoryPublishDate journalSubjectCategoryPublishDate;
+        ArrayList<JournalSubjectCategoryPublishDate> journalSubjectCategoryPublishDates;
+
+        try {
+
+            i = 0;
+            subjectCategoryDAO = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO();
+            journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
+
+            while ((i < this.subjectCategoriesToMove.size()) && (successful)) {
+
+                subjectCategory = this.subjectCategoriesToMove.get(i);
+
+                // Retrieve the relations of the source items
+                journalSubjectCategoryPublishDates = this.journalSubjectCategoryPublishDatesOfSources.get(i);
+
+                // Do the join
+                j = 0;
+
+                successful = subjectCategoryDAO.removeSubjectCategory(subjectCategory.getSubjectCategoryID(), true);
+
+                while ((j < journalSubjectCategoryPublishDates.size()) && (successful)) {
+
+                    journalSubjectCategoryPublishDate = journalSubjectCategoryPublishDates.get(j);
+
+                    // If the target element is not associated with this element we perform the association.
+                    if (!journalSubjectCategoryPublishDateDAO.checkJournalSubjectCategoryPublishDate(journalSubjectCategoryPublishDate.getJournal().getJournalID(),
+                            this.targetSubjectCategory.getSubjectCategoryID(),
+                            journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID())) {
+
+                        successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(journalSubjectCategoryPublishDate.getJournal().getJournalID(),
+                                this.targetSubjectCategory.getSubjectCategoryID(),
+                                journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
+                    }
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

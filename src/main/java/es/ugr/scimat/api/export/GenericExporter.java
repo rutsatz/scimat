@@ -6,10 +6,9 @@
 package es.ugr.scimat.api.export;
 
 /**
- *
  * @author mjcobo
  */
 public interface GenericExporter {
 
-  public void execute() throws ExportException;
+    public void execute() throws ExportException;
 }

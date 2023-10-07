@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,220 +12,219 @@ import es.ugr.scimat.model.knowledgebase.entity.ReferenceSourceGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateReferenceSourceGroupEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer referenceSourceGroupID;
+    /**
+     *
+     */
+    private Integer referenceSourceGroupID;
 
-  /**
-   *
-   */
-  private String groupName;
+    /**
+     *
+     */
+    private String groupName;
 
-  /**
-   *
-   */
-  private boolean stopGroup;
+    /**
+     *
+     */
+    private boolean stopGroup;
 
-  /**
-   * The elements added
-   */
-  private ReferenceSourceGroup referenceSourceGroupOld;
-  
-  private ReferenceSourceGroup referenceSourceGroupUpdated;
+    /**
+     * The elements added
+     */
+    private ReferenceSourceGroup referenceSourceGroupOld;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private ReferenceSourceGroup referenceSourceGroupUpdated;
 
-  public UpdateReferenceSourceGroupEdit(Integer referenceSourceGroupID, String groupName, boolean stopGroup) {
-    super();
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-    this.referenceSourceGroupID = referenceSourceGroupID;
-    this.groupName = groupName;
-    this.stopGroup = stopGroup;
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public UpdateReferenceSourceGroupEdit(Integer referenceSourceGroupID, String groupName, boolean stopGroup) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = false;
-
-    try {
-
-      referenceSourceGroupOld = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().getReferenceSourceGroup(referenceSourceGroupID);
-
-      if (referenceSourceGroupOld.getGroupName().equals(this.groupName)) {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().setStopGroup(referenceSourceGroupID, stopGroup, true);
-
-        this.referenceSourceGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().getReferenceSourceGroup(referenceSourceGroupID);
-
-      } else if (this.groupName == null) {
-
-        successful = false;
-        this.errorMessage = "The name can not be null.";
-
-      } else if (CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().checkReferenceSourceGroup(groupName)) {
-
-        successful = false;
-        this.errorMessage = "A Reference source group yet exists with this name.";
-
-      } else {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().updateReferenceSourceGroup(referenceSourceGroupID, groupName, stopGroup, true);
-
-        this.referenceSourceGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().getReferenceSourceGroup(referenceSourceGroupID);
-
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        successful = true;
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.referenceSourceGroupID = referenceSourceGroupID;
+        this.groupName = groupName;
+        this.stopGroup = stopGroup;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = false;
 
-    boolean flag;
+        try {
 
-    try {
+            referenceSourceGroupOld = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().getReferenceSourceGroup(referenceSourceGroupID);
 
-      if (this.referenceSourceGroupOld.getGroupName().equals(this.referenceSourceGroupUpdated.getGroupName())) {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().setStopGroup(referenceSourceGroupOld.getReferenceSourceGroupID(),
-              referenceSourceGroupOld.isStopGroup(), true);
-        
-      } else {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().updateReferenceSourceGroup(referenceSourceGroupOld.getReferenceSourceGroupID(),
-              referenceSourceGroupOld.getGroupName(), referenceSourceGroupOld.isStopGroup(), true);
-      }
+            if (referenceSourceGroupOld.getGroupName().equals(this.groupName)) {
 
-      if (flag) {
+                successful = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().setStopGroup(referenceSourceGroupID, stopGroup, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                this.referenceSourceGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().getReferenceSourceGroup(referenceSourceGroupID);
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+            } else if (this.groupName == null) {
 
-      } else {
+                successful = false;
+                this.errorMessage = "The name can not be null.";
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            } else if (CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().checkReferenceSourceGroup(groupName)) {
 
-    } catch (KnowledgeBaseException e) {
+                successful = false;
+                this.errorMessage = "A Reference source group yet exists with this name.";
 
-      e.printStackTrace(System.err);
+            } else {
 
-      try{
+                successful = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().updateReferenceSourceGroup(referenceSourceGroupID, groupName, stopGroup, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                this.referenceSourceGroupUpdated = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().getReferenceSourceGroup(referenceSourceGroupID);
 
-      } catch (KnowledgeBaseException e2) {
+            }
 
-        e2.printStackTrace(System.err);
+            if (successful) {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                successful = true;
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
+
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      if (this.referenceSourceGroupOld.getGroupName().equals(groupName)) {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().setStopGroup(referenceSourceGroupID, stopGroup, true);
-        
-      } else {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().updateReferenceSourceGroup(referenceSourceGroupID,
-              groupName, stopGroup, true);
-      }
+            if (this.referenceSourceGroupOld.getGroupName().equals(this.referenceSourceGroupUpdated.getGroupName())) {
 
-      if (flag) {
+                flag = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().setStopGroup(referenceSourceGroupOld.getReferenceSourceGroupID(),
+                        referenceSourceGroupOld.isStopGroup(), true);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+            } else {
 
-      } else {
+                flag = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().updateReferenceSourceGroup(referenceSourceGroupOld.getReferenceSourceGroupID(),
+                        referenceSourceGroupOld.getGroupName(), referenceSourceGroupOld.isStopGroup(), true);
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            if (flag) {
 
-    } catch (KnowledgeBaseException e) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      e.printStackTrace(System.err);
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      try{
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } catch (KnowledgeBaseException e2) {
+        } catch (KnowledgeBaseException e) {
 
-        e2.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      }
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean flag;
+
+        try {
+
+            if (this.referenceSourceGroupOld.getGroupName().equals(groupName)) {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().setStopGroup(referenceSourceGroupID, stopGroup, true);
+
+            } else {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceGroupDAO().updateReferenceSourceGroup(referenceSourceGroupID,
+                        groupName, stopGroup, true);
+            }
+
+            if (flag) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

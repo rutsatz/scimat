@@ -5,44 +5,42 @@
  */
 package es.ugr.scimat.api.analysis.performance.quantity;
 
+import es.ugr.scimat.api.analysis.performance.DocumentAggregationMeasure;
 import es.ugr.scimat.api.analysis.performance.docmapper.DocumentSet;
 import es.ugr.scimat.api.dataset.exception.NotExistsItemException;
-import es.ugr.scimat.api.analysis.performance.DocumentAggregationMeasure;
 
 /**
- *
  * @author mjcobo
  */
 public class DocumentCountAggregationMeasure implements DocumentAggregationMeasure {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public DocumentCountAggregationMeasure() {
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public DocumentCountAggregationMeasure() {
+    }
 
-  /**
-   *
-   * @param docsList
-   * @return
-   *
-   * @throws NotExistsItemException if a doc is not present in the dataset.
-   */
-  public double calculateMeasure(DocumentSet documentSet) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    return documentSet.getDocumentsCount();
-  }
+    /**
+     * @param docsList
+     * @return
+     * @throws NotExistsItemException if a doc is not present in the dataset.
+     */
+    public double calculateMeasure(DocumentSet documentSet) {
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+        return documentSet.getDocumentsCount();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

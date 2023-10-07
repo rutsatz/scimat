@@ -5,67 +5,67 @@
  */
 package es.ugr.scimat.gui.components.manager;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.commands.edit.delete.DeleteAuthorReferenceEdit;
+import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
 import es.ugr.scimat.gui.components.adddialog.AddDialogManager;
+import es.ugr.scimat.gui.components.globalslavepanel.AuthorReferenceGlobalSlavePanel;
 import es.ugr.scimat.gui.components.itemslist.AuthorReferencesListPanel;
 import es.ugr.scimat.gui.components.joindialog.JoinEntitiesDialogManager;
-import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
-import es.ugr.scimat.gui.components.globalslavepanel.AuthorReferenceGlobalSlavePanel;
 import es.ugr.scimat.model.knowledgebase.entity.AuthorReference;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AuthorReferenceManager extends GenericItemManagerPanel<AuthorReference> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public AuthorReferenceManager() {
-    super(new AuthorReferencesListPanel(),
-          new AuthorReferenceGlobalSlavePanel());
+    /***************************************************************************/
 
-    setMasterPanelTitle("Authors-reference list");
-    setSlavePanelTitle("Authors-reference detail");
-  }
+    public AuthorReferenceManager() {
+        super(new AuthorReferencesListPanel(),
+                new AuthorReferenceGlobalSlavePanel());
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        setMasterPanelTitle("Authors-reference list");
+        setSlavePanelTitle("Authors-reference detail");
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void addAction() {
-    AddDialogManager.getInstance().showAddAuthorReferenceDialog();
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  @Override
-  public void moveToAction(ArrayList<AuthorReference> items) {
-    JoinEntitiesDialogManager.getInstance().showAuthorReferencesJoinDialog(items);
-  }
+    /**
+     *
+     */
+    @Override
+    public void addAction() {
+        AddDialogManager.getInstance().showAddAuthorReferenceDialog();
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void removeAction(ArrayList<AuthorReference> items) {
-    (new PerformKnowledgeBaseEditTask(new DeleteAuthorReferenceEdit(items), this)).execute();
-  }
+    /**
+     *
+     */
+    @Override
+    public void moveToAction(ArrayList<AuthorReference> items) {
+        JoinEntitiesDialogManager.getInstance().showAuthorReferencesJoinDialog(items);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     *
+     */
+    @Override
+    public void removeAction(ArrayList<AuthorReference> items) {
+        (new PerformKnowledgeBaseEditTask(new DeleteAuthorReferenceEdit(items), this)).execute();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

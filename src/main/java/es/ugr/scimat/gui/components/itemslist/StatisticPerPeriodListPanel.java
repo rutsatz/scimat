@@ -5,42 +5,42 @@
  */
 package es.ugr.scimat.gui.components.itemslist;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.components.tablemodel.StatisticPerPeriodTableModel;
 import es.ugr.scimat.model.statistic.entity.StatisticPerPeriod;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class StatisticPerPeriodListPanel extends GenericItemsListPanel<StatisticPerPeriod> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  public StatisticPerPeriodListPanel() {
-    super(new StatisticPerPeriodTableModel());
-  }
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  @Override
-  public void refreshItems(ArrayList<StatisticPerPeriod> items) {
-    super.refreshItems(items);
-  }
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-    
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     *
+     */
+    public StatisticPerPeriodListPanel() {
+        super(new StatisticPerPeriodTableModel());
+    }
+
+    /***************************************************************************/
+    /*                            Constructors                                 */
+
+    /***************************************************************************/
+
+    @Override
+    public void refreshItems(ArrayList<StatisticPerPeriod> items) {
+        super.refreshItems(items);
+    }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

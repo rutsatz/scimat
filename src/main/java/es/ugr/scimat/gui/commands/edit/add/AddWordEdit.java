@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.add;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,189 +12,189 @@ import es.ugr.scimat.model.knowledgebase.entity.Word;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AddWordEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer wordID;
+    /**
+     *
+     */
+    private Integer wordID;
 
-  /**
-   *
-   */
-  private String wordName;
+    /**
+     *
+     */
+    private String wordName;
 
-  /**
-   * The elements added
-   */
-  private ArrayList<Word> wordsAdded;
+    /**
+     * The elements added
+     */
+    private ArrayList<Word> wordsAdded;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public AddWordEdit(String wordName) {
-    super();
-    
-    this.wordName = wordName;
-    this.wordsAdded = new ArrayList<Word>();
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public AddWordEdit(String wordName) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+        this.wordName = wordName;
+        this.wordsAdded = new ArrayList<Word>();
+    }
 
-    boolean successful = false;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    try {
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-      if (this.wordName == null) {
+        boolean successful = false;
 
-        successful = false;
-        this.errorMessage = "The name can not be null.";
+        try {
 
-      } else if (CurrentProject.getInstance().getFactoryDAO().getWordDAO().checkWord(wordName)) {
+            if (this.wordName == null) {
 
-        successful = false;
-        this.errorMessage = "A word yet exists with this name.";
+                successful = false;
+                this.errorMessage = "The name can not be null.";
 
-      } else {
+            } else if (CurrentProject.getInstance().getFactoryDAO().getWordDAO().checkWord(wordName)) {
 
-        this.wordID = CurrentProject.getInstance().getFactoryDAO().getWordDAO().addWord(wordName, true);
+                successful = false;
+                this.errorMessage = "A word yet exists with this name.";
 
-        if (this.wordID != null) {
+            } else {
 
-          CurrentProject.getInstance().getKnowledgeBase().commit();
+                this.wordID = CurrentProject.getInstance().getFactoryDAO().getWordDAO().addWord(wordName, true);
 
-          this.wordsAdded.add(CurrentProject.getInstance().getFactoryDAO().getWordDAO().getWord(wordID));
+                if (this.wordID != null) {
 
-          KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                    CurrentProject.getInstance().getKnowledgeBase().commit();
 
-          successful = true;
+                    this.wordsAdded.add(CurrentProject.getInstance().getFactoryDAO().getWordDAO().getWord(wordID));
 
-          UndoStack.addEdit(this);
+                    KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        } else {
+                    successful = true;
 
-          CurrentProject.getInstance().getKnowledgeBase().rollback();
+                    UndoStack.addEdit(this);
 
-          successful = false;
-          this.errorMessage = "An error happened.";
+                } else {
+
+                    CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                    successful = false;
+                    this.errorMessage = "An error happened.";
+                }
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
-      }
 
-    } catch (KnowledgeBaseException e) {
+        return successful;
 
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
     }
 
-    return successful;
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-  }
+        boolean flag;
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        try {
 
-    boolean flag;
+            flag = CurrentProject.getInstance().getFactoryDAO().getWordDAO().removeWord(wordID, true);
 
-    try {
+            if (flag) {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getWordDAO().removeWord(wordID, true);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      if (flag) {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+            } else {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } else {
+        } catch (KnowledgeBaseException e) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            e.printStackTrace(System.err);
 
-    } catch (KnowledgeBaseException e) {
+            try {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      try{
+            } catch (KnowledgeBaseException e2) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                e2.printStackTrace(System.err);
 
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
+            }
+        }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getWordDAO().addWord(wordID, wordName, true);
+            flag = CurrentProject.getInstance().getFactoryDAO().getWordDAO().addWord(wordID, wordName, true);
 
-      if (flag) {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

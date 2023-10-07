@@ -5,211 +5,205 @@
  */
 package es.ugr.scimat.api.mapping.clustering;
 
-import java.util.ArrayList;
-
-import es.ugr.scimat.api.mapping.clustering.result.ClusterSet;
 import es.ugr.scimat.api.analysis.network.statistics.MaxAverageSimilarNode;
 import es.ugr.scimat.api.dataset.NetworkPair;
 import es.ugr.scimat.api.dataset.UndirectNetworkMatrix;
+import es.ugr.scimat.api.mapping.clustering.result.ClusterSet;
+
+import java.util.ArrayList;
 
 /**
- *
  * @author mjcobo
  */
 public class CompleteLinkClustering implements ClusteringAlgorithm {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /**
-   *
-   */
-  private int minNetworkSize;
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  private int maxNetworkSize;
-  
-  /**
-   * 
-   */
-  private double cutOff;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param minNetworkSize
-   * @param maxNetworkSize
-   * @param cutOff 
-   */
-  public CompleteLinkClustering(int minNetworkSize, int maxNetworkSize, double cutOff) {
-    this.minNetworkSize = minNetworkSize;
-    this.maxNetworkSize = maxNetworkSize;
-    this.cutOff = cutOff;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param network
-   * @return 
-   */
-  public ClusterSet execute(UndirectNetworkMatrix network) {
-    
-    int i, j, clusterToJoinI, clusterToJoinJ;
-    boolean joinedClusters;
-    double minSimilarity, similarity;
-    ArrayList<ArrayList<Integer>> clusters;
-    ArrayList<Integer> clusterI, clusterJ;
-    ArrayList<NetworkPair> pairs;
-    ClusterSet clusterSet;
-    
-    clusterSet = new ClusterSet(network);
-    
-    clusters = eachNodeToCluster(network.getNodes());
+    /**
+     *
+     */
+    private int minNetworkSize;
 
-    joinedClusters = true;
+    /**
+     *
+     */
+    private int maxNetworkSize;
 
-    while (joinedClusters) {
+    /**
+     *
+     */
+    private double cutOff;
 
-      minSimilarity = 0.0;
-      clusterToJoinI = -1;
-      clusterToJoinJ = -1;
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-      for (i = 0; i < clusters.size(); i++) {
+    /**
+     * @param minNetworkSize
+     * @param maxNetworkSize
+     * @param cutOff
+     */
+    public CompleteLinkClustering(int minNetworkSize, int maxNetworkSize, double cutOff) {
+        this.minNetworkSize = minNetworkSize;
+        this.maxNetworkSize = maxNetworkSize;
+        this.cutOff = cutOff;
+    }
 
-        clusterI = clusters.get(i);
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-        for (j = i + 1; j < clusters.size(); j++) {
+    /**
+     * @param network
+     * @return
+     */
+    public ClusterSet execute(UndirectNetworkMatrix network) {
 
-          clusterJ = clusters.get(j);
+        int i, j, clusterToJoinI, clusterToJoinJ;
+        boolean joinedClusters;
+        double minSimilarity, similarity;
+        ArrayList<ArrayList<Integer>> clusters;
+        ArrayList<Integer> clusterI, clusterJ;
+        ArrayList<NetworkPair> pairs;
+        ClusterSet clusterSet;
 
-          pairs = network.getIntraNodesPairs(clusterI, clusterJ);
+        clusterSet = new ClusterSet(network);
 
-          if (pairs.size() > 0) {
+        clusters = eachNodeToCluster(network.getNodes());
 
-            similarity = getMinPairsValue(pairs);
+        joinedClusters = true;
 
-            if ((similarity < minSimilarity) && (similarity >= this.cutOff)) {
+        while (joinedClusters) {
 
-              minSimilarity = similarity;
+            minSimilarity = 0.0;
+            clusterToJoinI = -1;
+            clusterToJoinJ = -1;
 
-              clusterToJoinI = i;
-              clusterToJoinJ = j;
+            for (i = 0; i < clusters.size(); i++) {
+
+                clusterI = clusters.get(i);
+
+                for (j = i + 1; j < clusters.size(); j++) {
+
+                    clusterJ = clusters.get(j);
+
+                    pairs = network.getIntraNodesPairs(clusterI, clusterJ);
+
+                    if (pairs.size() > 0) {
+
+                        similarity = getMinPairsValue(pairs);
+
+                        if ((similarity < minSimilarity) && (similarity >= this.cutOff)) {
+
+                            minSimilarity = similarity;
+
+                            clusterToJoinI = i;
+                            clusterToJoinJ = j;
+                        }
+                    }
+                }
             }
-          }
-        }
-      }
 
-      if (clusterToJoinI != -1) {
-        
-        joinedClusters= joinClusters(clusters, clusterToJoinI, clusterToJoinJ);
-        
-      } else {
-      
-        joinedClusters = false;
-      }
-    }
-      
-    for (i = 0; i < clusters.size(); i++) {
-    
-      if (clusters.get(i).size() >= this.minNetworkSize) {
-      
-        clusterSet.addCluster(clusters.get(i), new MaxAverageSimilarNode().execute(network, clusters.get(i)));
-      }
-    }
-    
-    return clusterSet;
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param nodes
-   * @return 
-   */
-  private ArrayList<ArrayList<Integer>> eachNodeToCluster(ArrayList<Integer> nodes) {
-  
-    int i;
-    ArrayList<Integer> cluster;
-    ArrayList<ArrayList<Integer>> clusters;
-    
-    clusters = new ArrayList<ArrayList<Integer>>();
-    
-    for (i = 0; i < nodes.size(); i++) {
-    
-      cluster = new ArrayList<Integer>();
-      cluster.add(nodes.get(i));
-      clusters.add(cluster);
-    }
-    
-    return clusters;
-  }
-  
-  /**
-   * 
-   * @param clusters
-   * @param i
-   * @param j 
-   */
-  private boolean joinClusters(ArrayList<ArrayList<Integer>> clusters, int i, int j) {
-  
-    boolean flag;
-    
-    if ((clusters.get(i).size() + clusters.get(j).size()) <= this.maxNetworkSize) {
-    
-      clusters.get(i).addAll(clusters.get(j));
-      clusters.remove(j);
-      
-      flag = true;
-      
-    } else {
-    
-      flag = false;
-    }
-    
-    return flag;
-  }
-  
-  /**
-   * 
-   * @param pairs
-   * @return 
-   */
-  private double getMinPairsValue(ArrayList<NetworkPair> pairs) {
-  
-    int i;
-    double minValue, tmpValue;
-    
-    minValue = Double.MAX_VALUE;
-    
-    if (pairs.size() > 0) {
-      
-      minValue = pairs.get(0).getValue();
-      
-      for (i = 1; i < pairs.size(); i++) {
-        
-        tmpValue = pairs.get(i).getValue();
-        
-        if (tmpValue < minValue) {
-        
-          minValue = tmpValue;
+            if (clusterToJoinI != -1) {
+
+                joinedClusters = joinClusters(clusters, clusterToJoinI, clusterToJoinJ);
+
+            } else {
+
+                joinedClusters = false;
+            }
         }
-      
-      }
+
+        for (i = 0; i < clusters.size(); i++) {
+
+            if (clusters.get(i).size() >= this.minNetworkSize) {
+
+                clusterSet.addCluster(clusters.get(i), new MaxAverageSimilarNode().execute(network, clusters.get(i)));
+            }
+        }
+
+        return clusterSet;
     }
-    
-    return minValue;
-  }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
+
+    /**
+     * @param nodes
+     * @return
+     */
+    private ArrayList<ArrayList<Integer>> eachNodeToCluster(ArrayList<Integer> nodes) {
+
+        int i;
+        ArrayList<Integer> cluster;
+        ArrayList<ArrayList<Integer>> clusters;
+
+        clusters = new ArrayList<ArrayList<Integer>>();
+
+        for (i = 0; i < nodes.size(); i++) {
+
+            cluster = new ArrayList<Integer>();
+            cluster.add(nodes.get(i));
+            clusters.add(cluster);
+        }
+
+        return clusters;
+    }
+
+    /**
+     * @param clusters
+     * @param i
+     * @param j
+     */
+    private boolean joinClusters(ArrayList<ArrayList<Integer>> clusters, int i, int j) {
+
+        boolean flag;
+
+        if ((clusters.get(i).size() + clusters.get(j).size()) <= this.maxNetworkSize) {
+
+            clusters.get(i).addAll(clusters.get(j));
+            clusters.remove(j);
+
+            flag = true;
+
+        } else {
+
+            flag = false;
+        }
+
+        return flag;
+    }
+
+    /**
+     * @param pairs
+     * @return
+     */
+    private double getMinPairsValue(ArrayList<NetworkPair> pairs) {
+
+        int i;
+        double minValue, tmpValue;
+
+        minValue = Double.MAX_VALUE;
+
+        if (pairs.size() > 0) {
+
+            minValue = pairs.get(0).getValue();
+
+            for (i = 1; i < pairs.size(); i++) {
+
+                tmpValue = pairs.get(i).getValue();
+
+                if (tmpValue < minValue) {
+
+                    minValue = tmpValue;
+                }
+
+            }
+        }
+
+        return minValue;
+    }
 }

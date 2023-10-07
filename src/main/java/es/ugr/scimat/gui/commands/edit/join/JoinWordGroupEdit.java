@@ -5,10 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.join;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeSet;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -19,277 +15,277 @@ import es.ugr.scimat.model.knowledgebase.entity.WordGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
+
 /**
- *
  * @word mjcobo
  */
 public class JoinWordGroupEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private ArrayList<WordGroup> wordGroupsToMove;
-  private WordGroup targetWordGroup;
+    private ArrayList<WordGroup> wordGroupsToMove;
+    private WordGroup targetWordGroup;
 
-  private ArrayList<ArrayList<Word>> wordsOfSources = new ArrayList<ArrayList<Word>>();
+    private ArrayList<ArrayList<Word>> wordsOfSources = new ArrayList<ArrayList<Word>>();
 
-  private TreeSet<Word> wordsOfTarget = new TreeSet<Word>();
+    private TreeSet<Word> wordsOfTarget = new TreeSet<Word>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param wordGroupsToMove
-   * @param targetWordGroup
-   */
-  public JoinWordGroupEdit(ArrayList<WordGroup> wordGroupsToMove, WordGroup targetWordGroup) {
+    /**
+     * @param wordGroupsToMove
+     * @param targetWordGroup
+     */
+    public JoinWordGroupEdit(ArrayList<WordGroup> wordGroupsToMove, WordGroup targetWordGroup) {
 
-    this.wordGroupsToMove = wordGroupsToMove;
-    this.targetWordGroup = targetWordGroup;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = true;
-    int i, j;
-    WordDAO wordDAO;
-    WordGroupDAO wordGroupDAO;
-    WordGroup wordGroup;
-    ArrayList<Word> words;
-
-    try {
-
-      i = 0;
-
-      wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
-      wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
-
-      // Retrieve the realations of the target item.
-      this.wordsOfTarget = new TreeSet<Word>(wordGroupDAO.getWords(this.targetWordGroup.getWordGroupID()));
-
-      while ((i < this.wordGroupsToMove.size()) && (successful)) {
-
-        wordGroup = this.wordGroupsToMove.get(i);
-
-        // Retrieve the relations of the source items
-        words = wordGroupDAO.getWords(wordGroup.getWordGroupID());
-        this.wordsOfSources.add(words);
-
-        // Do the join
-        j = 0;
-
-        successful = wordGroupDAO.removeWordGroup(wordGroup.getWordGroupID(), true);
-
-        while ((j < words.size()) && (successful)) {
-          
-          successful = wordDAO.setWordGroup(words.get(j).getWordID(), 
-                  this.targetWordGroup.getWordGroupID(), true);
-
-          j ++;
-        }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-      
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.wordGroupsToMove = wordGroupsToMove;
+        this.targetWordGroup = targetWordGroup;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = true;
+        int i, j;
+        WordDAO wordDAO;
+        WordGroupDAO wordGroupDAO;
+        WordGroup wordGroup;
+        ArrayList<Word> words;
 
-    int i, j;
-    boolean successful = true;
-    TreeSet<Word> tmpWords;
-    WordGroupDAO wordGroupDAO;
-    WordDAO wordDAO;
-    WordGroup wordGroup;
-    Word word;
-    Iterator<Word> itWord;
+        try {
 
-    try {
+            i = 0;
 
-      wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
-      wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
-      
+            wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
+            wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
 
-      tmpWords = new TreeSet<Word>(wordGroupDAO.getWords(this.targetWordGroup.getWordGroupID()));
-      tmpWords.removeAll(this.wordsOfTarget);
+            // Retrieve the realations of the target item.
+            this.wordsOfTarget = new TreeSet<Word>(wordGroupDAO.getWords(this.targetWordGroup.getWordGroupID()));
 
-      itWord = tmpWords.iterator();
+            while ((i < this.wordGroupsToMove.size()) && (successful)) {
 
-      while ((itWord.hasNext()) && (successful)) {
+                wordGroup = this.wordGroupsToMove.get(i);
 
-        successful = wordDAO.setWordGroup(itWord.next().getWordID(), null, true);
-      }
+                // Retrieve the relations of the source items
+                words = wordGroupDAO.getWords(wordGroup.getWordGroupID());
+                this.wordsOfSources.add(words);
 
-      i = 0;
+                // Do the join
+                j = 0;
 
-      while ((i < this.wordGroupsToMove.size()) && (successful)) {
+                successful = wordGroupDAO.removeWordGroup(wordGroup.getWordGroupID(), true);
 
-        wordGroup = this.wordGroupsToMove.get(i);
+                while ((j < words.size()) && (successful)) {
 
-        successful = wordGroupDAO.addWordGroup(wordGroup, true);
+                    successful = wordDAO.setWordGroup(words.get(j).getWordID(),
+                            this.targetWordGroup.getWordGroupID(), true);
 
-        j = 0;
+                    j++;
+                }
 
-        while ((j < this.wordsOfSources.get(i).size()) && (successful)) {
+                i++;
+            }
 
-          word = this.wordsOfSources.get(i).get(j);
+            if (successful) {
 
-          successful = wordDAO.setWordGroup(word.getWordID(),
-                  wordGroup.getWordGroupID(), true);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-          j++;
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
 
-        i++;
-      }
+        return successful;
 
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean successful = true;
-    int i, j;
-    WordDAO wordDAO;
-    WordGroupDAO wordGroupDAO;
-    WordGroup wordGroup;
-    ArrayList<Word> words;
+        int i, j;
+        boolean successful = true;
+        TreeSet<Word> tmpWords;
+        WordGroupDAO wordGroupDAO;
+        WordDAO wordDAO;
+        WordGroup wordGroup;
+        Word word;
+        Iterator<Word> itWord;
 
-    try {
+        try {
 
-      i = 0;
+            wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
+            wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
 
-      wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
-      wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
 
-      while ((i < this.wordGroupsToMove.size()) && (successful)) {
+            tmpWords = new TreeSet<Word>(wordGroupDAO.getWords(this.targetWordGroup.getWordGroupID()));
+            tmpWords.removeAll(this.wordsOfTarget);
 
-        wordGroup = this.wordGroupsToMove.get(i);
+            itWord = tmpWords.iterator();
 
-        // Retrieve the relations of the source items
-        words = this.wordsOfSources.get(i) ;
+            while ((itWord.hasNext()) && (successful)) {
 
-        // Do the join
-        j = 0;
+                successful = wordDAO.setWordGroup(itWord.next().getWordID(), null, true);
+            }
 
-        successful = wordGroupDAO.removeWordGroup(wordGroup.getWordGroupID(), true);
+            i = 0;
 
-        while ((j < words.size()) && (successful)) {
-          
-          successful = wordDAO.setWordGroup(words.get(j).getWordID(), 
-                  this.targetWordGroup.getWordGroupID(), true);
+            while ((i < this.wordGroupsToMove.size()) && (successful)) {
 
-          j ++;
+                wordGroup = this.wordGroupsToMove.get(i);
+
+                successful = wordGroupDAO.addWordGroup(wordGroup, true);
+
+                j = 0;
+
+                while ((j < this.wordsOfSources.get(i).size()) && (successful)) {
+
+                    word = this.wordsOfSources.get(i).get(j);
+
+                    successful = wordDAO.setWordGroup(word.getWordID(),
+                            wordGroup.getWordGroupID(), true);
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
         }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        int i, j;
+        WordDAO wordDAO;
+        WordGroupDAO wordGroupDAO;
+        WordGroup wordGroup;
+        ArrayList<Word> words;
+
+        try {
+
+            i = 0;
+
+            wordDAO = CurrentProject.getInstance().getFactoryDAO().getWordDAO();
+            wordGroupDAO = CurrentProject.getInstance().getFactoryDAO().getWordGroupDAO();
+
+            while ((i < this.wordGroupsToMove.size()) && (successful)) {
+
+                wordGroup = this.wordGroupsToMove.get(i);
+
+                // Retrieve the relations of the source items
+                words = this.wordsOfSources.get(i);
+
+                // Do the join
+                j = 0;
+
+                successful = wordGroupDAO.removeWordGroup(wordGroup.getWordGroupID(), true);
+
+                while ((j < words.size()) && (successful)) {
+
+                    successful = wordDAO.setWordGroup(words.get(j).getWordID(),
+                            this.targetWordGroup.getWordGroupID(), true);
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

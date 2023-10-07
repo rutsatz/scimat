@@ -5,6 +5,30 @@
  */
 package es.ugr.scimat.api.report;
 
+import es.ugr.scimat.analysis.*;
+import es.ugr.scimat.api.analysis.category.StrategicDiagram;
+import es.ugr.scimat.api.analysis.category.StrategicDiagramBuildier;
+import es.ugr.scimat.api.analysis.performance.docmapper.DocumentSet;
+import es.ugr.scimat.api.dataset.NetworkPair;
+import es.ugr.scimat.api.mapping.Node;
+import es.ugr.scimat.api.mapping.WholeNetwork;
+import es.ugr.scimat.api.mapping.clustering.result.Cluster;
+import es.ugr.scimat.api.mapping.clustering.result.ClusterSet;
+import es.ugr.scimat.api.utils.image.TranscoderSVGtoPNG;
+import es.ugr.scimat.api.utils.xml.DomToString;
+import es.ugr.scimat.api.visualization.category.StrategicDiagramSVG;
+import es.ugr.scimat.api.visualization.graph.ClusterNetworkSVG;
+import es.ugr.scimat.api.visualization.graph.WholeNetworkPajek;
+import es.ugr.scimat.api.visualization.temporal.EvolutionMapPajek;
+import es.ugr.scimat.api.visualization.temporal.EvolutionMapSVG;
+import es.ugr.scimat.api.visualization.temporal.OverlappingMapSVG;
+import es.ugr.scimat.model.knowledgebase.KnowledgeBaseManager;
+import es.ugr.scimat.model.knowledgebase.dao.DocumentDAO;
+import es.ugr.scimat.model.knowledgebase.entity.Period;
+import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,38 +38,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import es.ugr.scimat.api.dataset.NetworkPair;
-import es.ugr.scimat.api.mapping.Node;
-import es.ugr.scimat.api.mapping.WholeNetwork;
-import es.ugr.scimat.api.mapping.clustering.result.Cluster;
-import es.ugr.scimat.api.mapping.clustering.result.ClusterSet;
-import es.ugr.scimat.api.visualization.category.StrategicDiagramSVG;
-import es.ugr.scimat.api.visualization.graph.ClusterNetworkSVG;
-import es.ugr.scimat.api.visualization.graph.WholeNetworkPajek;
-import es.ugr.scimat.api.visualization.temporal.EvolutionMapPajek;
-import es.ugr.scimat.api.visualization.temporal.EvolutionMapSVG;
-import es.ugr.scimat.api.visualization.temporal.OverlappingMapSVG;
-import es.ugr.scimat.api.analysis.category.StrategicDiagram;
-import es.ugr.scimat.api.analysis.category.StrategicDiagramBuildier;
-import es.ugr.scimat.api.analysis.performance.docmapper.DocumentSet;
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.commons.lang3.StringEscapeUtils;
-import es.ugr.scimat.api.utils.image.TranscoderSVGtoPNG;
-import es.ugr.scimat.api.utils.xml.DomToString;
-import es.ugr.scimat.analysis.BuildPerformanceMeasuresAvailable;
-import es.ugr.scimat.analysis.AnalysisPeriodResult;
-import es.ugr.scimat.analysis.BuildDocumentMappersAvailable;
-import es.ugr.scimat.analysis.ClusteringAlgorithmEnum;
-import es.ugr.scimat.analysis.GlobalAnalysisResult;
-import es.ugr.scimat.analysis.KeyProperties;
-import es.ugr.scimat.analysis.PerformanceMeasuresAvailable;
-import es.ugr.scimat.model.knowledgebase.KnowledgeBaseManager;
-import es.ugr.scimat.model.knowledgebase.dao.DocumentDAO;
-import es.ugr.scimat.model.knowledgebase.entity.Period;
-import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
-
 /**
- *
  * @author mjcobo
  */
 public class MakeExtendedReportHTML implements ReportGenericBuilder {
@@ -141,8 +134,8 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     private DocumentFormatter documentFormatter;
 
     private ArrayList<String> documentMappers;
-    
-    private KnowledgeBaseManager kbm;            
+
+    private KnowledgeBaseManager kbm;
 
     /**
      * ************************************************************************
@@ -152,7 +145,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
      * ************************************************************************
      */
     /**
-     *
      * @param path
      * @param globalExperimentResult
      */
@@ -176,7 +168,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
      * ************************************************************************
      */
     /**
-     *
      * @throws ReportBuilderException
      */
     public void execute() throws ReportBuilderException {
@@ -203,7 +194,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
      * ************************************************************************
      */
     /**
-     *
      * @throws FileNotFoundException
      * @throws IOException
      * @throws TranscoderException
@@ -496,7 +486,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param period
      * @param periodPosition
      * @param results
@@ -689,7 +678,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param periodPosition
      * @param escapedPeriodName
      * @param escapedClusterName
@@ -699,8 +687,8 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
      * @throws TranscoderException
      */
     private void doClusterHTLMPage(int periodPosition, String escapedPeriodName,
-            String escapedClusterName, Cluster cluster, int clusterIndex,
-            ClusterSet clusterSet)
+                                   String escapedClusterName, Cluster cluster, int clusterIndex,
+                                   ClusterSet clusterSet)
             throws FileNotFoundException, IOException, TranscoderException, KnowledgeBaseException {
 
         int i, j, clusterOfNode;
@@ -867,7 +855,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param wholeNetwork
      * @return
      */
@@ -897,7 +884,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param path
      * @param document
      * @throws FileNotFoundException
@@ -912,7 +898,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @return
      */
     private boolean makeFolderStructure() {
@@ -934,7 +919,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param period
      * @return
      */
@@ -944,7 +928,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param period
      * @return
      */
@@ -954,7 +937,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param period
      * @return
      */
@@ -964,7 +946,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param period
      * @return
      */
@@ -974,7 +955,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @return
      */
     private String getFileAbsolutePathMainHTMLPage() {
@@ -983,7 +963,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @return
      */
     private String getFilePathMainHTMLPage() {
@@ -992,7 +971,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @return
      */
     private String getFileAbsolutePathStrategicDiagram(int period, String subName, String extension) {
@@ -1002,7 +980,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @return
      */
     private String getFilePathStrategicDiagram(int period, String subName, String extension) {
@@ -1011,14 +988,13 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param period
      * @param theme
      * @param extension
      * @return
      */
     private String getFileAbsolutePathClusterNetwork(int period, int theme,
-            String extension) {
+                                                     String extension) {
 
         return path + File.separator + __IMAGES_FOLDER_NAME + File.separator
                 + "clusterNetwork-period" + String.valueOf(period) + "-cluster"
@@ -1026,14 +1002,13 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param period
      * @param theme
      * @param extension
      * @return
      */
     private String getFilePathClusterNetwork(int period, int theme,
-            String extension) {
+                                             String extension) {
 
         return __IMAGES_FOLDER_NAME + "/"
                 + "clusterNetwork-period" + String.valueOf(period) + "-cluster"
@@ -1041,7 +1016,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param extension
      * @return
      */
@@ -1052,7 +1026,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param extension
      * @return
      */
@@ -1062,7 +1035,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param subname
      * @param extension
      * @return
@@ -1074,7 +1046,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param subname
      * @param extension
      * @return
@@ -1085,7 +1056,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param subname
      * @param extension
      * @return
@@ -1097,7 +1067,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @param subname
      * @param extension
      * @return
@@ -1108,7 +1077,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @return
      */
     private String getFileAbsolutePathWholeNetworkPajek(int period) {
@@ -1118,7 +1086,6 @@ public class MakeExtendedReportHTML implements ReportGenericBuilder {
     }
 
     /**
-     *
      * @return
      */
     private String getFilePathWholeNetworkPajekm(int period) {

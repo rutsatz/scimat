@@ -5,72 +5,70 @@
  */
 package es.ugr.scimat.api.analysis.performance.quality;
 
+import es.ugr.scimat.api.analysis.performance.DocumentAggregationMeasure;
 import es.ugr.scimat.api.analysis.performance.docmapper.DocumentSet;
 import es.ugr.scimat.api.dataset.Dataset;
 import es.ugr.scimat.api.dataset.exception.NotExistsItemException;
-import es.ugr.scimat.api.analysis.performance.DocumentAggregationMeasure;
 
 import java.util.ArrayList;
 
 /**
- *
  * @author mjcobo
  */
 public class MinCitationAggregationMeasure implements DocumentAggregationMeasure {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private Dataset dataset;
+    private Dataset dataset;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public MinCitationAggregationMeasure(Dataset dataset) {
-    this.dataset = dataset;
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   * @param docsList
-   * @return
-   *
-   * @throws NotExistsItemException if a doc is not present in the dataset.
-   */
-  public double calculateMeasure(DocumentSet documentSet) {
-
-    int i;
-    double min, tmp;
-    ArrayList<Integer> docsList;
-
-    min = 0.0;
-    docsList = documentSet.getDocuments();
-
-    if (docsList.size() > 0) {
-
-      min = dataset.getDocumentCitations(docsList.get(0));
-
-      for (i = 1; i < docsList.size(); i++) {
-
-        tmp = dataset.getDocumentCitations(docsList.get(i));
-
-        if (min > tmp) {
-
-          min = tmp;
-        }
-      }
+    public MinCitationAggregationMeasure(Dataset dataset) {
+        this.dataset = dataset;
     }
 
-    return min;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param docsList
+     * @return
+     * @throws NotExistsItemException if a doc is not present in the dataset.
+     */
+    public double calculateMeasure(DocumentSet documentSet) {
+
+        int i;
+        double min, tmp;
+        ArrayList<Integer> docsList;
+
+        min = 0.0;
+        docsList = documentSet.getDocuments();
+
+        if (docsList.size() > 0) {
+
+            min = dataset.getDocumentCitations(docsList.get(0));
+
+            for (i = 1; i < docsList.size(); i++) {
+
+                tmp = dataset.getDocumentCitations(docsList.get(i));
+
+                if (min > tmp) {
+
+                    min = tmp;
+                }
+            }
+        }
+
+        return min;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

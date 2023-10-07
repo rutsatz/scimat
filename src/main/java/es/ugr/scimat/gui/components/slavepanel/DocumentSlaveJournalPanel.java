@@ -5,7 +5,6 @@
  */
 package es.ugr.scimat.gui.components.slavepanel;
 
-import java.util.ArrayList;
 import es.ugr.scimat.gui.components.ErrorDialogManager;
 import es.ugr.scimat.model.knowledgebase.entity.Document;
 import es.ugr.scimat.model.knowledgebase.entity.Journal;
@@ -14,171 +13,172 @@ import es.ugr.scimat.project.CurrentProject;
 import es.ugr.scimat.project.observer.EntityObserver;
 import es.ugr.scimat.project.observer.JournalRelationDocumentObserver;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
-public class DocumentSlaveJournalPanel extends GenericOneSlaveItemPanel 
+public class DocumentSlaveJournalPanel extends GenericOneSlaveItemPanel
         implements JournalRelationDocumentObserver, EntityObserver<Journal> {
 
-  /** Creates new form DocumentSlaveJournalPanel */
-  public DocumentSlaveJournalPanel() {
+    /**
+     * Creates new form DocumentSlaveJournalPanel
+     */
+    public DocumentSlaveJournalPanel() {
 
-    initComponents();
+        initComponents();
 
-    CurrentProject.getInstance().getKbObserver().addJournalRelationDocumentsObserver(this);
-    CurrentProject.getInstance().getKbObserver().addJournalObserver(this);
-  }
-
-  /**
-   *
-   */
-  private void refresh() {
-
-    if (this.journal != null) {
-
-      this.sourceTextField.setText(this.journal.getSource());
-      fireSlaveItemObserver(true);
-
-    } else {
-
-      this.sourceTextField.setText("");
-      fireSlaveItemObserver(false);
+        CurrentProject.getInstance().getKbObserver().addJournalRelationDocumentsObserver(this);
+        CurrentProject.getInstance().getKbObserver().addJournalObserver(this);
     }
-  }
 
-  /**
-   *
-   */
-  public void setMasterItem(Document document) {
+    /**
+     *
+     */
+    private void refresh() {
 
-    this.document = document;
+        if (this.journal != null) {
 
-    try {
+            this.sourceTextField.setText(this.journal.getSource());
+            fireSlaveItemObserver(true);
 
-      if (this.document != null) {
+        } else {
 
-        relationChanged();
+            this.sourceTextField.setText("");
+            fireSlaveItemObserver(false);
+        }
+    }
 
-      } else {
+    /**
+     *
+     */
+    public void setMasterItem(Document document) {
 
-        this.journal = null;
+        this.document = document;
+
+        try {
+
+            if (this.document != null) {
+
+                relationChanged();
+
+            } else {
+
+                this.journal = null;
+                refresh();
+
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            ErrorDialogManager.getInstance().showException(e);
+
+        }
+    }
+
+    /**
+     *
+     */
+    public void relationChanged() throws KnowledgeBaseException {
+
+        if (this.document != null) {
+
+            this.journal = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getJournal(this.document.getDocumentID());
+
+        } else {
+
+            this.journal = null;
+        }
+
         refresh();
-
-      }
-
-    } catch (KnowledgeBaseException e) {
-    
-      ErrorDialogManager.getInstance().showException(e);
-
     }
-  }
 
-  /**
-   *
-   */
-  public void relationChanged() throws KnowledgeBaseException {
-
-    if (this.document != null) {
-    
-      this.journal = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getJournal(this.document.getDocumentID());
-      
-    } else {
-    
-      this.journal = null;
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityAdded(ArrayList<Journal> items) throws KnowledgeBaseException {
+        // Do not do nothing
     }
-    
-    refresh();
-  }
 
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityAdded(ArrayList<Journal> items) throws KnowledgeBaseException {
-    // Do not do nothing
-  }
+    /**
+     * @param entity
+     * @throws KnowledgeBaseException
+     */
+    public void entityRefresh() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @param entity
-   * @throws KnowledgeBaseException
-   */
-  public void entityRefresh() throws KnowledgeBaseException {
+        if (this.journal != null) {
 
-    if (this.journal != null) {
-
-      this.journal = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().getJournal(this.document.getDocumentID());
-      refresh();
+            this.journal = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().getJournal(this.document.getDocumentID());
+            refresh();
+        }
     }
-  }
 
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityRemoved(ArrayList<Journal> items) throws KnowledgeBaseException {
-    // Do not do nothing
-  }
-
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityUpdated(ArrayList<Journal> items) throws KnowledgeBaseException {
-
-    int position;
-
-    if (this.journal != null) {
-
-      position = items.indexOf(this.journal);
-
-      if (position != -1) {
-
-        this.journal = items.get(position);
-      }
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityRemoved(ArrayList<Journal> items) throws KnowledgeBaseException {
+        // Do not do nothing
     }
-  }
 
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityUpdated(ArrayList<Journal> items) throws KnowledgeBaseException {
 
-    sourceDescriptionLabel = new javax.swing.JLabel();
-    sourceTextField = new javax.swing.JTextField();
+        int position;
 
-    sourceDescriptionLabel.setText("Source:");
+        if (this.journal != null) {
 
-    sourceTextField.setEditable(false);
+            position = items.indexOf(this.journal);
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-    this.setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(sourceDescriptionLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(sourceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE))
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-        .addComponent(sourceDescriptionLabel)
-        .addComponent(sourceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-    );
-  }// </editor-fold>//GEN-END:initComponents
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel sourceDescriptionLabel;
-  private javax.swing.JTextField sourceTextField;
-  // End of variables declaration//GEN-END:variables
-  private Document document = null;
-  private Journal journal = null;
+            if (position != -1) {
+
+                this.journal = items.get(position);
+            }
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        sourceDescriptionLabel = new javax.swing.JLabel();
+        sourceTextField = new javax.swing.JTextField();
+
+        sourceDescriptionLabel.setText("Source:");
+
+        sourceTextField.setEditable(false);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(sourceDescriptionLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sourceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(sourceDescriptionLabel)
+                                .addComponent(sourceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel sourceDescriptionLabel;
+    private javax.swing.JTextField sourceTextField;
+    // End of variables declaration//GEN-END:variables
+    private Document document = null;
+    private Journal journal = null;
 }

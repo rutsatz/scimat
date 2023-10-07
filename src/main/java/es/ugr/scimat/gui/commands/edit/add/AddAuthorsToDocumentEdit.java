@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.add;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -16,190 +14,188 @@ import es.ugr.scimat.model.knowledgebase.entity.Document;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AddAuthorsToDocumentEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private Document document;
-  private ArrayList<Author> authors;
-  private int[] positions;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param document
-   * @param journal 
-   */
-  public AddAuthorsToDocumentEdit(Document document, ArrayList<Author> authors) {
-    this.document = document;
-    this.authors = authors;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @return
-   * @throws KnowledgeBaseException 
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-    
-    boolean successful = true;
-    int i;
-    DocumentAuthorDAO documentAuthorDAO;
-    
-    try {
-      
-      this.positions = new int[this.authors.size()];
-      
-      documentAuthorDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAuthorDAO();
-      
-      for (i = 0; i < this.authors.size(); i++) {
-        
-        this.positions[i] = documentAuthorDAO.getMaxPosition(this.document.getDocumentID()) + 1;
-      
-        documentAuthorDAO.addDocumentAuthor(this.document.getDocumentID(), 
-                this.authors.get(i).getAuthorID(), this.positions[i], true);
-      }
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-      if (successful) {
+    private Document document;
+    private ArrayList<Author> authors;
+    private int[] positions;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+    /**
+     * @param document
+     * @param journal
+     */
+    public AddAuthorsToDocumentEdit(Document document, ArrayList<Author> authors) {
+        this.document = document;
+        this.authors = authors;
     }
 
-    return successful;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
-    
-    boolean successful = true; 
-    int i;
-    DocumentAuthorDAO documentAuthorDAO;
-    
-    try {
-      
-      documentAuthorDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAuthorDAO();
-      
-      for (i = 0; i < this.authors.size(); i++) {
-      
-        documentAuthorDAO.removeDocumentAuthor(this.document.getDocumentID(), 
-                this.authors.get(i).getAuthorID(), true);
-      }
+    /**
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-      if (successful) {
+        boolean successful = true;
+        int i;
+        DocumentAuthorDAO documentAuthorDAO;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        try {
 
-      } else {
+            this.positions = new int[this.authors.size()];
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            documentAuthorDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAuthorDAO();
 
-    } catch (KnowledgeBaseException e) {
+            for (i = 0; i < this.authors.size(); i++) {
 
-      e.printStackTrace(System.err);
+                this.positions[i] = documentAuthorDAO.getMaxPosition(this.document.getDocumentID()) + 1;
 
-      try{
+                documentAuthorDAO.addDocumentAuthor(this.document.getDocumentID(),
+                        this.authors.get(i).getAuthorID(), this.positions[i], true);
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            if (successful) {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        e2.printStackTrace(System.err);
+                UndoStack.addEdit(this);
 
-      }
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
     }
-  }
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
-    
-    boolean successful = true;
-    int i;
-    DocumentAuthorDAO documentAuthorDAO;
-    
-    try {
-      
-      documentAuthorDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAuthorDAO();
-      
-      for (i = 0; i < this.authors.size(); i++) {
-      
-        documentAuthorDAO.addDocumentAuthor(this.document.getDocumentID(), 
-                this.authors.get(i).getAuthorID(), this.positions[i], true);
-      }
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-      if (successful) {
+        boolean successful = true;
+        int i;
+        DocumentAuthorDAO documentAuthorDAO;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        try {
 
-      } else {
+            documentAuthorDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAuthorDAO();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            for (i = 0; i < this.authors.size(); i++) {
 
-    } catch (KnowledgeBaseException e) {
+                documentAuthorDAO.removeDocumentAuthor(this.document.getDocumentID(),
+                        this.authors.get(i).getAuthorID(), true);
+            }
 
-      e.printStackTrace(System.err);
+            if (successful) {
 
-      try{
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            } else {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-        e2.printStackTrace(System.err);
+        } catch (KnowledgeBaseException e) {
 
-      }
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        int i;
+        DocumentAuthorDAO documentAuthorDAO;
+
+        try {
+
+            documentAuthorDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAuthorDAO();
+
+            for (i = 0; i < this.authors.size(); i++) {
+
+                documentAuthorDAO.addDocumentAuthor(this.document.getDocumentID(),
+                        this.authors.get(i).getAuthorID(), this.positions[i], true);
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

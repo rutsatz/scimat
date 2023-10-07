@@ -8,9 +8,8 @@ package es.ugr.scimat.analysis;
 import java.io.Serializable;
 
 /**
- *
  * @author mjcobo
  */
 public enum SimilarityMeasuresEnum implements Serializable {
-  AssociationStrength, EquivalenceIndex, InclusionIndex, JaccardIndex, SaltonCosine
+    AssociationStrength, EquivalenceIndex, InclusionIndex, JaccardIndex, SaltonCosine
 }

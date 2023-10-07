@@ -5,15 +5,14 @@
  */
 package es.ugr.scimat.gui.commands.task;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
 import es.ugr.scimat.gui.commands.NoUndoableTask;
+
+import javax.swing.*;
 
 /**
  * This class implement an undoable task. It deals with the visualization of a
  * panel (particularly a manager panel) in the main frame.
- * 
+ * <p>
  * When the {@code execute()} method is called, the task remove all the elements
  * from the receiver, and add the new panel.
  *
@@ -21,51 +20,51 @@ import es.ugr.scimat.gui.commands.NoUndoableTask;
  */
 public class ShowManagerTask implements NoUndoableTask {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The component where the panel will be added
-   */
-  private JComponent receiver;
+    /**
+     * The component where the panel will be added
+     */
+    private JComponent receiver;
 
-  /**
-   * The panel to add.
-   */
-  private JPanel panel;
+    /**
+     * The panel to add.
+     */
+    private JPanel panel;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * Contructs a new {@link ShowManagerTask}.
-   * 
-   * @param receiver The component where the panel will be added
-   * @param panel The panel to add
-   */
-  public ShowManagerTask(JComponent receiver, JPanel panel) {
-    this.receiver = receiver;
-    this.panel = panel;
-  }
+    /**
+     * Contructs a new {@link ShowManagerTask}.
+     *
+     * @param receiver The component where the panel will be added
+     * @param panel    The panel to add
+     */
+    public ShowManagerTask(JComponent receiver, JPanel panel) {
+        this.receiver = receiver;
+        this.panel = panel;
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  public void execute() {
+    /**
+     *
+     */
+    public void execute() {
 
-    this.receiver.removeAll();
-    this.receiver.add(this.panel);
-    this.receiver.validate();
-    this.receiver.repaint();
-  }
+        this.receiver.removeAll();
+        this.receiver.add(this.panel);
+        this.receiver.validate();
+        this.receiver.repaint();
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

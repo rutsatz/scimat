@@ -9,56 +9,53 @@ import es.ugr.scimat.api.dataset.Dataset;
 import es.ugr.scimat.api.mapping.clustering.result.Cluster;
 
 /**
- *
  * @author mjcobo
  */
 public class CouplingClusterLabellerBasedOnMainNode implements ClusterLabeller {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private Dataset dataset;
+    private Dataset dataset;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param dataset
-   */
-  public CouplingClusterLabellerBasedOnMainNode(Dataset dataset) {
-    this.dataset = dataset;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @param cluster
-   * @return
-   */
-  public String execute(Cluster cluster) {
-
-    String label;
-    Integer mainNode;
-
-    label = "";
-
-    mainNode = cluster.getMainNode();
-
-    if (mainNode != null) {
-
-      label = mainNode.toString();
+    /**
+     * @param dataset
+     */
+    public CouplingClusterLabellerBasedOnMainNode(Dataset dataset) {
+        this.dataset = dataset;
     }
 
-    return label;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param cluster
+     * @return
+     */
+    public String execute(Cluster cluster) {
+
+        String label;
+        Integer mainNode;
+
+        label = "";
+
+        mainNode = cluster.getMainNode();
+
+        if (mainNode != null) {
+
+            label = mainNode.toString();
+        }
+
+        return label;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

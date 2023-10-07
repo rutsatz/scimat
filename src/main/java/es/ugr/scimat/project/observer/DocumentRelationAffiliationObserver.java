@@ -8,10 +8,9 @@ package es.ugr.scimat.project.observer;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 
 /**
- *
  * @author mjcobo
  */
 public interface DocumentRelationAffiliationObserver {
 
-  public void relationChanged() throws KnowledgeBaseException;
+    public void relationChanged() throws KnowledgeBaseException;
 }

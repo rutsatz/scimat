@@ -5,59 +5,56 @@
  */
 package es.ugr.scimat.gui.components.globalslavepanel;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 /**
- * 
- * @author mjcobo
  * @param <M> the master {@link Entity}.
+ * @author mjcobo
  */
 public abstract class GlobalSlavePanel<M extends Comparable<M>> extends JPanel {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private M masterItem;
+    private M masterItem;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public GlobalSlavePanel() {
+    /***************************************************************************/
 
-    this.masterItem = null;
-  }
+    public GlobalSlavePanel() {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        this.masterItem = null;
+    }
 
-  /**
-   * 
-   * @param masterItem
-   */
-  public abstract void refresh(M masterItem);
-  
-  /**
-   *
-   * @return
-   */
-  public M getMasterItem() {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    return this.masterItem;
-  }
+    /**
+     * @param masterItem
+     */
+    public abstract void refresh(M masterItem);
 
-  /**
-   *
-   * @param masterItem
-   */
-  protected void setMasterItem(M masterItem) {
-    this.masterItem = masterItem;
-  }
+    /**
+     * @return
+     */
+    public M getMasterItem() {
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+        return this.masterItem;
+    }
+
+    /**
+     * @param masterItem
+     */
+    protected void setMasterItem(M masterItem) {
+        this.masterItem = masterItem;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 
 }

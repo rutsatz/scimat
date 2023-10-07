@@ -5,108 +5,103 @@
  */
 package es.ugr.scimat.api.analysis.performance.docmapper;
 
+import es.ugr.scimat.api.dataset.AggregatedDataset;
+import es.ugr.scimat.api.dataset.Dataset;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import es.ugr.scimat.api.dataset.AggregatedDataset;
-import es.ugr.scimat.api.dataset.Dataset;
-
 /**
- *
  * @author mjcobo
  */
 public class IntersectionDocumentMapper implements DocumentMapper {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private Dataset dataset;
+    private Dataset dataset;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param dataset
-   */
-  public IntersectionDocumentMapper(Dataset dataset) {
-    this.dataset = dataset;
-  }
-
-  /**
-   *
-   * @param aggregatedDataset
-   */
-  public IntersectionDocumentMapper(AggregatedDataset aggregatedDataset) {
-    this.dataset = aggregatedDataset;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * Execute the document mapper, returning a list with the identifiers of
-   * the documents that belong to the items according to a specific
-   * implementation.
-   * 
-   * @param itemsList A list with the identifier of the items.
-   *
-   * @return A document set with list of documents which are associated with the items.
-   */
-  public DocumentSet executeMapper(ArrayList<Integer> itemsList) {
-
-    int i;
-    TreeSet<Integer> result;
-    DocumentSet documentSet;
-
-    result = new TreeSet<Integer>();
-
-    // Calculate the union
-    if (itemsList.size() > 0) {
-
-      result.addAll(getDocuments(itemsList.get(0)));
-
-      for (i = 1; i < itemsList.size(); i++) {
-
-        result.retainAll(getDocuments(itemsList.get(i)));
-
-      }
+    /**
+     * @param dataset
+     */
+    public IntersectionDocumentMapper(Dataset dataset) {
+        this.dataset = dataset;
     }
 
-    documentSet = new DocumentSet();
-
-    Iterator<Integer> iterator = result.iterator();
-
-    while (iterator.hasNext()) {
-
-      documentSet.addDocument(iterator.next());
+    /**
+     * @param aggregatedDataset
+     */
+    public IntersectionDocumentMapper(AggregatedDataset aggregatedDataset) {
+        this.dataset = aggregatedDataset;
     }
 
-    return documentSet;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * Execute the document mapper, returning a list with the identifiers of
+     * the documents that belong to the items according to a specific
+     * implementation.
+     *
+     * @param itemsList A list with the identifier of the items.
+     * @return A document set with list of documents which are associated with the items.
+     */
+    public DocumentSet executeMapper(ArrayList<Integer> itemsList) {
 
-  /**
-   *
-   * @param itemID
-   * @return
-   */
-  private ArrayList<Integer> getDocuments(Integer itemID) {
+        int i;
+        TreeSet<Integer> result;
+        DocumentSet documentSet;
 
-    if (this.dataset instanceof AggregatedDataset) {
+        result = new TreeSet<Integer>();
 
-      return ((AggregatedDataset)this.dataset).getDocumentsInHighLevelItem(itemID);
+        // Calculate the union
+        if (itemsList.size() > 0) {
 
-    } else {
+            result.addAll(getDocuments(itemsList.get(0)));
 
-      return this.dataset.getDocumentsInItem(itemID);
+            for (i = 1; i < itemsList.size(); i++) {
+
+                result.retainAll(getDocuments(itemsList.get(i)));
+
+            }
+        }
+
+        documentSet = new DocumentSet();
+
+        Iterator<Integer> iterator = result.iterator();
+
+        while (iterator.hasNext()) {
+
+            documentSet.addDocument(iterator.next());
+        }
+
+        return documentSet;
     }
-  }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
+
+    /**
+     * @param itemID
+     * @return
+     */
+    private ArrayList<Integer> getDocuments(Integer itemID) {
+
+        if (this.dataset instanceof AggregatedDataset) {
+
+            return ((AggregatedDataset) this.dataset).getDocumentsInHighLevelItem(itemID);
+
+        } else {
+
+            return this.dataset.getDocumentsInItem(itemID);
+        }
+    }
 }

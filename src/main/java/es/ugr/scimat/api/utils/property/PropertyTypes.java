@@ -6,10 +6,9 @@
 package es.ugr.scimat.api.utils.property;
 
 /**
- *
  * @author mjcobo
  */
 public enum PropertyTypes {
 
-  Double,Int,Integer,String,Collection,DocumentsProperty
+    Double, Int, Integer, String, Collection, DocumentsProperty
 }

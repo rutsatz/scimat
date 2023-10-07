@@ -6,90 +6,87 @@
 
 package es.ugr.scimat.gui.commands.task;
 
-import java.io.File;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import es.ugr.scimat.analysis.CurrentAnalysis;
 import es.ugr.scimat.gui.commands.NoUndoableTask;
 import es.ugr.scimat.gui.components.analysisview.AnalysisViewManager;
 import es.ugr.scimat.gui.components.cursor.CursorManager;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.*;
+import java.io.File;
+
 /**
- *
  * @author Manuel Jesus Cobo Martin.
  */
 public class LoadAnalysisTask implements NoUndoableTask {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private JComponent receiver;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private JComponent receiver;
 
-  /**
-   * 
-   * @param component
-   */
-  public LoadAnalysisTask(JComponent component) {
-    this.receiver = component;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * Tarea a realizar por el objeto.
-   */
-  public void execute() {
-  
-    String path;
-
-    JFileChooser fileChooser = new JFileChooser();
-
-    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-    fileChooser.setMultiSelectionEnabled(false);
-    
-    if (CurrentProject.getInstance().isKnowledbaseLoaded()) {
-      
-      fileChooser.setCurrentDirectory(new File(CurrentProject.getInstance().getCurrentProjectPath()));
+    /**
+     * @param component
+     */
+    public LoadAnalysisTask(JComponent component) {
+        this.receiver = component;
     }
 
-    int returnVal = fileChooser.showOpenDialog(this.receiver);
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    if (returnVal == JFileChooser.APPROVE_OPTION) {
+    /**
+     * Tarea a realizar por el objeto.
+     */
+    public void execute() {
 
-      path = fileChooser.getSelectedFile().getAbsolutePath();
-      
-      try {
+        String path;
 
-        CursorManager.getInstance().setWaitCursor();
-        CurrentAnalysis.getInstance().loadResults(path);
-        CursorManager.getInstance().setNormalCursor();
+        JFileChooser fileChooser = new JFileChooser();
 
-      } catch (Exception e) {
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(false);
 
-        CursorManager.getInstance().setNormalCursor();
-        e.printStackTrace(System.err);
+        if (CurrentProject.getInstance().isKnowledbaseLoaded()) {
 
-        JOptionPane.showMessageDialog(receiver, "The file's format is "
-                + "incorrect.\nAn error happened.\n"
-                + "Please choose other file.",
-                "Error", JOptionPane.ERROR_MESSAGE);
-      }
-      
-      AnalysisViewManager.getInstance().showAnalysisViewDialog();
+            fileChooser.setCurrentDirectory(new File(CurrentProject.getInstance().getCurrentProjectPath()));
+        }
+
+        int returnVal = fileChooser.showOpenDialog(this.receiver);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+            path = fileChooser.getSelectedFile().getAbsolutePath();
+
+            try {
+
+                CursorManager.getInstance().setWaitCursor();
+                CurrentAnalysis.getInstance().loadResults(path);
+                CursorManager.getInstance().setNormalCursor();
+
+            } catch (Exception e) {
+
+                CursorManager.getInstance().setNormalCursor();
+                e.printStackTrace(System.err);
+
+                JOptionPane.showMessageDialog(receiver, "The file's format is "
+                                + "incorrect.\nAn error happened.\n"
+                                + "Please choose other file.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            AnalysisViewManager.getInstance().showAnalysisViewDialog();
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 
 }

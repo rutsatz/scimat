@@ -8,10 +8,9 @@ package es.ugr.scimat.api.analysis.network.labeller;
 import es.ugr.scimat.api.mapping.clustering.result.Cluster;
 
 /**
- *
  * @author mjcobo
  */
 public interface ClusterLabeller {
 
-  public String execute(Cluster cluster);
+    public String execute(Cluster cluster);
 }

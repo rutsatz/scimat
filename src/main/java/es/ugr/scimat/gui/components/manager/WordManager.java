@@ -5,70 +5,69 @@
  */
 package es.ugr.scimat.gui.components.manager;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.commands.edit.delete.DeleteWordEdit;
+import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
 import es.ugr.scimat.gui.components.adddialog.AddDialogManager;
+import es.ugr.scimat.gui.components.globalslavepanel.WordGlobalSlavePanel;
 import es.ugr.scimat.gui.components.itemslist.WordsListPanel;
 import es.ugr.scimat.gui.components.joindialog.JoinEntitiesDialogManager;
-import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
-import es.ugr.scimat.gui.components.globalslavepanel.WordGlobalSlavePanel;
 import es.ugr.scimat.model.knowledgebase.entity.Word;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class WordManager extends GenericItemManagerPanel<Word> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  public WordManager() {
-    super(new WordsListPanel(),
-          new WordGlobalSlavePanel());
+    /**
+     *
+     */
+    public WordManager() {
+        super(new WordsListPanel(),
+                new WordGlobalSlavePanel());
 
-    setMasterPanelTitle("Words list");
-    setSlavePanelTitle("Word detail");
-  }
+        setMasterPanelTitle("Words list");
+        setSlavePanelTitle("Word detail");
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  @Override
-  public void addAction() {
-    AddDialogManager.getInstance().showAddWordDialog();
-  }
+    /**
+     *
+     */
+    @Override
+    public void addAction() {
+        AddDialogManager.getInstance().showAddWordDialog();
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void moveToAction(ArrayList<Word> items) {
-    JoinEntitiesDialogManager.getInstance().showWordsJoinDialog(items);
-  }
+    /**
+     *
+     */
+    @Override
+    public void moveToAction(ArrayList<Word> items) {
+        JoinEntitiesDialogManager.getInstance().showWordsJoinDialog(items);
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void removeAction(ArrayList<Word> items) {
-    (new PerformKnowledgeBaseEditTask(new DeleteWordEdit(items), this)).execute();
-  }
+    /**
+     *
+     */
+    @Override
+    public void removeAction(ArrayList<Word> items) {
+        (new PerformKnowledgeBaseEditTask(new DeleteWordEdit(items), this)).execute();
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

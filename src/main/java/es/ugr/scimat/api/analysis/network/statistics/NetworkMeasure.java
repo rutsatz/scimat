@@ -5,21 +5,19 @@
  */
 package es.ugr.scimat.api.analysis.network.statistics;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.api.mapping.WholeNetwork;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public interface NetworkMeasure {
 
-  /**
-   * 
-   * @param network
-   * @param nodeList
-   * @return
-   */
-  public double calculateMeasure(WholeNetwork network, ArrayList<Integer> nodeList);
+    /**
+     * @param network
+     * @param nodeList
+     * @return
+     */
+    public double calculateMeasure(WholeNetwork network, ArrayList<Integer> nodeList);
 }

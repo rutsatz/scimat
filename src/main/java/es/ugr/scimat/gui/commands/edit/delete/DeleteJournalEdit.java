@@ -5,256 +5,252 @@
  */
 package es.ugr.scimat.gui.commands.edit.delete;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
 import es.ugr.scimat.model.knowledgebase.dao.DocumentDAO;
 import es.ugr.scimat.model.knowledgebase.dao.JournalDAO;
 import es.ugr.scimat.model.knowledgebase.dao.JournalSubjectCategoryPublishDateDAO;
-import es.ugr.scimat.model.knowledgebase.entity.JournalSubjectCategoryPublishDate;
 import es.ugr.scimat.model.knowledgebase.entity.Document;
 import es.ugr.scimat.model.knowledgebase.entity.Journal;
+import es.ugr.scimat.model.knowledgebase.entity.JournalSubjectCategoryPublishDate;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class DeleteJournalEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The elements delete
-   */
-  private ArrayList<Journal> journalsToDelete;
-  private ArrayList<ArrayList<Document>> documents = new ArrayList<ArrayList<Document>>();
-  private ArrayList<ArrayList<JournalSubjectCategoryPublishDate>> journalSubjectCategoryPublishDates = new ArrayList<ArrayList<JournalSubjectCategoryPublishDate>>();
+    /**
+     * The elements delete
+     */
+    private ArrayList<Journal> journalsToDelete;
+    private ArrayList<ArrayList<Document>> documents = new ArrayList<ArrayList<Document>>();
+    private ArrayList<ArrayList<JournalSubjectCategoryPublishDate>> journalSubjectCategoryPublishDates = new ArrayList<ArrayList<JournalSubjectCategoryPublishDate>>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param journalsToDelete
-   */
-  public DeleteJournalEdit(ArrayList<Journal> journalsToDelete) {
-    super();
-    
-    this.journalsToDelete = journalsToDelete;
-  }
+    /**
+     * @param journalsToDelete
+     */
+    public DeleteJournalEdit(ArrayList<Journal> journalsToDelete) {
+        super();
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = true;
-    int i;
-    JournalDAO journalDAO;
-    Journal journal;
-
-    try {
-
-      i = 0;
-      journalDAO = CurrentProject.getInstance().getFactoryDAO().getJournalDAO();
-
-      while ((i < this.journalsToDelete.size()) && (successful)) {
-
-        journal = this.journalsToDelete.get(i);
-
-        // Retrieve its relation
-        this.documents.add(journalDAO.getDocuments(journal.getJournalID()));
-        this.journalSubjectCategoryPublishDates.add(journalDAO.getJournalSubjectCategoryPublishDates(journal.getJournalID()));
-
-        successful = journalDAO.removeJournal(journal.getJournalID(), true);
-
-        i++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.journalsToDelete = journalsToDelete;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = true;
+        int i;
+        JournalDAO journalDAO;
+        Journal journal;
 
-    int i, j;
-    boolean successful = true;
-    JournalDAO journalDAO;
-    Journal journal;
-    JournalSubjectCategoryPublishDate journalSubjectCategoryPublishDate;
-    Document document;
-    JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
-    DocumentDAO documentDAO;
+        try {
 
-    try {
+            i = 0;
+            journalDAO = CurrentProject.getInstance().getFactoryDAO().getJournalDAO();
+
+            while ((i < this.journalsToDelete.size()) && (successful)) {
+
+                journal = this.journalsToDelete.get(i);
+
+                // Retrieve its relation
+                this.documents.add(journalDAO.getDocuments(journal.getJournalID()));
+                this.journalSubjectCategoryPublishDates.add(journalDAO.getJournalSubjectCategoryPublishDates(journal.getJournalID()));
+
+                successful = journalDAO.removeJournal(journal.getJournalID(), true);
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                UndoStack.addEdit(this);
 
 
-      journalDAO = CurrentProject.getInstance().getFactoryDAO().getJournalDAO();
-      journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
-      documentDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO();
+            } else {
 
-      i = 0;
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      while ((i < this.journalsToDelete.size()) && (successful)) {
+                this.errorMessage = "An error happened";
 
-        journal = this.journalsToDelete.get(i);
+            }
 
-        successful = journalDAO.addJournal(journal, true);
 
-        j = 0;
+        } catch (KnowledgeBaseException e) {
 
-        while ((j < this.journalSubjectCategoryPublishDates.get(i).size()) && (successful)) {
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-          journalSubjectCategoryPublishDate = this.journalSubjectCategoryPublishDates.get(i).get(j);
+            successful = false;
+            this.errorMessage = "An exception happened.";
 
-          successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(journalSubjectCategoryPublishDate.getSubjectCategory().getSubjectCategoryID(),
-                                                           journalSubjectCategoryPublishDate.getJournal().getJournalID(),
-                                                           journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
-
-          j++;
+            throw e;
         }
 
-        j = 0;
+        return successful;
 
-        while ((j < this.documents.get(i).size()) && (successful)) {
+    }
 
-          successful = documentDAO.setJournal(this.documents.get(i).get(j).getDocumentID(),
-                                              journal.getJournalID(), true);
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-          j++;
+        int i, j;
+        boolean successful = true;
+        JournalDAO journalDAO;
+        Journal journal;
+        JournalSubjectCategoryPublishDate journalSubjectCategoryPublishDate;
+        Document document;
+        JournalSubjectCategoryPublishDateDAO journalSubjectCategoryPublishDateDAO;
+        DocumentDAO documentDAO;
+
+        try {
+
+
+            journalDAO = CurrentProject.getInstance().getFactoryDAO().getJournalDAO();
+            journalSubjectCategoryPublishDateDAO = CurrentProject.getInstance().getFactoryDAO().getJournalSubjectCategoryPublishDateDAO();
+            documentDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentDAO();
+
+            i = 0;
+
+            while ((i < this.journalsToDelete.size()) && (successful)) {
+
+                journal = this.journalsToDelete.get(i);
+
+                successful = journalDAO.addJournal(journal, true);
+
+                j = 0;
+
+                while ((j < this.journalSubjectCategoryPublishDates.get(i).size()) && (successful)) {
+
+                    journalSubjectCategoryPublishDate = this.journalSubjectCategoryPublishDates.get(i).get(j);
+
+                    successful = journalSubjectCategoryPublishDateDAO.addSubjectCategoryToJournal(journalSubjectCategoryPublishDate.getSubjectCategory().getSubjectCategoryID(),
+                            journalSubjectCategoryPublishDate.getJournal().getJournalID(),
+                            journalSubjectCategoryPublishDate.getPublishDate().getPublishDateID(), true);
+
+                    j++;
+                }
+
+                j = 0;
+
+                while ((j < this.documents.get(i).size()) && (successful)) {
+
+                    successful = documentDAO.setJournal(this.documents.get(i).get(j).getDocumentID(),
+                            journal.getJournalID(), true);
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
         }
-
-        i++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
 
-    int i;
-    boolean successful = true;
-    JournalDAO journalDAO;
-    Journal journal;
+        int i;
+        boolean successful = true;
+        JournalDAO journalDAO;
+        Journal journal;
 
-    try {
+        try {
 
-      i = 0;
-      journalDAO = CurrentProject.getInstance().getFactoryDAO().getJournalDAO();
+            i = 0;
+            journalDAO = CurrentProject.getInstance().getFactoryDAO().getJournalDAO();
 
-      while ((i < this.journalsToDelete.size()) && (successful)) {
+            while ((i < this.journalsToDelete.size()) && (successful)) {
 
-        journal = this.journalsToDelete.get(i);
+                journal = this.journalsToDelete.get(i);
 
-        successful = journalDAO.removeJournal(journal.getJournalID(), true);
+                successful = journalDAO.removeJournal(journal.getJournalID(), true);
 
-        i++;
-      }
+                i++;
+            }
 
-      if (successful) {
+            if (successful) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

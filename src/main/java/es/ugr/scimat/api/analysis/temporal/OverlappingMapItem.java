@@ -9,104 +9,97 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- *
  * @author mjcobo
  */
 public class OverlappingMapItem implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private ArrayList<Integer> items;
-  private ArrayList<Integer> newItems;
-  private ArrayList<Integer> dissapearedItems;
+    private ArrayList<Integer> items;
+    private ArrayList<Integer> newItems;
+    private ArrayList<Integer> dissapearedItems;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param items
-   * @param newItems
-   * @param dissapearedItems
-   */
-  public OverlappingMapItem(ArrayList<Integer> items,
-          ArrayList<Integer> newItems, ArrayList<Integer> dissapearedItems) {
-    
-    this.items = items;
-    this.newItems = newItems;
-    this.dissapearedItems = dissapearedItems;
-  }
+    /**
+     * @param items
+     * @param newItems
+     * @param dissapearedItems
+     */
+    public OverlappingMapItem(ArrayList<Integer> items,
+                              ArrayList<Integer> newItems, ArrayList<Integer> dissapearedItems) {
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        this.items = items;
+        this.newItems = newItems;
+        this.dissapearedItems = dissapearedItems;
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public int getItemsCount() {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    return this.items.size();
-  }
+    /**
+     * @return
+     */
+    public int getItemsCount() {
 
-  /**
-   *
-   * @return
-   */
-  public ArrayList<Integer> getItems() {
-    return items;
-  }
+        return this.items.size();
+    }
 
-  public void setItems(ArrayList<Integer> items) {
-    this.items = items;
-  }
+    /**
+     * @return
+     */
+    public ArrayList<Integer> getItems() {
+        return items;
+    }
 
-  /**
-   *
-   * @return
-   */
-  public int getNewItemsCount() {
+    public void setItems(ArrayList<Integer> items) {
+        this.items = items;
+    }
 
-    return this.newItems.size();
-  }
+    /**
+     * @return
+     */
+    public int getNewItemsCount() {
 
-  public void setNewItems(ArrayList<Integer> newItems) {
-    this.newItems = newItems;
-  }
+        return this.newItems.size();
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public ArrayList<Integer> getNewItems() {
-    return newItems;
-  }
-  
-  /**
-   * 
-   */
-  public int getDissapearedItemsCount() {
+    public void setNewItems(ArrayList<Integer> newItems) {
+        this.newItems = newItems;
+    }
 
-    return this.dissapearedItems.size();
-  }
+    /**
+     * @return
+     */
+    public ArrayList<Integer> getNewItems() {
+        return newItems;
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public ArrayList<Integer> getDissapearedItems() {
-    return dissapearedItems;
-  }
+    /**
+     *
+     */
+    public int getDissapearedItemsCount() {
 
-  public void setDissapearedItems(ArrayList<Integer> dissapearedItems) {
-    this.dissapearedItems = dissapearedItems;
-  }
+        return this.dissapearedItems.size();
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @return
+     */
+    public ArrayList<Integer> getDissapearedItems() {
+        return dissapearedItems;
+    }
+
+    public void setDissapearedItems(ArrayList<Integer> dissapearedItems) {
+        this.dissapearedItems = dissapearedItems;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

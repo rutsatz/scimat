@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,240 +12,239 @@ import es.ugr.scimat.model.knowledgebase.entity.Reference;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateReferenceEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer referenceID;
+    /**
+     *
+     */
+    private Integer referenceID;
 
-  /**
-   *
-   */
-  private String fullReference;
+    /**
+     *
+     */
+    private String fullReference;
 
-  /**
-   *
-   */
-  private String volume;
+    /**
+     *
+     */
+    private String volume;
 
-  /**
-   *
-   */
-  private String issue;
+    /**
+     *
+     */
+    private String issue;
 
-  /**
-   *
-   */
-  private String page;
+    /**
+     *
+     */
+    private String page;
 
-  /**
-   *
-   */
-  private String year;
+    /**
+     *
+     */
+    private String year;
 
-  /**
-   *
-   */
-  private String doi;
+    /**
+     *
+     */
+    private String doi;
 
-  /**
-   *
-   */
-  private String format;
+    /**
+     *
+     */
+    private String format;
 
-  /**
-   * The elements added
-   */
-  private Reference referenceOld;
-  
-  private Reference referenceUpdated;
+    /**
+     * The elements added
+     */
+    private Reference referenceOld;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private Reference referenceUpdated;
 
-  public UpdateReferenceEdit(Integer referenceID, String fullReference, String volume, String issue,
-          String page, String year, String doi, String format) {
-    super();
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-    this.referenceID = referenceID;
-    this.fullReference = fullReference;
-    this.volume = volume;
-    this.issue = issue;
-    this.page = page;
-    this.year = year;
-    this.doi = doi;
-    this.format = format;
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public UpdateReferenceEdit(Integer referenceID, String fullReference, String volume, String issue,
+                               String page, String year, String doi, String format) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = false;
-
-    try {
-
-      this.referenceOld = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReference(referenceID);
-
-      if (this.referenceOld.getFullReference().equals(this.fullReference)) {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().updateReference(referenceID,
-                fullReference, volume, issue, page, year, doi, format, true);
-
-        this.referenceUpdated = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReference(referenceID);
-
-      } else if (this.fullReference == null) {
-
-        successful = false;
-        this.errorMessage = "The full reference can not be null.";
-
-      } else if (CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().checkReference(fullReference)) {
-
-        successful = false;
-        this.errorMessage = "A reference yet exists with this full reference.";
-
-      } else {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().updateReference(referenceID,
-                fullReference, volume, issue, page, year, doi, format, true);
-
-        this.referenceUpdated = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReference(referenceID);
-
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        successful = true;
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.referenceID = referenceID;
+        this.fullReference = fullReference;
+        this.volume = volume;
+        this.issue = issue;
+        this.page = page;
+        this.year = year;
+        this.doi = doi;
+        this.format = format;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = false;
 
-    boolean flag;
+        try {
 
-    try {
+            this.referenceOld = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReference(referenceID);
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().updateReference(referenceOld.getReferenceID(),
-              referenceOld.getFullReference(), referenceOld.getVolume(), referenceOld.getIssue(),
-              referenceOld.getPage(), referenceOld.getYear(), referenceOld.getDoi(),
-              referenceOld.getFormat(), true);
+            if (this.referenceOld.getFullReference().equals(this.fullReference)) {
 
-      if (flag) {
+                successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().updateReference(referenceID,
+                        fullReference, volume, issue, page, year, doi, format, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                this.referenceUpdated = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReference(referenceID);
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+            } else if (this.fullReference == null) {
 
-      } else {
+                successful = false;
+                this.errorMessage = "The full reference can not be null.";
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            } else if (CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().checkReference(fullReference)) {
 
-    } catch (KnowledgeBaseException e) {
+                successful = false;
+                this.errorMessage = "A reference yet exists with this full reference.";
 
-      e.printStackTrace(System.err);
+            } else {
 
-      try{
+                successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().updateReference(referenceID,
+                        fullReference, volume, issue, page, year, doi, format, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                this.referenceUpdated = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReference(referenceID);
 
-      } catch (KnowledgeBaseException e2) {
+            }
 
-        e2.printStackTrace(System.err);
+            if (successful) {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                successful = true;
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
+
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().updateReference(referenceID,
-              fullReference, volume, issue, page, year, doi, format, true);
+            flag = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().updateReference(referenceOld.getReferenceID(),
+                    referenceOld.getFullReference(), referenceOld.getVolume(), referenceOld.getIssue(),
+                    referenceOld.getPage(), referenceOld.getYear(), referenceOld.getDoi(),
+                    referenceOld.getFormat(), true);
 
-      if (flag) {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      } else {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            } else {
 
-    } catch (KnowledgeBaseException e) {
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      e.printStackTrace(System.err);
+        } catch (KnowledgeBaseException e) {
 
-      try{
+            e.printStackTrace(System.err);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            try {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-        e2.printStackTrace(System.err);
+            } catch (KnowledgeBaseException e2) {
 
-      }
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean flag;
+
+        try {
+
+            flag = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().updateReference(referenceID,
+                    fullReference, volume, issue, page, year, doi, format, true);
+
+            if (flag) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

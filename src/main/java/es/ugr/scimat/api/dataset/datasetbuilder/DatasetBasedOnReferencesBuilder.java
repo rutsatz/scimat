@@ -5,7 +5,6 @@
  */
 package es.ugr.scimat.api.dataset.datasetbuilder;
 
-import java.util.ArrayList;
 import es.ugr.scimat.api.dataset.Dataset;
 import es.ugr.scimat.api.dataset.exception.NotExistsItemException;
 import es.ugr.scimat.model.knowledgebase.KnowledgeBaseManager;
@@ -18,105 +17,105 @@ import es.ugr.scimat.model.knowledgebase.entity.Reference;
 import es.ugr.scimat.model.knowledgebase.entity.ReferenceGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class DatasetBasedOnReferencesBuilder implements DatasetBuilder {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private KnowledgeBaseManager kbm;
+    private KnowledgeBaseManager kbm;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  public DatasetBasedOnReferencesBuilder(KnowledgeBaseManager kbm) {
+    /**
+     *
+     */
+    public DatasetBasedOnReferencesBuilder(KnowledgeBaseManager kbm) {
 
-    this.kbm = kbm;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   * @param publishDateList
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  public Dataset execute(ArrayList<PublishDate> publishDateList) throws KnowledgeBaseException {
-
-    int i, j, k;
-    PublishDateDAO publishDateDAO = new PublishDateDAO(this.kbm);
-    DocumentDAO documentDAO = new DocumentDAO(this.kbm);
-    ReferenceDAO referenceDAO = new ReferenceDAO(this.kbm);
-    Document document;
-    ArrayList<Document> documentsList;
-    Reference reference;
-    ArrayList<Reference> referencesList;
-    ReferenceGroup referenceGroup;
-    Dataset dataset;
-
-    dataset = new Dataset();
-
-    // For each year we retrieved all the documents associated with it.
-    for (i = 0; i < publishDateList.size(); i++) {
-
-      documentsList = publishDateDAO.getDocuments(publishDateList.get(i).getPublishDateID());
-
-      // For each document we retrieved its associated references.
-      for (j = 0; j < documentsList.size(); j++) {
-
-        document = documentsList.get(j);
-
-        // Add the document to the dataset
-        dataset.addDocument(document.getDocumentID(), document.getCitationsCount());
-
-        referencesList = documentDAO.getReferences(document.getDocumentID());
-
-        // For each reference, if it has a referenceGroup associated and this
-        // group is not a stopGroup, we add this item to the document in the
-        // dataset.
-        for (k = 0; k < referencesList.size(); k++) {
-
-          reference = referencesList.get(k);
-
-          referenceGroup = referenceDAO.getReferenceGroup(reference.getReferenceID());
-
-          if ((referenceGroup != null) && (! referenceGroup.isStopGroup())) {
-
-            try {
-
-              dataset.addItemToDocument(document.getDocumentID(),
-                      referenceGroup.getReferenceGroupID(),
-                      referenceGroup.getGroupName());
-
-            } catch (NotExistsItemException e) {
-
-              System.err.println("An internal error occurs within the dataset "
-                      + "construction. The document "
-                      + document.getDocumentID() + " does not exist.");
-
-              e.printStackTrace(System.err);
-            }
-          }
-        }
-      }
-
+        this.kbm = kbm;
     }
 
-    return dataset;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param publishDateList
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public Dataset execute(ArrayList<PublishDate> publishDateList) throws KnowledgeBaseException {
+
+        int i, j, k;
+        PublishDateDAO publishDateDAO = new PublishDateDAO(this.kbm);
+        DocumentDAO documentDAO = new DocumentDAO(this.kbm);
+        ReferenceDAO referenceDAO = new ReferenceDAO(this.kbm);
+        Document document;
+        ArrayList<Document> documentsList;
+        Reference reference;
+        ArrayList<Reference> referencesList;
+        ReferenceGroup referenceGroup;
+        Dataset dataset;
+
+        dataset = new Dataset();
+
+        // For each year we retrieved all the documents associated with it.
+        for (i = 0; i < publishDateList.size(); i++) {
+
+            documentsList = publishDateDAO.getDocuments(publishDateList.get(i).getPublishDateID());
+
+            // For each document we retrieved its associated references.
+            for (j = 0; j < documentsList.size(); j++) {
+
+                document = documentsList.get(j);
+
+                // Add the document to the dataset
+                dataset.addDocument(document.getDocumentID(), document.getCitationsCount());
+
+                referencesList = documentDAO.getReferences(document.getDocumentID());
+
+                // For each reference, if it has a referenceGroup associated and this
+                // group is not a stopGroup, we add this item to the document in the
+                // dataset.
+                for (k = 0; k < referencesList.size(); k++) {
+
+                    reference = referencesList.get(k);
+
+                    referenceGroup = referenceDAO.getReferenceGroup(reference.getReferenceID());
+
+                    if ((referenceGroup != null) && (!referenceGroup.isStopGroup())) {
+
+                        try {
+
+                            dataset.addItemToDocument(document.getDocumentID(),
+                                    referenceGroup.getReferenceGroupID(),
+                                    referenceGroup.getGroupName());
+
+                        } catch (NotExistsItemException e) {
+
+                            System.err.println("An internal error occurs within the dataset "
+                                    + "construction. The document "
+                                    + document.getDocumentID() + " does not exist.");
+
+                            e.printStackTrace(System.err);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        return dataset;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

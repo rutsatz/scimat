@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.add;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,228 +12,228 @@ import es.ugr.scimat.model.knowledgebase.entity.Reference;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AddReferenceEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer referenceID;
+    /**
+     *
+     */
+    private Integer referenceID;
 
-  /**
-   *
-   */
-  private String fullReference;
+    /**
+     *
+     */
+    private String fullReference;
 
-  /**
-   *
-   */
-  private String volume;
+    /**
+     *
+     */
+    private String volume;
 
-  /**
-   *
-   */
-  private String issue;
+    /**
+     *
+     */
+    private String issue;
 
-  /**
-   *
-   */
-  private String page;
+    /**
+     *
+     */
+    private String page;
 
-  /**
-   *
-   */
-  private String year;
+    /**
+     *
+     */
+    private String year;
 
-  /**
-   *
-   */
-  private String doi;
+    /**
+     *
+     */
+    private String doi;
 
-  /**
-   *
-   */
-  private String format;
+    /**
+     *
+     */
+    private String format;
 
-  /**
-   * The elements added
-   */
-  private ArrayList<Reference> referencesAdded;
+    /**
+     * The elements added
+     */
+    private ArrayList<Reference> referencesAdded;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public AddReferenceEdit(String fullReference, String volume, String issue, 
-          String page, String year, String doi, String format) {
-    super();
-    
-    this.fullReference = fullReference;
-    this.volume = volume;
-    this.issue = issue;
-    this.page = page;
-    this.year = year;
-    this.doi = doi;
-    this.format = format;
-    this.referencesAdded = new ArrayList<Reference>();
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public AddReferenceEdit(String fullReference, String volume, String issue,
+                            String page, String year, String doi, String format) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+        this.fullReference = fullReference;
+        this.volume = volume;
+        this.issue = issue;
+        this.page = page;
+        this.year = year;
+        this.doi = doi;
+        this.format = format;
+        this.referencesAdded = new ArrayList<Reference>();
+    }
 
-    boolean successful = false;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    try {
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-      if (this.fullReference == null) {
-        
-        successful = false;
-        this.errorMessage = "The full reference can not be null.";
+        boolean successful = false;
 
-      } else if (CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().checkReference(fullReference)) {
+        try {
 
-        successful = false;
-        this.errorMessage = "A reference yet exists with this full reference.";
+            if (this.fullReference == null) {
 
-      } else {
+                successful = false;
+                this.errorMessage = "The full reference can not be null.";
 
-        this.referenceID = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().addReference(fullReference,
-                volume, issue, page, year, doi, format, true);
+            } else if (CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().checkReference(fullReference)) {
 
-        if (this.referenceID != null) {
+                successful = false;
+                this.errorMessage = "A reference yet exists with this full reference.";
 
-          CurrentProject.getInstance().getKnowledgeBase().commit();
+            } else {
 
-          this.referencesAdded.add(CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReference(referenceID));
+                this.referenceID = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().addReference(fullReference,
+                        volume, issue, page, year, doi, format, true);
 
-          KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                if (this.referenceID != null) {
 
-          successful = true;
+                    CurrentProject.getInstance().getKnowledgeBase().commit();
 
-          UndoStack.addEdit(this);
+                    this.referencesAdded.add(CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReference(referenceID));
 
-        } else {
+                    KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-          CurrentProject.getInstance().getKnowledgeBase().rollback();
+                    successful = true;
 
-          successful = false;
-          this.errorMessage = "An error happened.";
+                    UndoStack.addEdit(this);
+
+                } else {
+
+                    CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                    successful = false;
+                    this.errorMessage = "An error happened.";
+                }
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
-      }
 
-    } catch (KnowledgeBaseException e) {
+        return successful;
 
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
     }
 
-    return successful;
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-  }
+        boolean flag;
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        try {
 
-    boolean flag;
+            flag = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().removeReference(referenceID, true);
 
-    try {
+            if (flag) {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().removeReference(referenceID, true);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      if (flag) {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+            } else {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } else {
+        } catch (KnowledgeBaseException e) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            e.printStackTrace(System.err);
 
-    } catch (KnowledgeBaseException e) {
+            try {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      try{
+            } catch (KnowledgeBaseException e2) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                e2.printStackTrace(System.err);
 
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
+            }
+        }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().addReference(referenceID,
-              fullReference, volume, issue, page, year, doi, format, true);
+            flag = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().addReference(referenceID,
+                    fullReference, volume, issue, page, year, doi, format, true);
 
-      if (flag) {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

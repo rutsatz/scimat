@@ -7,10 +7,9 @@
 package es.ugr.scimat.gui.components.observer;
 
 /**
- *
  * @author Manuel Jesus Cobo Martin.
  */
 public interface SelectionObserver {
 
-  public void selectionChangeHappened(int[] selection);
+    public void selectionChangeHappened(int[] selection);
 }

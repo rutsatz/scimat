@@ -5,325 +5,308 @@
  */
 package es.ugr.scimat.model.knowledgebase.dao;
 
+import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
+import es.ugr.scimat.knowledgebaseevents.event.relation.DocumentRelationReferenceEvent;
+import es.ugr.scimat.knowledgebaseevents.event.update.*;
+import es.ugr.scimat.model.knowledgebase.KnowledgeBaseManager;
+import es.ugr.scimat.model.knowledgebase.entity.*;
+import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
+import es.ugr.scimat.project.CurrentProject;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.TreeSet;
-import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
-import es.ugr.scimat.knowledgebaseevents.event.relation.DocumentRelationReferenceEvent;
-import es.ugr.scimat.knowledgebaseevents.event.update.UpdateAuthorReferenceEvent;
-import es.ugr.scimat.knowledgebaseevents.event.update.UpdateAuthorReferenceGroupEvent;
-import es.ugr.scimat.knowledgebaseevents.event.update.UpdateDocumentEvent;
-import es.ugr.scimat.knowledgebaseevents.event.update.UpdateReferenceEvent;
-import es.ugr.scimat.knowledgebaseevents.event.update.UpdateReferenceGroupEvent;
-import es.ugr.scimat.knowledgebaseevents.event.update.UpdateReferenceSourceEvent;
-import es.ugr.scimat.knowledgebaseevents.event.update.UpdateReferenceSourceGroupEvent;
-import es.ugr.scimat.knowledgebaseevents.event.update.UpdateReferenceWithoutGroupEvent;
-import es.ugr.scimat.model.knowledgebase.entity.Reference;
-import es.ugr.scimat.model.knowledgebase.entity.ReferenceSource;
-import es.ugr.scimat.model.knowledgebase.KnowledgeBaseManager;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorReference;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceGroup;
-import es.ugr.scimat.model.knowledgebase.entity.ReferenceGroup;
-import es.ugr.scimat.model.knowledgebase.entity.ReferenceSourceGroup;
-import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
-import es.ugr.scimat.project.CurrentProject;
 
 /**
- *
  * @author mjcobo
  */
 public class DocumentReferenceDAO {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  /**
-   * The knowlege base manager
-   */
-  private KnowledgeBaseManager kbm;
-  /**
-   * <rpe>
-   * INSERT INTO Document_Reference(Reference_idReference,Document_idDocument) VALUES(?,?);
-   * </pre>
-   */
-  private final static String __ADD_DOCUMENT_REFERENCE = "INSERT INTO Document_Reference(Reference_idReference,Document_idDocument) VALUES(?,?);";
-  /**
-   * <rpe>
-   * DELETE Document_Reference
-   * WHERE Reference_idReference = ? AND
-   *       Document_idDocument = ?;
-   * </pre>
-   */
-  private final static String __REMOVE_DOCUMENT_REFERENCE = "DELETE FROM Document_Reference "
-          + "WHERE Reference_idReference = ? AND "
-          + "      Document_idDocument = ?;";
-  private final static String __CHECK_DOCUMENT_REFERENCE = "SELECT "
-          + "Document_idDocument FROM Document_Reference WHERE "
-          + "Document_idDocument = ? AND Reference_idReference = ?;";
-  private PreparedStatement statAddDocumentReference;
-  private PreparedStatement statCheckDocumentReference;
-  private PreparedStatement statRemoveDocumentReference;
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
+    /**
+     * The knowlege base manager
+     */
+    private KnowledgeBaseManager kbm;
+    /**
+     * <rpe>
+     * INSERT INTO Document_Reference(Reference_idReference,Document_idDocument) VALUES(?,?);
+     * </pre>
+     */
+    private final static String __ADD_DOCUMENT_REFERENCE = "INSERT INTO Document_Reference(Reference_idReference,Document_idDocument) VALUES(?,?);";
+    /**
+     * <rpe>
+     * DELETE Document_Reference
+     * WHERE Reference_idReference = ? AND
+     * Document_idDocument = ?;
+     * </pre>
+     */
+    private final static String __REMOVE_DOCUMENT_REFERENCE = "DELETE FROM Document_Reference "
+            + "WHERE Reference_idReference = ? AND "
+            + "      Document_idDocument = ?;";
+    private final static String __CHECK_DOCUMENT_REFERENCE = "SELECT "
+            + "Document_idDocument FROM Document_Reference WHERE "
+            + "Document_idDocument = ? AND Reference_idReference = ?;";
+    private PreparedStatement statAddDocumentReference;
+    private PreparedStatement statCheckDocumentReference;
+    private PreparedStatement statRemoveDocumentReference;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  /**
-   * 
-   * @param kbm
-   * @throws KnowledgeBaseException
-   */
-  public DocumentReferenceDAO(KnowledgeBaseManager kbm) throws KnowledgeBaseException {
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
+    /**
+     * @param kbm
+     * @throws KnowledgeBaseException
+     */
+    public DocumentReferenceDAO(KnowledgeBaseManager kbm) throws KnowledgeBaseException {
 
-    this.kbm = kbm;
+        this.kbm = kbm;
 
-    try {
+        try {
 
-      this.statAddDocumentReference = this.kbm.getConnection().prepareStatement(__ADD_DOCUMENT_REFERENCE);
-      this.statCheckDocumentReference = this.kbm.getConnection().prepareStatement(__CHECK_DOCUMENT_REFERENCE);
-      this.statRemoveDocumentReference = this.kbm.getConnection().prepareStatement(__REMOVE_DOCUMENT_REFERENCE);
+            this.statAddDocumentReference = this.kbm.getConnection().prepareStatement(__ADD_DOCUMENT_REFERENCE);
+            this.statCheckDocumentReference = this.kbm.getConnection().prepareStatement(__CHECK_DOCUMENT_REFERENCE);
+            this.statRemoveDocumentReference = this.kbm.getConnection().prepareStatement(__REMOVE_DOCUMENT_REFERENCE);
 
-    } catch (SQLException e) {
+        } catch (SQLException e) {
 
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
-    }
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  /**
-   * 
-   * @param documentID
-   * @param referenceID
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  public boolean addDocumentReference(Integer documentID, Integer referenceID, boolean notifyObservers)
-          throws KnowledgeBaseException {
-
-    boolean result = false;
-
-    try {
-
-      this.statAddDocumentReference.clearParameters();
-
-      this.statAddDocumentReference.setInt(1, referenceID);
-      this.statAddDocumentReference.setInt(2, documentID);
-
-      result = this.statAddDocumentReference.executeUpdate() > 0;
-
-    } catch (SQLException e) {
-
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
-    }
-
-    // Notify to the observer
-    if (notifyObservers) {
-
-      ReferenceDAO referenceDAO = new ReferenceDAO(kbm);
-      Reference reference = referenceDAO.getReference(referenceID);
-
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceEvent(reference));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationReferenceEvent());
-
-      // Reference group
-
-      ReferenceGroup referenceGroup = referenceDAO.getReferenceGroup(referenceID);
-
-      if (referenceGroup != null) {
-
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceGroupEvent(referenceGroup));
-
-      } else {
-
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceWithoutGroupEvent(reference));
-      }
-
-      // Author-Reference 
-
-      ArrayList<AuthorReference> authorReferences = referenceDAO.getAuthorReferences(referenceID);
-
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceEvent(authorReferences));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceEvent(referenceDAO.getAuthorReferencesWithoutGroup(referenceID)));
-
-      // Author-Reference group
-
-      AuthorReferenceGroup authorReferenceGroup;
-      TreeSet<AuthorReferenceGroup> authorReferenceGroups = new TreeSet<AuthorReferenceGroup>();
-
-      for (int i = 0; i < authorReferences.size(); i++) {
-
-        authorReferenceGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO().getAuthorReferenceGroup(authorReferences.get(i).getAuthorReferenceID());
-
-        if (authorReferenceGroup != null) {
-
-          authorReferenceGroups.add(authorReferenceGroup);
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
         }
-      }
+    }
 
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceGroupEvent(new ArrayList<AuthorReferenceGroup>(authorReferenceGroups)));
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+    /**
+     * @param documentID
+     * @param referenceID
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public boolean addDocumentReference(Integer documentID, Integer referenceID, boolean notifyObservers)
+            throws KnowledgeBaseException {
 
-      // Reference-Source
+        boolean result = false;
 
-      ReferenceSource referenceSource = referenceDAO.getReferenceSource(referenceID);
+        try {
 
-      if (referenceSource != null) {
+            this.statAddDocumentReference.clearParameters();
 
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceEvent(referenceSource));
-        //KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceEvent(referenceDAO.getReferenceSourceWithoutGroup(referenceID)));
+            this.statAddDocumentReference.setInt(1, referenceID);
+            this.statAddDocumentReference.setInt(2, documentID);
 
-        // Reference-Source group
+            result = this.statAddDocumentReference.executeUpdate() > 0;
 
-        ReferenceSourceGroup referenceSourceGroup;
+        } catch (SQLException e) {
 
-        referenceSourceGroup = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO().getReferenceSourceGroup(referenceSource.getReferenceSourceID());
-
-        if (referenceSourceGroup != null) {
-
-          KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceGroupEvent(referenceSourceGroup));
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
         }
-      }
-    }
 
-    return result;
-  }
+        // Notify to the observer
+        if (notifyObservers) {
 
-  /**
-   * 
-   * @param documentID
-   * @param referenceID
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  public boolean removeDocumentReference(Integer documentID, Integer referenceID, boolean notifyObservers)
-          throws KnowledgeBaseException {
+            ReferenceDAO referenceDAO = new ReferenceDAO(kbm);
+            Reference reference = referenceDAO.getReference(referenceID);
 
-    boolean result = false;
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceEvent(reference));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationReferenceEvent());
 
-    try {
+            // Reference group
 
-      this.statRemoveDocumentReference.clearParameters();
+            ReferenceGroup referenceGroup = referenceDAO.getReferenceGroup(referenceID);
 
-      this.statRemoveDocumentReference.setInt(1, referenceID);
-      this.statRemoveDocumentReference.setInt(2, documentID);
+            if (referenceGroup != null) {
 
-      result = this.statRemoveDocumentReference.executeUpdate() > 0;
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceGroupEvent(referenceGroup));
 
-    } catch (SQLException e) {
+            } else {
 
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
-    }
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceWithoutGroupEvent(reference));
+            }
 
-    // Notify to the observer
-    if (notifyObservers) {
+            // Author-Reference
 
-      ReferenceDAO referenceDAO = new ReferenceDAO(kbm);
-      Reference reference = referenceDAO.getReference(referenceID);
+            ArrayList<AuthorReference> authorReferences = referenceDAO.getAuthorReferences(referenceID);
 
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceEvent(reference));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationReferenceEvent());
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceEvent(authorReferences));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceEvent(referenceDAO.getAuthorReferencesWithoutGroup(referenceID)));
 
-      // Reference group
+            // Author-Reference group
 
-      ReferenceGroup referenceGroup = referenceDAO.getReferenceGroup(referenceID);
+            AuthorReferenceGroup authorReferenceGroup;
+            TreeSet<AuthorReferenceGroup> authorReferenceGroups = new TreeSet<AuthorReferenceGroup>();
 
-      if (referenceGroup != null) {
+            for (int i = 0; i < authorReferences.size(); i++) {
 
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceGroupEvent(referenceGroup));
+                authorReferenceGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO().getAuthorReferenceGroup(authorReferences.get(i).getAuthorReferenceID());
 
-      } else {
+                if (authorReferenceGroup != null) {
 
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceWithoutGroupEvent(reference));
-      }
+                    authorReferenceGroups.add(authorReferenceGroup);
+                }
+            }
 
-      // Author-Reference 
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceGroupEvent(new ArrayList<AuthorReferenceGroup>(authorReferenceGroups)));
 
-      ArrayList<AuthorReference> authorReferences = referenceDAO.getAuthorReferences(referenceID);
+            // Reference-Source
 
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceEvent(authorReferences));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceEvent(referenceDAO.getAuthorReferencesWithoutGroup(referenceID)));
+            ReferenceSource referenceSource = referenceDAO.getReferenceSource(referenceID);
 
-      // Author-Reference group
+            if (referenceSource != null) {
 
-      AuthorReferenceGroup authorReferenceGroup;
-      TreeSet<AuthorReferenceGroup> authorReferenceGroups = new TreeSet<AuthorReferenceGroup>();
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceEvent(referenceSource));
+                //KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceEvent(referenceDAO.getReferenceSourceWithoutGroup(referenceID)));
 
-      for (int i = 0; i < authorReferences.size(); i++) {
+                // Reference-Source group
 
-        authorReferenceGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO().getAuthorReferenceGroup(authorReferences.get(i).getAuthorReferenceID());
+                ReferenceSourceGroup referenceSourceGroup;
 
-        if (authorReferenceGroup != null) {
+                referenceSourceGroup = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO().getReferenceSourceGroup(referenceSource.getReferenceSourceID());
 
-          authorReferenceGroups.add(authorReferenceGroup);
+                if (referenceSourceGroup != null) {
+
+                    KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceGroupEvent(referenceSourceGroup));
+                }
+            }
         }
-      }
 
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceGroupEvent(new ArrayList<AuthorReferenceGroup>(authorReferenceGroups)));
-
-      // Reference-Source
-
-      ReferenceSource referenceSource = referenceDAO.getReferenceSource(referenceID);
-
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceEvent(referenceSource));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceEvent(referenceDAO.getReferenceSourceWithoutGroup(referenceID)));
-
-      // Reference-Source group
-
-      ReferenceSourceGroup referenceSourceGroup;
-
-      referenceSourceGroup = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO().getReferenceSourceGroup(referenceSource.getReferenceSourceID());
-
-      if (referenceSourceGroup != null) {
-
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceGroupEvent(referenceSourceGroup));
-      }
+        return result;
     }
 
-    return result;
-  }
+    /**
+     * @param documentID
+     * @param referenceID
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public boolean removeDocumentReference(Integer documentID, Integer referenceID, boolean notifyObservers)
+            throws KnowledgeBaseException {
 
-  /**
-   * <p>Check if the <code>Document</code> and <Code>Reference<Code> are
-   * associated.</p>
-   *
-   * @param idDocument the document's ID
-   * @param idReference the reference's ID
-   *
-   * @return true if there is an association between both items.
-   *
-   * @throws KnowledgeBaseException if a database access error occurs
-   */
-  public boolean checkDocumentReference(Integer idDocument, Integer idReference)
-          throws KnowledgeBaseException {
+        boolean result = false;
 
-    boolean result = false;
-    ResultSet rs;
+        try {
 
-    try {
+            this.statRemoveDocumentReference.clearParameters();
 
-      this.statCheckDocumentReference.clearParameters();
+            this.statRemoveDocumentReference.setInt(1, referenceID);
+            this.statRemoveDocumentReference.setInt(2, documentID);
 
-      this.statCheckDocumentReference.setInt(1, idDocument);
-      this.statCheckDocumentReference.setInt(2, idReference);
+            result = this.statRemoveDocumentReference.executeUpdate() > 0;
 
-      rs = this.statCheckDocumentReference.executeQuery();
+        } catch (SQLException e) {
 
-      result = rs.next();
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
 
-      rs.close();
+        // Notify to the observer
+        if (notifyObservers) {
 
-      return result;
+            ReferenceDAO referenceDAO = new ReferenceDAO(kbm);
+            Reference reference = referenceDAO.getReference(referenceID);
 
-    } catch (SQLException e) {
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceEvent(reference));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationReferenceEvent());
 
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+            // Reference group
+
+            ReferenceGroup referenceGroup = referenceDAO.getReferenceGroup(referenceID);
+
+            if (referenceGroup != null) {
+
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceGroupEvent(referenceGroup));
+
+            } else {
+
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceWithoutGroupEvent(reference));
+            }
+
+            // Author-Reference
+
+            ArrayList<AuthorReference> authorReferences = referenceDAO.getAuthorReferences(referenceID);
+
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceEvent(authorReferences));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceEvent(referenceDAO.getAuthorReferencesWithoutGroup(referenceID)));
+
+            // Author-Reference group
+
+            AuthorReferenceGroup authorReferenceGroup;
+            TreeSet<AuthorReferenceGroup> authorReferenceGroups = new TreeSet<AuthorReferenceGroup>();
+
+            for (int i = 0; i < authorReferences.size(); i++) {
+
+                authorReferenceGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceDAO().getAuthorReferenceGroup(authorReferences.get(i).getAuthorReferenceID());
+
+                if (authorReferenceGroup != null) {
+
+                    authorReferenceGroups.add(authorReferenceGroup);
+                }
+            }
+
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorReferenceGroupEvent(new ArrayList<AuthorReferenceGroup>(authorReferenceGroups)));
+
+            // Reference-Source
+
+            ReferenceSource referenceSource = referenceDAO.getReferenceSource(referenceID);
+
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceEvent(referenceSource));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceEvent(referenceDAO.getReferenceSourceWithoutGroup(referenceID)));
+
+            // Reference-Source group
+
+            ReferenceSourceGroup referenceSourceGroup;
+
+            referenceSourceGroup = CurrentProject.getInstance().getFactoryDAO().getReferenceSourceDAO().getReferenceSourceGroup(referenceSource.getReferenceSourceID());
+
+            if (referenceSourceGroup != null) {
+
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateReferenceSourceGroupEvent(referenceSourceGroup));
+            }
+        }
+
+        return result;
     }
-  }
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /**
+     * <p>Check if the <code>Document</code> and <Code>Reference<Code> are
+     * associated.</p>
+     *
+     * @param idDocument  the document's ID
+     * @param idReference the reference's ID
+     * @return true if there is an association between both items.
+     * @throws KnowledgeBaseException if a database access error occurs
+     */
+    public boolean checkDocumentReference(Integer idDocument, Integer idReference)
+            throws KnowledgeBaseException {
+
+        boolean result = false;
+        ResultSet rs;
+
+        try {
+
+            this.statCheckDocumentReference.clearParameters();
+
+            this.statCheckDocumentReference.setInt(1, idDocument);
+            this.statCheckDocumentReference.setInt(2, idReference);
+
+            rs = this.statCheckDocumentReference.executeQuery();
+
+            result = rs.next();
+
+            rs.close();
+
+            return result;
+
+        } catch (SQLException e) {
+
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
+    }
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

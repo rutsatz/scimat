@@ -9,57 +9,54 @@ import es.ugr.scimat.api.dataset.Dataset;
 import es.ugr.scimat.api.mapping.clustering.result.Cluster;
 
 /**
- *
  * @author mjcobo
  */
 public class BasicClusterLabellerBasedOnMainNode implements ClusterLabeller {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private Dataset dataset;
+    private Dataset dataset;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param dataset
-   */
-  public BasicClusterLabellerBasedOnMainNode(Dataset dataset) {
-    this.dataset = dataset;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @param cluster
-   * @return
-   */
-  public String execute(Cluster cluster) {
-
-    String label;
-    Integer mainNode;
-
-    label = "";
-
-    mainNode = cluster.getMainNode();
-
-    if (mainNode != null) {
-
-      label = this.dataset.getItemLabel(mainNode);
-      
+    /**
+     * @param dataset
+     */
+    public BasicClusterLabellerBasedOnMainNode(Dataset dataset) {
+        this.dataset = dataset;
     }
 
-    return label;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param cluster
+     * @return
+     */
+    public String execute(Cluster cluster) {
+
+        String label;
+        Integer mainNode;
+
+        label = "";
+
+        mainNode = cluster.getMainNode();
+
+        if (mainNode != null) {
+
+            label = this.dataset.getItemLabel(mainNode);
+
+        }
+
+        return label;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

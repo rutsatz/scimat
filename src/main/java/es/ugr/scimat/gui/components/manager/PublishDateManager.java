@@ -5,67 +5,67 @@
  */
 package es.ugr.scimat.gui.components.manager;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.commands.edit.delete.DeletePublishDateEdit;
+import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
 import es.ugr.scimat.gui.components.adddialog.AddDialogManager;
+import es.ugr.scimat.gui.components.globalslavepanel.PublishDateGlobalSlavePanel;
 import es.ugr.scimat.gui.components.itemslist.PublishDatesListPanel;
 import es.ugr.scimat.gui.components.joindialog.JoinEntitiesDialogManager;
-import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
-import es.ugr.scimat.gui.components.globalslavepanel.PublishDateGlobalSlavePanel;
 import es.ugr.scimat.model.knowledgebase.entity.PublishDate;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class PublishDateManager extends GenericItemManagerPanel<PublishDate> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public PublishDateManager() {
-    super(new PublishDatesListPanel(),
-          new PublishDateGlobalSlavePanel());
+    /***************************************************************************/
 
-    setMasterPanelTitle("Publish dates list");
-    setSlavePanelTitle("Publish date detail");
-  }
+    public PublishDateManager() {
+        super(new PublishDatesListPanel(),
+                new PublishDateGlobalSlavePanel());
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        setMasterPanelTitle("Publish dates list");
+        setSlavePanelTitle("Publish date detail");
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void addAction() {
-    AddDialogManager.getInstance().showAddPublishDateDialog();
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  @Override
-  public void moveToAction(ArrayList<PublishDate> items) {
-    JoinEntitiesDialogManager.getInstance().showPublishDatesJoinDialog(items);
-  }
+    /**
+     *
+     */
+    @Override
+    public void addAction() {
+        AddDialogManager.getInstance().showAddPublishDateDialog();
+    }
 
-  /**
-   *
-   */
-  @Override
-  public void removeAction(ArrayList<PublishDate> items) {
-    (new PerformKnowledgeBaseEditTask(new DeletePublishDateEdit(items), this)).execute();
-  }
+    /**
+     *
+     */
+    @Override
+    public void moveToAction(ArrayList<PublishDate> items) {
+        JoinEntitiesDialogManager.getInstance().showPublishDatesJoinDialog(items);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     *
+     */
+    @Override
+    public void removeAction(ArrayList<PublishDate> items) {
+        (new PerformKnowledgeBaseEditTask(new DeletePublishDateEdit(items), this)).execute();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

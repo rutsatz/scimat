@@ -9,44 +9,41 @@ import es.ugr.scimat.api.dataset.AggregatedDataset;
 import es.ugr.scimat.api.mapping.Node;
 
 /**
- *
  * @author mjcobo
  */
 public class AggregatedCouplingNodeLabeller implements NodeLabeller {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private AggregatedDataset aggregatedDataset;
+    private AggregatedDataset aggregatedDataset;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   * @param dataset
-   */
-  public AggregatedCouplingNodeLabeller(AggregatedDataset dataset) {
-    this.aggregatedDataset = dataset;
-  }
+    /**
+     * @param dataset
+     */
+    public AggregatedCouplingNodeLabeller(AggregatedDataset dataset) {
+        this.aggregatedDataset = dataset;
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   * @param node
-   * @return
-   */
-  public String execute(Node node) {
+    /**
+     * @param node
+     * @return
+     */
+    public String execute(Node node) {
 
-    return this.aggregatedDataset.getHighLevelItemLabel(node.getNodeID());
-  }
+        return this.aggregatedDataset.getHighLevelItemLabel(node.getNodeID());
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

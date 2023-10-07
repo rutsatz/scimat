@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.delete;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -17,222 +15,220 @@ import es.ugr.scimat.model.knowledgebase.entity.PublishDate;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class DeletePeriodEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The elements delete
-   */
-  private ArrayList<Period> periodsToDelete;
-  private ArrayList<ArrayList<PublishDate>> publishDates = new ArrayList<ArrayList<PublishDate>>();
+    /**
+     * The elements delete
+     */
+    private ArrayList<Period> periodsToDelete;
+    private ArrayList<ArrayList<PublishDate>> publishDates = new ArrayList<ArrayList<PublishDate>>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param periodsToDelete
-   */
-  public DeletePeriodEdit(ArrayList<Period> periodsToDelete) {
-    super();
-    
-    this.periodsToDelete = periodsToDelete;
-  }
+    /**
+     * @param periodsToDelete
+     */
+    public DeletePeriodEdit(ArrayList<Period> periodsToDelete) {
+        super();
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = true;
-    int i;
-    PeriodDAO periodDAO;
-    Period period;
-
-    try {
-
-      i = 0;
-      periodDAO = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO();
-
-      while ((i < this.periodsToDelete.size()) && (successful)) {
-
-        period = this.periodsToDelete.get(i);
-
-        // Retrieve its relation
-        this.publishDates.add(periodDAO.getPublishDates(period.getPeriodID()));
-
-        successful = periodDAO.removePeriod(period.getPeriodID(), true);
-
-        i++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.periodsToDelete = periodsToDelete;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = true;
+        int i;
+        PeriodDAO periodDAO;
+        Period period;
 
-    int i, j;
-    boolean successful = true;
-    PeriodDAO periodDAO;
-    PublishDatePeriodDAO publishDatePeriodDAO;
-    Period period;
+        try {
 
-    try {
+            i = 0;
+            periodDAO = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO();
 
-      periodDAO = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO();
-      publishDatePeriodDAO = CurrentProject.getInstance().getFactoryDAO().getPublishDatePeriodDAO();
+            while ((i < this.periodsToDelete.size()) && (successful)) {
 
-      i = 0;
+                period = this.periodsToDelete.get(i);
 
-      while ((i < this.periodsToDelete.size()) && (successful)) {
+                // Retrieve its relation
+                this.publishDates.add(periodDAO.getPublishDates(period.getPeriodID()));
 
-        period = this.periodsToDelete.get(i);
+                successful = periodDAO.removePeriod(period.getPeriodID(), true);
 
-        successful = periodDAO.addPeriod(period, true);
+                i++;
+            }
 
-        j = 0;
+            if (successful) {
 
-        while ((j < this.publishDates.get(i).size()) && (successful)) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-          successful = publishDatePeriodDAO.addPublishDatePeriod(period.getPeriodID(), 
-                                                                   this.publishDates.get(i).get(j).getPublishDateID(), true);
+                UndoStack.addEdit(this);
 
-          j++;
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
 
-        i++;
-      }
+        return successful;
 
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    int i;
-    boolean successful = true;
-    PeriodDAO periodDAO;
-    Period period;
+        int i, j;
+        boolean successful = true;
+        PeriodDAO periodDAO;
+        PublishDatePeriodDAO publishDatePeriodDAO;
+        Period period;
 
-    try {
+        try {
 
-      i = 0;
-      periodDAO = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO();
+            periodDAO = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO();
+            publishDatePeriodDAO = CurrentProject.getInstance().getFactoryDAO().getPublishDatePeriodDAO();
 
-      while ((i < this.periodsToDelete.size()) && (successful)) {
+            i = 0;
 
-        period = this.periodsToDelete.get(i);
+            while ((i < this.periodsToDelete.size()) && (successful)) {
 
-        successful = periodDAO.removePeriod(period.getPeriodID(), true);
+                period = this.periodsToDelete.get(i);
 
-        i++;
-      }
+                successful = periodDAO.addPeriod(period, true);
 
-      if (successful) {
+                j = 0;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                while ((j < this.publishDates.get(i).size()) && (successful)) {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                    successful = publishDatePeriodDAO.addPublishDatePeriod(period.getPeriodID(),
+                            this.publishDates.get(i).get(j).getPublishDateID(), true);
 
-      } else {
+                    j++;
+                }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                i++;
+            }
 
-    } catch (KnowledgeBaseException e) {
+            if (successful) {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      try{
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            } else {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-        e2.printStackTrace(System.err);
+        } catch (KnowledgeBaseException e) {
 
-      }
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        int i;
+        boolean successful = true;
+        PeriodDAO periodDAO;
+        Period period;
+
+        try {
+
+            i = 0;
+            periodDAO = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO();
+
+            while ((i < this.periodsToDelete.size()) && (successful)) {
+
+                period = this.periodsToDelete.get(i);
+
+                successful = periodDAO.removePeriod(period.getPeriodID(), true);
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

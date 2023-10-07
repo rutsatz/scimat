@@ -5,205 +5,199 @@
  */
 package es.ugr.scimat.api.mapping.clustering;
 
-import java.util.ArrayList;
-
-import es.ugr.scimat.api.mapping.clustering.result.ClusterSet;
 import es.ugr.scimat.api.analysis.network.statistics.MaxAverageSimilarNode;
 import es.ugr.scimat.api.dataset.NetworkPair;
 import es.ugr.scimat.api.dataset.UndirectNetworkMatrix;
+import es.ugr.scimat.api.mapping.clustering.result.ClusterSet;
+
+import java.util.ArrayList;
 
 /**
- *
  * @author mjcobo
  */
 public class AverageLinkClustering implements ClusteringAlgorithm {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /**
-   *
-   */
-  private int minNetworkSize;
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  private int maxNetworkSize;
-  
-  /**
-   * 
-   */
-  private double cutOff;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param minNetworkSize
-   * @param maxNetworkSize
-   * @param cutOff 
-   */
-  public AverageLinkClustering(int minNetworkSize, int maxNetworkSize, double cutOff) {
-    this.minNetworkSize = minNetworkSize;
-    this.maxNetworkSize = maxNetworkSize;
-    this.cutOff = cutOff;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param network
-   * @return 
-   */
-  public ClusterSet execute(UndirectNetworkMatrix network) {
-    
-    int i, j, clusterToJoinI, clusterToJoinJ;
-    boolean joinedClusters;
-    double maxAverage, averageSimilarity;
-    ArrayList<ArrayList<Integer>> clusters;
-    ArrayList<Integer> clusterI, clusterJ;
-    ArrayList<NetworkPair> pairs;
-    ClusterSet clusterSet;
-    
-    clusterSet = new ClusterSet(network);
-    
-    clusters = eachNodeToCluster(network.getNodes());
+    /**
+     *
+     */
+    private int minNetworkSize;
 
-    joinedClusters = true;
+    /**
+     *
+     */
+    private int maxNetworkSize;
 
-    while (joinedClusters) {
+    /**
+     *
+     */
+    private double cutOff;
 
-      maxAverage = 0.0;
-      clusterToJoinI = -1;
-      clusterToJoinJ = -1;
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-      for (i = 0; i < clusters.size(); i++) {
+    /**
+     * @param minNetworkSize
+     * @param maxNetworkSize
+     * @param cutOff
+     */
+    public AverageLinkClustering(int minNetworkSize, int maxNetworkSize, double cutOff) {
+        this.minNetworkSize = minNetworkSize;
+        this.maxNetworkSize = maxNetworkSize;
+        this.cutOff = cutOff;
+    }
 
-        clusterI = clusters.get(i);
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-        for (j = i + 1; j < clusters.size(); j++) {
+    /**
+     * @param network
+     * @return
+     */
+    public ClusterSet execute(UndirectNetworkMatrix network) {
 
-          clusterJ = clusters.get(j);
+        int i, j, clusterToJoinI, clusterToJoinJ;
+        boolean joinedClusters;
+        double maxAverage, averageSimilarity;
+        ArrayList<ArrayList<Integer>> clusters;
+        ArrayList<Integer> clusterI, clusterJ;
+        ArrayList<NetworkPair> pairs;
+        ClusterSet clusterSet;
 
-          pairs = network.getIntraNodesPairs(clusterI, clusterJ);
+        clusterSet = new ClusterSet(network);
 
-          if (pairs.size() > 0) {
+        clusters = eachNodeToCluster(network.getNodes());
 
-            averageSimilarity = getAveragePairsValue(pairs);
+        joinedClusters = true;
 
-            if ((averageSimilarity > maxAverage) && (averageSimilarity >= this.cutOff)) {
+        while (joinedClusters) {
 
-              maxAverage = averageSimilarity;
+            maxAverage = 0.0;
+            clusterToJoinI = -1;
+            clusterToJoinJ = -1;
 
-              clusterToJoinI = i;
-              clusterToJoinJ = j;
+            for (i = 0; i < clusters.size(); i++) {
+
+                clusterI = clusters.get(i);
+
+                for (j = i + 1; j < clusters.size(); j++) {
+
+                    clusterJ = clusters.get(j);
+
+                    pairs = network.getIntraNodesPairs(clusterI, clusterJ);
+
+                    if (pairs.size() > 0) {
+
+                        averageSimilarity = getAveragePairsValue(pairs);
+
+                        if ((averageSimilarity > maxAverage) && (averageSimilarity >= this.cutOff)) {
+
+                            maxAverage = averageSimilarity;
+
+                            clusterToJoinI = i;
+                            clusterToJoinJ = j;
+                        }
+                    }
+                }
             }
-          }
-        }
-      }
 
-      if (clusterToJoinI != -1) {
-        
-        joinedClusters= joinClusters(clusters, clusterToJoinI, clusterToJoinJ);
-        
-      } else {
-      
-        joinedClusters = false;
-      }
+            if (clusterToJoinI != -1) {
+
+                joinedClusters = joinClusters(clusters, clusterToJoinI, clusterToJoinJ);
+
+            } else {
+
+                joinedClusters = false;
+            }
+        }
+
+        for (i = 0; i < clusters.size(); i++) {
+
+            if (clusters.get(i).size() >= this.minNetworkSize) {
+
+                clusterSet.addCluster(clusters.get(i), new MaxAverageSimilarNode().execute(network, clusters.get(i)));
+            }
+        }
+
+        return clusterSet;
     }
-      
-    for (i = 0; i < clusters.size(); i++) {
-    
-      if (clusters.get(i).size() >= this.minNetworkSize) {
-        
-        clusterSet.addCluster(clusters.get(i), new MaxAverageSimilarNode().execute(network, clusters.get(i)));
-      }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
+
+    /**
+     * @param nodes
+     * @return
+     */
+    private ArrayList<ArrayList<Integer>> eachNodeToCluster(ArrayList<Integer> nodes) {
+
+        int i;
+        ArrayList<Integer> cluster;
+        ArrayList<ArrayList<Integer>> clusters;
+
+        clusters = new ArrayList<ArrayList<Integer>>();
+
+        for (i = 0; i < nodes.size(); i++) {
+
+            cluster = new ArrayList<Integer>();
+            cluster.add(nodes.get(i));
+            clusters.add(cluster);
+        }
+
+        return clusters;
     }
-    
-    return clusterSet;
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param nodes
-   * @return 
-   */
-  private ArrayList<ArrayList<Integer>> eachNodeToCluster(ArrayList<Integer> nodes) {
-  
-    int i;
-    ArrayList<Integer> cluster;
-    ArrayList<ArrayList<Integer>> clusters;
-    
-    clusters = new ArrayList<ArrayList<Integer>>();
-    
-    for (i = 0; i < nodes.size(); i++) {
-    
-      cluster = new ArrayList<Integer>();
-      cluster.add(nodes.get(i));
-      clusters.add(cluster);
+
+    /**
+     * @param clusters
+     * @param i
+     * @param j
+     */
+    private boolean joinClusters(ArrayList<ArrayList<Integer>> clusters, int i, int j) {
+
+        boolean flag;
+
+        if ((clusters.get(i).size() + clusters.get(j).size()) <= this.maxNetworkSize) {
+
+            clusters.get(i).addAll(clusters.get(j));
+            clusters.remove(j);
+
+            flag = true;
+
+        } else {
+
+            flag = false;
+        }
+
+        return flag;
     }
-    
-    return clusters;
-  }
-  
-  /**
-   * 
-   * @param clusters
-   * @param i
-   * @param j 
-   */
-  private boolean joinClusters(ArrayList<ArrayList<Integer>> clusters, int i, int j) {
-  
-    boolean flag;
-    
-    if ((clusters.get(i).size() + clusters.get(j).size()) <= this.maxNetworkSize) {
-    
-      clusters.get(i).addAll(clusters.get(j));
-      clusters.remove(j);
-      
-      flag = true;
-      
-    } else {
-    
-      flag = false;
+
+    /**
+     * @param pairs
+     * @return
+     */
+    private double getAveragePairsValue(ArrayList<NetworkPair> pairs) {
+
+        int i;
+        double average;
+
+        average = 0.0;
+
+        if (pairs.size() > 0) {
+
+            for (i = 0; i < pairs.size(); i++) {
+
+                average += pairs.get(i).getValue();
+            }
+
+            average = average / pairs.size();
+        }
+
+        return average;
     }
-    
-    return flag;
-  }
-  
-  /**
-   * 
-   * @param pairs
-   * @return 
-   */
-  private double getAveragePairsValue(ArrayList<NetworkPair> pairs) {
-  
-    int i;
-    double average;
-    
-    average = 0.0;
-    
-    if (pairs.size() > 0) {
-      
-      for (i = 0; i < pairs.size(); i++) {
-        
-        average += pairs.get(i).getValue();
-      }
-      
-      average = average / pairs.size();
-    }
-    
-    return average;
-  }
 }

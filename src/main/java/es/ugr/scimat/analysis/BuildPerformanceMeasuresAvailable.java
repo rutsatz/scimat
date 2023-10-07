@@ -8,134 +8,133 @@ package es.ugr.scimat.analysis;
 import java.util.ArrayList;
 
 /**
- *
  * @author mjcobo
  */
 public class BuildPerformanceMeasuresAvailable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  public ArrayList<PerformanceMeasuresAvailable> build() {
-  
-    ArrayList<PerformanceMeasuresAvailable> properties = new ArrayList<PerformanceMeasuresAvailable>();
-    AnalysisConfiguration conf = CurrentAnalysis.getInstance().getResults().getAnalysisConfiguration();
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-    if (conf.getKindOfMatrix().equals(KindOfMatrixEnum.CoOccurrence)
-            || conf.getKindOfMatrix().equals(KindOfMatrixEnum.AggregatedCouplingBasedOnAuthor)
-            || conf.getKindOfMatrix().equals(KindOfMatrixEnum.AggregatedCouplingBasedOnJournal)) {
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-      if (conf.isCoreMapper()) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
 
-        addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_CORE_DOCUMENTS);
-      }
+    /***************************************************************************/
 
-      if (conf.isSecondaryMapper()) {
+    public ArrayList<PerformanceMeasuresAvailable> build() {
 
-        addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_SECONDARY_DOCUMENTS);
-      }
+        ArrayList<PerformanceMeasuresAvailable> properties = new ArrayList<PerformanceMeasuresAvailable>();
+        AnalysisConfiguration conf = CurrentAnalysis.getInstance().getResults().getAnalysisConfiguration();
 
-      if (conf.iskCoreMapper()) {
+        if (conf.getKindOfMatrix().equals(KindOfMatrixEnum.CoOccurrence)
+                || conf.getKindOfMatrix().equals(KindOfMatrixEnum.AggregatedCouplingBasedOnAuthor)
+                || conf.getKindOfMatrix().equals(KindOfMatrixEnum.AggregatedCouplingBasedOnJournal)) {
 
-        addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_KCORE_DOCUMENTS);
-      }
+            if (conf.isCoreMapper()) {
 
-      if (conf.isIntersectionMapper()) {
+                addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_CORE_DOCUMENTS);
+            }
 
-        addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_INTERSECTION_DOCUMENTS);
-      }
+            if (conf.isSecondaryMapper()) {
 
-      if (conf.isUnionMapper()) {
+                addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_SECONDARY_DOCUMENTS);
+            }
 
-        addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_UNION_DOCUMENTS);
-      }
+            if (conf.iskCoreMapper()) {
 
-    } else {
+                addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_KCORE_DOCUMENTS);
+            }
 
-      if (conf.isBasicCouplingMapper()) {
+            if (conf.isIntersectionMapper()) {
 
-        addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_COUPLING_DOCUMENTS);
-      }
-    }
-    
-    return properties;
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param conf
-   * @param properties
-   * @param mapper
-   * @param propertySet
-   */
-  private void addDocumentMapperProperties(AnalysisConfiguration conf,
-          ArrayList<PerformanceMeasuresAvailable> properties, String mapper) {
+                addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_INTERSECTION_DOCUMENTS);
+            }
 
-    properties.add(new PerformanceMeasuresAvailable(mapper,
-            KeyProperties.__KEY_DOCUMENTS_COUNT));
+            if (conf.isUnionMapper()) {
 
-    if (conf.isHIndex()) {
+                addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_UNION_DOCUMENTS);
+            }
 
-      properties.add(new PerformanceMeasuresAvailable(mapper,
-              KeyProperties.__KEY_HINDEX));
-    }
-    
-    if (conf.isGIndex()) {
+        } else {
 
-      properties.add(new PerformanceMeasuresAvailable(mapper,
-              KeyProperties.__KEY_GINDEX));
-    }
-    
-    if (conf.isHgIndex()) {
+            if (conf.isBasicCouplingMapper()) {
 
-      properties.add(new PerformanceMeasuresAvailable(mapper,
-              KeyProperties.__KEY_HGINDEX));
-    }
-    
-    if (conf.isQ2Index()) {
+                addDocumentMapperProperties(conf, properties, KeyProperties.__KEY_COUPLING_DOCUMENTS);
+            }
+        }
 
-      properties.add(new PerformanceMeasuresAvailable(mapper,
-              KeyProperties.__KEY_Q2INDEX));
+        return properties;
     }
 
-    if (conf.isAverageCitations()) {
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
+
+    /**
+     * @param conf
+     * @param properties
+     * @param mapper
+     * @param propertySet
+     */
+    private void addDocumentMapperProperties(AnalysisConfiguration conf,
+                                             ArrayList<PerformanceMeasuresAvailable> properties, String mapper) {
+
+        properties.add(new PerformanceMeasuresAvailable(mapper,
+                KeyProperties.__KEY_DOCUMENTS_COUNT));
+
+        if (conf.isHIndex()) {
+
+            properties.add(new PerformanceMeasuresAvailable(mapper,
+                    KeyProperties.__KEY_HINDEX));
+        }
+
+        if (conf.isGIndex()) {
+
+            properties.add(new PerformanceMeasuresAvailable(mapper,
+                    KeyProperties.__KEY_GINDEX));
+        }
+
+        if (conf.isHgIndex()) {
+
+            properties.add(new PerformanceMeasuresAvailable(mapper,
+                    KeyProperties.__KEY_HGINDEX));
+        }
+
+        if (conf.isQ2Index()) {
+
+            properties.add(new PerformanceMeasuresAvailable(mapper,
+                    KeyProperties.__KEY_Q2INDEX));
+        }
+
+        if (conf.isAverageCitations()) {
 
 
-      properties.add(new PerformanceMeasuresAvailable(mapper,
-              KeyProperties.__KEY_AVERAGE_CITATIONS));
+            properties.add(new PerformanceMeasuresAvailable(mapper,
+                    KeyProperties.__KEY_AVERAGE_CITATIONS));
+        }
+
+        if (conf.isSumCitations()) {
+
+
+            properties.add(new PerformanceMeasuresAvailable(mapper,
+                    KeyProperties.__KEY_SUM_CITATIONS));
+        }
+
+        if (conf.isMaxCitations()) {
+
+
+            properties.add(new PerformanceMeasuresAvailable(mapper,
+                    KeyProperties.__KEY_MAX_CITATIONS));
+        }
+
+        if (conf.isMinCitations()) {
+
+            properties.add(new PerformanceMeasuresAvailable(mapper,
+                    KeyProperties.__KEY_MIN_CITATIONS));
+        }
     }
-
-    if (conf.isSumCitations()) {
-
-
-      properties.add(new PerformanceMeasuresAvailable(mapper,
-              KeyProperties.__KEY_SUM_CITATIONS));
-    }
-
-    if (conf.isMaxCitations()) {
-
-
-      properties.add(new PerformanceMeasuresAvailable(mapper,
-              KeyProperties.__KEY_MAX_CITATIONS));
-    }
-
-    if (conf.isMinCitations()) {
-
-      properties.add(new PerformanceMeasuresAvailable(mapper,
-              KeyProperties.__KEY_MIN_CITATIONS));
-    }
-  }
 }

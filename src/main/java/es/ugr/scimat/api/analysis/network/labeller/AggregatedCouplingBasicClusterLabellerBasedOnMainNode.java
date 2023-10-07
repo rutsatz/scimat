@@ -9,56 +9,53 @@ import es.ugr.scimat.api.dataset.AggregatedDataset;
 import es.ugr.scimat.api.mapping.clustering.result.Cluster;
 
 /**
- *
  * @author mjcobo
  */
 public class AggregatedCouplingBasicClusterLabellerBasedOnMainNode implements ClusterLabeller {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private AggregatedDataset aggregatedDataset;
+    private AggregatedDataset aggregatedDataset;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param dataset
-   */
-  public AggregatedCouplingBasicClusterLabellerBasedOnMainNode(AggregatedDataset dataset) {
-    this.aggregatedDataset = dataset;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @param cluster
-   * @return
-   */
-  public String execute(Cluster cluster) {
-
-    String label;
-    Integer mainNode;
-
-    label = "";
-
-    mainNode = cluster.getMainNode();
-
-    if (mainNode != null) {
-
-      label = this.aggregatedDataset.getHighLevelItemLabel(mainNode);
+    /**
+     * @param dataset
+     */
+    public AggregatedCouplingBasicClusterLabellerBasedOnMainNode(AggregatedDataset dataset) {
+        this.aggregatedDataset = dataset;
     }
 
-    return label;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param cluster
+     * @return
+     */
+    public String execute(Cluster cluster) {
+
+        String label;
+        Integer mainNode;
+
+        label = "";
+
+        mainNode = cluster.getMainNode();
+
+        if (mainNode != null) {
+
+            label = this.aggregatedDataset.getHighLevelItemLabel(mainNode);
+        }
+
+        return label;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

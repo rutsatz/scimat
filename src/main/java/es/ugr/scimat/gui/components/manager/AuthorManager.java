@@ -5,69 +5,67 @@
  */
 package es.ugr.scimat.gui.components.manager;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.gui.commands.edit.delete.DeleteAuthorEdit;
+import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
 import es.ugr.scimat.gui.components.adddialog.AddDialogManager;
+import es.ugr.scimat.gui.components.globalslavepanel.AuthorGlobalSlavePanel;
 import es.ugr.scimat.gui.components.itemslist.AuthorsListPanel;
 import es.ugr.scimat.gui.components.joindialog.JoinEntitiesDialogManager;
-import es.ugr.scimat.gui.commands.task.PerformKnowledgeBaseEditTask;
-import es.ugr.scimat.gui.components.globalslavepanel.AuthorGlobalSlavePanel;
 import es.ugr.scimat.model.knowledgebase.entity.Author;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AuthorManager extends GenericItemManagerPanel<Author> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public AuthorManager() {
-    super(new AuthorsListPanel(),
-          new AuthorGlobalSlavePanel());
+    /***************************************************************************/
 
-    setMasterPanelTitle("Authors list");
-    setSlavePanelTitle("Author detail");
-  }
+    public AuthorManager() {
+        super(new AuthorsListPanel(),
+                new AuthorGlobalSlavePanel());
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        setMasterPanelTitle("Authors list");
+        setSlavePanelTitle("Author detail");
+    }
 
-  /**
-   * 
-   */
-  @Override
-  public void addAction() {
-    AddDialogManager.getInstance().showAddAuthorDialog();
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param items 
-   */
-  @Override
-  public void moveToAction(ArrayList<Author> items) {
-    JoinEntitiesDialogManager.getInstance().showAuthorsJoinDialog(items);
-  }
+    /**
+     *
+     */
+    @Override
+    public void addAction() {
+        AddDialogManager.getInstance().showAddAuthorDialog();
+    }
 
-  /**
-   * 
-   * @param items 
-   */
-  @Override
-  public void removeAction(ArrayList<Author> items) {
-    (new PerformKnowledgeBaseEditTask(new DeleteAuthorEdit(items), this)).execute();
-  }
+    /**
+     * @param items
+     */
+    @Override
+    public void moveToAction(ArrayList<Author> items) {
+        JoinEntitiesDialogManager.getInstance().showAuthorsJoinDialog(items);
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param items
+     */
+    @Override
+    public void removeAction(ArrayList<Author> items) {
+        (new PerformKnowledgeBaseEditTask(new DeleteAuthorEdit(items), this)).execute();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

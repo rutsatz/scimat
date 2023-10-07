@@ -5,98 +5,96 @@
  */
 package es.ugr.scimat.api.analysis.performance.quality;
 
+import es.ugr.scimat.api.analysis.performance.DocumentAggregationMeasure;
+import es.ugr.scimat.api.analysis.performance.docmapper.DocumentSet;
+import es.ugr.scimat.api.dataset.Dataset;
+import es.ugr.scimat.api.dataset.exception.NotExistsItemException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import es.ugr.scimat.api.analysis.performance.docmapper.DocumentSet;
-import es.ugr.scimat.api.dataset.Dataset;
-import es.ugr.scimat.api.dataset.exception.NotExistsItemException;
-import es.ugr.scimat.api.analysis.performance.DocumentAggregationMeasure;
-
 /**
- *
  * @author mjcobo
  */
 public class Q2Index implements DocumentAggregationMeasure {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private Dataset dataset;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  public Q2Index(Dataset dataset) {
-    this.dataset = dataset;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   *
-   * @param docsList
-   * @return
-   *
-   * @throws NotExistsItemException if a doc is not present in the dataset.
-   */
-  public double calculateMeasure(DocumentSet documentSet) {
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-    int i, citations;
-    double hIndex, median;
-    ArrayList<Integer> docsList, citationsList;
-    HIndex hIndexFunction = new HIndex(this.dataset);
+    private Dataset dataset;
 
-    // Get the citations.
-    citationsList = new ArrayList<Integer>();
-    docsList = documentSet.getDocuments();
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-    for (i = 0; i < docsList.size(); i++) {
-        
-      citations = dataset.getDocumentCitations(docsList.get(i));
-      
-      if (citations > 0){
-        
-        citationsList.add(citations);
-      }
+    /***************************************************************************/
+
+    public Q2Index(Dataset dataset) {
+        this.dataset = dataset;
     }
 
-    Collections.sort(citationsList, new Comparator<Integer>() {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-      public int compare(Integer o1, Integer o2) {
+    /**
+     * @param docsList
+     * @return
+     * @throws NotExistsItemException if a doc is not present in the dataset.
+     */
+    public double calculateMeasure(DocumentSet documentSet) {
 
-        return o2.compareTo(o1);
-      }
-    });
+        int i, citations;
+        double hIndex, median;
+        ArrayList<Integer> docsList, citationsList;
+        HIndex hIndexFunction = new HIndex(this.dataset);
 
-    i = 0;
-    hIndex = hIndexFunction.calculateMeasure(documentSet);
-    
-    if (citationsList.isEmpty()) {
+        // Get the citations.
+        citationsList = new ArrayList<Integer>();
+        docsList = documentSet.getDocuments();
 
-      return 0;
+        for (i = 0; i < docsList.size(); i++) {
 
-    } else {
+            citations = dataset.getDocumentCitations(docsList.get(i));
 
-      if (hIndex % 2 == 1) {
+            if (citations > 0) {
 
-        median = citationsList.get((((int) hIndex + 1) / 2) - 1);
+                citationsList.add(citations);
+            }
+        }
 
-      } else {
+        Collections.sort(citationsList, new Comparator<Integer>() {
 
-        median = citationsList.get(((int) hIndex / 2) - 1);
-      }
-      
-      return Math.sqrt(hIndex * median);
+            public int compare(Integer o1, Integer o2) {
+
+                return o2.compareTo(o1);
+            }
+        });
+
+        i = 0;
+        hIndex = hIndexFunction.calculateMeasure(documentSet);
+
+        if (citationsList.isEmpty()) {
+
+            return 0;
+
+        } else {
+
+            if (hIndex % 2 == 1) {
+
+                median = citationsList.get((((int) hIndex + 1) / 2) - 1);
+
+            } else {
+
+                median = citationsList.get(((int) hIndex / 2) - 1);
+            }
+
+            return Math.sqrt(hIndex * median);
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

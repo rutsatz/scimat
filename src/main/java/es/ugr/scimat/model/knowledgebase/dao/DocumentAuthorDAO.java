@@ -5,379 +5,372 @@
  */
 package es.ugr.scimat.model.knowledgebase.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
 import es.ugr.scimat.knowledgebaseevents.event.relation.DocumentRelationAuthorEvent;
 import es.ugr.scimat.knowledgebaseevents.event.update.UpdateAuthorEvent;
 import es.ugr.scimat.knowledgebaseevents.event.update.UpdateAuthorGroupEvent;
 import es.ugr.scimat.knowledgebaseevents.event.update.UpdateAuthorWithoutGroupEvent;
 import es.ugr.scimat.knowledgebaseevents.event.update.UpdateDocumentEvent;
-import es.ugr.scimat.model.knowledgebase.entity.AuthorGroup;
 import es.ugr.scimat.model.knowledgebase.KnowledgeBaseManager;
 import es.ugr.scimat.model.knowledgebase.entity.Author;
+import es.ugr.scimat.model.knowledgebase.entity.AuthorGroup;
 import es.ugr.scimat.model.knowledgebase.entity.DocumentAuthor;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
- *
  * @author mjcobo
  */
 public class DocumentAuthorDAO {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The knowlege base manager
-   */
-  private KnowledgeBaseManager kbm;
+    /**
+     * The knowlege base manager
+     */
+    private KnowledgeBaseManager kbm;
 
-  /**
-   * <pre>
-   * INSERT INTO Document_Author(Author_idAuthor,Document_idDocument,position) VALUES(?,?,?);
-   * </pre>
-   */
-  private final static String __ADD_DOCUMENT_AUTHOR = "INSERT INTO Document_Author(Author_idAuthor,Document_idDocument,position) VALUES(?,?,?);";
+    /**
+     * <pre>
+     * INSERT INTO Document_Author(Author_idAuthor,Document_idDocument,position) VALUES(?,?,?);
+     * </pre>
+     */
+    private final static String __ADD_DOCUMENT_AUTHOR = "INSERT INTO Document_Author(Author_idAuthor,Document_idDocument,position) VALUES(?,?,?);";
 
-  /**
-   * <pre>
-   * DELETE Document_Author
-   * WHERE Author_idAuthor = ? AND
-   *       Document_idDocument = ?;
-   * </pre>
-   */
-  private final static String __REMOVE_DOCUMENT_AUTHOR = "DELETE FROM Document_Author "
-                                                       + "WHERE Author_idAuthor = ? AND "
-                                                       + "      Document_idDocument = ?;";
+    /**
+     * <pre>
+     * DELETE Document_Author
+     * WHERE Author_idAuthor = ? AND
+     *       Document_idDocument = ?;
+     * </pre>
+     */
+    private final static String __REMOVE_DOCUMENT_AUTHOR = "DELETE FROM Document_Author "
+            + "WHERE Author_idAuthor = ? AND "
+            + "      Document_idDocument = ?;";
 
-  /**
-   * <pre>
-   * UPDATE Document_Author
-   * SET position = ?
-   * WHERE Author_idAuthor = ? AND Document_idDocument = ?;
-   * </pre>
-   */
-  private final static String __UPDATE_POSITION = "UPDATE Document_Author "
-                                                + "SET position = ? "
-                                                + "WHERE Author_idAuthor = ? AND Document_idDocument = ?;";
-  
-  /**
-   * <pre>
-   * </pre>
-   */
-  private final static String __SELECT_DOCUMENT_AUTHOR = "SELECT d.*, a.*, da.position "
-                                                     + "FROM Document_Author da, Document d, Author a "
-                                                     + "WHERE a.idAuthor = ? AND "
-                                                     + "      d.idDocument = ? AND "
-                                                     + "      a.idAuthor = da.Author_idAuthor AND "
-                                                     + "      da.Document_idDocument = d.idDocument;";
-  
-  private final static String __CHECK_DOCUMENT_AUTHOR = "SELECT " +
-              "Document_idDocument FROM Document_Author WHERE "
-              + "Document_idDocument = ? AND Author_idAuthor = ?;";
-  
-  private final static String __SELECT_MAX_POSITION = "SELECT MAX(position) AS maxPosition "
-          + "FROM Document_Author "
-          + "WHERE Document_idDocument = ?;";
-  
-  private PreparedStatement statAddDocumentAuthor;
-  private PreparedStatement statCheckDocumentAuthor;
-  private PreparedStatement statRemoveDocumentAuthor;
-  private PreparedStatement statSelectDocumentAuthor;
-  private PreparedStatement statSelectMaxPosition;
-  private PreparedStatement statUpdatePosition;
+    /**
+     * <pre>
+     * UPDATE Document_Author
+     * SET position = ?
+     * WHERE Author_idAuthor = ? AND Document_idDocument = ?;
+     * </pre>
+     */
+    private final static String __UPDATE_POSITION = "UPDATE Document_Author "
+            + "SET position = ? "
+            + "WHERE Author_idAuthor = ? AND Document_idDocument = ?;";
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /**
+     * <pre>
+     * </pre>
+     */
+    private final static String __SELECT_DOCUMENT_AUTHOR = "SELECT d.*, a.*, da.position "
+            + "FROM Document_Author da, Document d, Author a "
+            + "WHERE a.idAuthor = ? AND "
+            + "      d.idDocument = ? AND "
+            + "      a.idAuthor = da.Author_idAuthor AND "
+            + "      da.Document_idDocument = d.idDocument;";
 
-  /**
-   * 
-   * @param kbm
-   */
-  public DocumentAuthorDAO(KnowledgeBaseManager kbm) throws KnowledgeBaseException {
-    
-    this.kbm = kbm;
-    
-    try {
+    private final static String __CHECK_DOCUMENT_AUTHOR = "SELECT " +
+            "Document_idDocument FROM Document_Author WHERE "
+            + "Document_idDocument = ? AND Author_idAuthor = ?;";
 
-      this.statAddDocumentAuthor = this.kbm.getConnection().prepareStatement(__ADD_DOCUMENT_AUTHOR);
-      this.statCheckDocumentAuthor = this.kbm.getConnection().prepareStatement(__CHECK_DOCUMENT_AUTHOR);
-      this.statRemoveDocumentAuthor = this.kbm.getConnection().prepareStatement(__REMOVE_DOCUMENT_AUTHOR);
-      this.statSelectDocumentAuthor = this.kbm.getConnection().prepareStatement(__SELECT_DOCUMENT_AUTHOR);
-      this.statSelectMaxPosition = this.kbm.getConnection().prepareStatement(__SELECT_MAX_POSITION);
-      this.statUpdatePosition = this.kbm.getConnection().prepareStatement(__UPDATE_POSITION);
-      
-    } catch (SQLException e) {
-    
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
-    }
-  }
+    private final static String __SELECT_MAX_POSITION = "SELECT MAX(position) AS maxPosition "
+            + "FROM Document_Author "
+            + "WHERE Document_idDocument = ?;";
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    private PreparedStatement statAddDocumentAuthor;
+    private PreparedStatement statCheckDocumentAuthor;
+    private PreparedStatement statRemoveDocumentAuthor;
+    private PreparedStatement statSelectDocumentAuthor;
+    private PreparedStatement statSelectMaxPosition;
+    private PreparedStatement statUpdatePosition;
 
-  /**
-   * 
-   * @param documentID
-   * @param authorID
-   * @param position
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  public boolean addDocumentAuthor(Integer documentID, Integer authorID, int position, boolean notifyObservers)
-          throws KnowledgeBaseException {
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-    boolean result = false;
-    
-    try {
+    /**
+     * @param kbm
+     */
+    public DocumentAuthorDAO(KnowledgeBaseManager kbm) throws KnowledgeBaseException {
 
-      this.statAddDocumentAuthor.clearParameters();
+        this.kbm = kbm;
 
-      this.statAddDocumentAuthor.setInt(1, authorID);
-      this.statAddDocumentAuthor.setInt(2, documentID);
-      this.statAddDocumentAuthor.setInt(3, position);
+        try {
 
-      result = this.statAddDocumentAuthor.executeUpdate() > 0;
+            this.statAddDocumentAuthor = this.kbm.getConnection().prepareStatement(__ADD_DOCUMENT_AUTHOR);
+            this.statCheckDocumentAuthor = this.kbm.getConnection().prepareStatement(__CHECK_DOCUMENT_AUTHOR);
+            this.statRemoveDocumentAuthor = this.kbm.getConnection().prepareStatement(__REMOVE_DOCUMENT_AUTHOR);
+            this.statSelectDocumentAuthor = this.kbm.getConnection().prepareStatement(__SELECT_DOCUMENT_AUTHOR);
+            this.statSelectMaxPosition = this.kbm.getConnection().prepareStatement(__SELECT_MAX_POSITION);
+            this.statUpdatePosition = this.kbm.getConnection().prepareStatement(__UPDATE_POSITION);
 
-    } catch (SQLException e) {
+        } catch (SQLException e) {
 
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
     }
 
-    // Notify to the observer
-    if (notifyObservers) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-      AuthorDAO authorDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO();
-      Author author = authorDAO.getAuthor(authorID);
-      
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorEvent(author));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAuthorEvent());
+    /**
+     * @param documentID
+     * @param authorID
+     * @param position
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public boolean addDocumentAuthor(Integer documentID, Integer authorID, int position, boolean notifyObservers)
+            throws KnowledgeBaseException {
 
-      AuthorGroup authorGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().getAuthorGroup(authorID);
-      
-      if (authorGroup != null) {
-      
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorGroupEvent(authorGroup));
-        
-      } else {
-      
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorWithoutGroupEvent(author));
-      }
-      
-    }
-      
-    return result;
+        boolean result = false;
 
-  }
+        try {
 
-  /**
-   * 
-   * @param documentID
-   * @param authorID
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  public boolean removeDocumentAuthor(Integer documentID, Integer authorID, boolean notifyObservers)
-          throws KnowledgeBaseException {
+            this.statAddDocumentAuthor.clearParameters();
 
-    boolean result = false;
-    
-    try {
+            this.statAddDocumentAuthor.setInt(1, authorID);
+            this.statAddDocumentAuthor.setInt(2, documentID);
+            this.statAddDocumentAuthor.setInt(3, position);
 
-      this.statRemoveDocumentAuthor.clearParameters();
+            result = this.statAddDocumentAuthor.executeUpdate() > 0;
 
-      this.statRemoveDocumentAuthor.setInt(1, authorID);
-      this.statRemoveDocumentAuthor.setInt(2, documentID);
+        } catch (SQLException e) {
 
-      result = this.statRemoveDocumentAuthor.executeUpdate() > 0;
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
 
-    } catch (SQLException e) {
+        // Notify to the observer
+        if (notifyObservers) {
 
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
-    }
+            AuthorDAO authorDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO();
+            Author author = authorDAO.getAuthor(authorID);
 
-    // Notify to the observer
-    if (notifyObservers) {
-      
-      AuthorDAO authorDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO();
-      Author author = authorDAO.getAuthor(authorID);
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorEvent(author));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAuthorEvent());
 
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorEvent(author));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAuthorEvent());
+            AuthorGroup authorGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().getAuthorGroup(authorID);
 
-      AuthorGroup authorGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().getAuthorGroup(authorID);
-      
-      if (authorGroup != null) {
-      
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorGroupEvent(authorGroup));
-        
-      } else {
-      
-        KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorWithoutGroupEvent(author));
-      }
-      
-    }
-      
-    return result;
-  }
+            if (authorGroup != null) {
 
-  /**
-   * 
-   * @param documentID
-   * @param authorID
-   * @param position
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  public boolean setPosition(Integer documentID, Integer authorID, int position, boolean notifyObservers)
-          throws KnowledgeBaseException {
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorGroupEvent(authorGroup));
 
-    boolean result = false;
-    
-    try {
+            } else {
 
-      this.statUpdatePosition.clearParameters();
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorWithoutGroupEvent(author));
+            }
 
-      this.statUpdatePosition.setInt(1, position);
-      this.statUpdatePosition.setInt(2, authorID);
-      this.statUpdatePosition.setInt(3, documentID);
+        }
 
-      result = this.statUpdatePosition.executeUpdate() > 0;
-
-    } catch (SQLException e) {
-
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        return result;
 
     }
 
-    // Notify to the observer
-    if (notifyObservers) {
+    /**
+     * @param documentID
+     * @param authorID
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public boolean removeDocumentAuthor(Integer documentID, Integer authorID, boolean notifyObservers)
+            throws KnowledgeBaseException {
 
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
-      KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAuthorEvent());
-    }
-      
-    return result;
-  }
+        boolean result = false;
 
-  /**
-   * <p>Check if the <code>Document</code> and <Code>Author<Code> are associated.</p>
-   *
-   * @param idDocument the document's ID
-   * @param idAuhtor the author's ID
-   *
-   * @return true if there is an association between both items.
-   *
-   * @throws KnowledgeBaseException if a database access error occurs
-   */
-  public boolean checkDocumentAuthor(Integer idDocument,Integer idAuhtor)
-          throws KnowledgeBaseException {
+        try {
 
-    boolean result = false;
-    ResultSet rs;
+            this.statRemoveDocumentAuthor.clearParameters();
 
-    try {
+            this.statRemoveDocumentAuthor.setInt(1, authorID);
+            this.statRemoveDocumentAuthor.setInt(2, documentID);
 
-      this.statCheckDocumentAuthor.clearParameters();
+            result = this.statRemoveDocumentAuthor.executeUpdate() > 0;
 
-      this.statCheckDocumentAuthor.setInt(1, idDocument);
-      this.statCheckDocumentAuthor.setInt(2, idAuhtor);
+        } catch (SQLException e) {
 
-      rs = this.statCheckDocumentAuthor.executeQuery();
-      
-      result = rs.next();
-      
-      rs.close();
-      
-      return result;
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
 
-    } catch (SQLException e) {
+        // Notify to the observer
+        if (notifyObservers) {
 
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
-    }
-  }
-  
-  /**
-   * 
-   * @param documentID
-   * @param authorID
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  public DocumentAuthor getDocumentAuthor(Integer documentID, Integer authorID)
-          throws KnowledgeBaseException {
+            AuthorDAO authorDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO();
+            Author author = authorDAO.getAuthor(authorID);
 
-    ResultSet rs;
-    DocumentAuthor documentAuthor = null;
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorEvent(author));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAuthorEvent());
 
-    try {
+            AuthorGroup authorGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().getAuthorGroup(authorID);
 
-      this.statSelectDocumentAuthor.clearParameters();
+            if (authorGroup != null) {
 
-      this.statSelectDocumentAuthor.setInt(1, authorID);
-      this.statSelectDocumentAuthor.setInt(2, documentID);
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorGroupEvent(authorGroup));
 
-      rs = this.statSelectDocumentAuthor.executeQuery();
+            } else {
 
-      while (rs.next()) {
-        
-        documentAuthor = UtilsDAO.getInstance().getDocumentAuthor(rs);
-      }
+                KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateAuthorWithoutGroupEvent(author));
+            }
 
-      rs.close();
+        }
 
-    } catch (SQLException e) {
-
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        return result;
     }
 
-    return documentAuthor;
-  }
-  
-  /**
-   * Retrieve the max position of the authors of the specified document.
-   * 
-   * @param documentID the document identifier
-   * @return
-   * @throws KnowledgeBaseException 
-   */
-  public int getMaxPosition(Integer documentID) throws KnowledgeBaseException {
-  
-    ResultSet rs;
-    int position = 0;
-    
-    try {
-      
-      this.statSelectMaxPosition.clearParameters();
-      
-      this.statSelectMaxPosition.setInt(1, documentID);
-      
-      rs = this.statSelectMaxPosition.executeQuery();
-      
-      if (rs.next()) {
-      
-        position = rs.getInt("maxPosition");
-      }
-      
-      rs.close();
-      
-    } catch (SQLException e) {
+    /**
+     * @param documentID
+     * @param authorID
+     * @param position
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public boolean setPosition(Integer documentID, Integer authorID, int position, boolean notifyObservers)
+            throws KnowledgeBaseException {
 
-      throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        boolean result = false;
+
+        try {
+
+            this.statUpdatePosition.clearParameters();
+
+            this.statUpdatePosition.setInt(1, position);
+            this.statUpdatePosition.setInt(2, authorID);
+            this.statUpdatePosition.setInt(3, documentID);
+
+            result = this.statUpdatePosition.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+
+        }
+
+        // Notify to the observer
+        if (notifyObservers) {
+
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new UpdateDocumentEvent(CurrentProject.getInstance().getFactoryDAO().getDocumentDAO().getDocument(documentID)));
+            KnowledgeBaseEventsReceiver.getInstance().addEvent(new DocumentRelationAuthorEvent());
+        }
+
+        return result;
     }
-    
-    return position;
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * <p>Check if the <code>Document</code> and <Code>Author<Code> are associated.</p>
+     *
+     * @param idDocument the document's ID
+     * @param idAuhtor   the author's ID
+     * @return true if there is an association between both items.
+     * @throws KnowledgeBaseException if a database access error occurs
+     */
+    public boolean checkDocumentAuthor(Integer idDocument, Integer idAuhtor)
+            throws KnowledgeBaseException {
+
+        boolean result = false;
+        ResultSet rs;
+
+        try {
+
+            this.statCheckDocumentAuthor.clearParameters();
+
+            this.statCheckDocumentAuthor.setInt(1, idDocument);
+            this.statCheckDocumentAuthor.setInt(2, idAuhtor);
+
+            rs = this.statCheckDocumentAuthor.executeQuery();
+
+            result = rs.next();
+
+            rs.close();
+
+            return result;
+
+        } catch (SQLException e) {
+
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
+    }
+
+    /**
+     * @param documentID
+     * @param authorID
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public DocumentAuthor getDocumentAuthor(Integer documentID, Integer authorID)
+            throws KnowledgeBaseException {
+
+        ResultSet rs;
+        DocumentAuthor documentAuthor = null;
+
+        try {
+
+            this.statSelectDocumentAuthor.clearParameters();
+
+            this.statSelectDocumentAuthor.setInt(1, authorID);
+            this.statSelectDocumentAuthor.setInt(2, documentID);
+
+            rs = this.statSelectDocumentAuthor.executeQuery();
+
+            while (rs.next()) {
+
+                documentAuthor = UtilsDAO.getInstance().getDocumentAuthor(rs);
+            }
+
+            rs.close();
+
+        } catch (SQLException e) {
+
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
+
+        return documentAuthor;
+    }
+
+    /**
+     * Retrieve the max position of the authors of the specified document.
+     *
+     * @param documentID the document identifier
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    public int getMaxPosition(Integer documentID) throws KnowledgeBaseException {
+
+        ResultSet rs;
+        int position = 0;
+
+        try {
+
+            this.statSelectMaxPosition.clearParameters();
+
+            this.statSelectMaxPosition.setInt(1, documentID);
+
+            rs = this.statSelectMaxPosition.executeQuery();
+
+            if (rs.next()) {
+
+                position = rs.getInt("maxPosition");
+            }
+
+            rs.close();
+
+        } catch (SQLException e) {
+
+            throw new KnowledgeBaseException(e.getMessage(), e.getCause());
+        }
+
+        return position;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

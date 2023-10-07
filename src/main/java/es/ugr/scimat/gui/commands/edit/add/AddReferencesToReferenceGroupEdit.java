@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.add;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -15,195 +13,193 @@ import es.ugr.scimat.model.knowledgebase.entity.ReferenceGroup;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AddReferencesToReferenceGroupEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private ArrayList<Reference> referencesToAdd;
-  private ArrayList<ReferenceGroup> oldReferenceGroupOfReferences;
-  private ReferenceGroup targetReferenceGroup;
+    private ArrayList<Reference> referencesToAdd;
+    private ArrayList<ReferenceGroup> oldReferenceGroupOfReferences;
+    private ReferenceGroup targetReferenceGroup;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param referencesToAdd
-   * @param targetReferenceGroup
-   */
-  public AddReferencesToReferenceGroupEdit(ArrayList<Reference> referencesToAdd, ReferenceGroup targetReferenceGroup) {
-    this.referencesToAdd = referencesToAdd;
-    this.targetReferenceGroup = targetReferenceGroup;
+    /**
+     * @param referencesToAdd
+     * @param targetReferenceGroup
+     */
+    public AddReferencesToReferenceGroupEdit(ArrayList<Reference> referencesToAdd, ReferenceGroup targetReferenceGroup) {
+        this.referencesToAdd = referencesToAdd;
+        this.targetReferenceGroup = targetReferenceGroup;
 
-    this.oldReferenceGroupOfReferences = new ArrayList<ReferenceGroup>();
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    int i;
-    Reference reference;
-    boolean successful = false;
-
-    try {
-
-      for (i = 0; i < this.referencesToAdd.size(); i++) {
-
-        reference = this.referencesToAdd.get(i);
-
-        this.oldReferenceGroupOfReferences.add(CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReferenceGroup(reference.getReferenceID()));
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().setReferenceGroup(reference.getReferenceID(),
-                this.targetReferenceGroup.getReferenceGroupID(), true);
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.oldReferenceGroupOfReferences = new ArrayList<ReferenceGroup>();
     }
 
-    return successful;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+    /**
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-    int i;
-    ReferenceGroup referenceGroup;
-    boolean successful = false;
+        int i;
+        Reference reference;
+        boolean successful = false;
 
-    try {
+        try {
 
-      for (i = 0; i < this.referencesToAdd.size(); i++) {
+            for (i = 0; i < this.referencesToAdd.size(); i++) {
 
-        referenceGroup = this.oldReferenceGroupOfReferences.get(i);
+                reference = this.referencesToAdd.get(i);
 
-        if (referenceGroup != null) {
+                this.oldReferenceGroupOfReferences.add(CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().getReferenceGroup(reference.getReferenceID()));
 
-          successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().setReferenceGroup(this.referencesToAdd.get(i).getReferenceID(),
-                  referenceGroup.getReferenceGroupID(), true);
+                successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().setReferenceGroup(reference.getReferenceID(),
+                        this.targetReferenceGroup.getReferenceGroupID(), true);
+            }
 
-        } else {
+            if (successful) {
 
-          successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().setReferenceGroup(this.referencesToAdd.get(i).getReferenceID(), null, true);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
-      }
 
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
+        return successful;
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    int i;
-    boolean successful = false;
+        int i;
+        ReferenceGroup referenceGroup;
+        boolean successful = false;
 
-    try {
+        try {
 
-      for (i = 0; i < this.referencesToAdd.size(); i++) {
+            for (i = 0; i < this.referencesToAdd.size(); i++) {
 
-        successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().setReferenceGroup(this.referencesToAdd.get(i).getReferenceID(),
-                this.targetReferenceGroup.getReferenceGroupID(), true);
-      }
+                referenceGroup = this.oldReferenceGroupOfReferences.get(i);
 
-      if (successful) {
+                if (referenceGroup != null) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                    successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().setReferenceGroup(this.referencesToAdd.get(i).getReferenceID(),
+                            referenceGroup.getReferenceGroupID(), true);
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                } else {
 
-      } else {
+                    successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().setReferenceGroup(this.referencesToAdd.get(i).getReferenceID(), null, true);
+                }
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            if (successful) {
 
-    } catch (KnowledgeBaseException e) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      e.printStackTrace(System.err);
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      try{
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } catch (KnowledgeBaseException e2) {
+        } catch (KnowledgeBaseException e) {
 
-        e2.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      }
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        int i;
+        boolean successful = false;
+
+        try {
+
+            for (i = 0; i < this.referencesToAdd.size(); i++) {
+
+                successful = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO().setReferenceGroup(this.referencesToAdd.get(i).getReferenceID(),
+                        this.targetReferenceGroup.getReferenceGroupID(), true);
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

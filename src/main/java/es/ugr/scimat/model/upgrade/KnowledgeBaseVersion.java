@@ -5,9 +5,8 @@
 package es.ugr.scimat.model.upgrade;
 
 /**
- *
  * @author mjcobo
  */
 public enum KnowledgeBaseVersion {
-  V_1_01, V_1_02, V_1_03, UNDEFINED
+    V_1_01, V_1_02, V_1_03, UNDEFINED
 }

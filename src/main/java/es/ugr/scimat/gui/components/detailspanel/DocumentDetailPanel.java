@@ -5,381 +5,371 @@
  */
 package es.ugr.scimat.gui.components.detailspanel;
 
-import java.util.ArrayList;
 import es.ugr.scimat.model.knowledgebase.entity.Document;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author Manuel Jesus Cobo Martin.
  */
 public class DocumentDetailPanel extends GenericDetailPanel<Document> {
 
-  /** 
-   * Creates new form ArticleDetailPanel
-   */
-  public DocumentDetailPanel() {
-    initComponents();
+    /**
+     * Creates new form ArticleDetailPanel
+     */
+    public DocumentDetailPanel() {
+        initComponents();
 
-    CurrentProject.getInstance().getKbObserver().addDocumentObserver(this);
-  }
-
-  /**
-   * 
-   */
-  public void reset() {
-
-    idTextField.setText("");
-    typeTextField.setText("");
-    titleTextField.setText("");
-    issueTextField.setText("");
-    volumeTextField.setText("");
-    beginPageTextField.setText("");
-    endPageTextField.setText("");
-    doiTextField.setText("");
-    abstractTextArea.setText("");
-    citationsSpinner.setValue(0);
-    sourceIdentifierTextField.setText("");
-
-    setEnableTextField(false);
-  }
-
-  /**
-   *
-   */
-  public void setEnableTextField(boolean enabled) {
-
-    idTextField.setEnabled(enabled);
-    typeTextField.setEnabled(enabled);
-    titleTextField.setEnabled(enabled);
-    issueTextField.setEnabled(enabled);
-    volumeTextField.setEnabled(enabled);
-    beginPageTextField.setEnabled(enabled);
-    endPageTextField.setEnabled(enabled);
-    doiTextField.setEnabled(enabled);
-    abstractTextArea.setEnabled(enabled);
-    citationsSpinner.setEnabled(enabled);
-    sourceIdentifierTextField.setEnabled(enabled);
-  }
-
-  /**
-   * 
-   * @param document
-   */
-  public void refreshItem(Document document) {
-
-    this.document = document;
-
-    // Si existe un articulo con ese identificador.
-    if (document != null) {
-
-      idTextField.setText(this.document.getDocumentID().toString());
-      typeTextField.setText(this.document.getType());
-      titleTextField.setText(this.document.getTitle());
-      issueTextField.setText(this.document.getIssue());
-      volumeTextField.setText(this.document.getVolume());
-      beginPageTextField.setText(this.document.getBeginPage());
-      endPageTextField.setText(this.document.getEndPage());
-      doiTextField.setText(this.document.getDoi());
-      abstractTextArea.setText(this.document.getDocAbstract());
-      citationsSpinner.setValue(this.document.getCitationsCount());
-      sourceIdentifierTextField.setText(this.document.getSourceIdentifier());
-
-      setEnableTextField(true);
-
-    } else {
-
-      reset();
+        CurrentProject.getInstance().getKbObserver().addDocumentObserver(this);
     }
-  }
 
-  /**
-   * 
-   * @return
-   */
-  public String getType() {
+    /**
+     *
+     */
+    public void reset() {
 
-    return typeTextField.getText();
-  }
+        idTextField.setText("");
+        typeTextField.setText("");
+        titleTextField.setText("");
+        issueTextField.setText("");
+        volumeTextField.setText("");
+        beginPageTextField.setText("");
+        endPageTextField.setText("");
+        doiTextField.setText("");
+        abstractTextArea.setText("");
+        citationsSpinner.setValue(0);
+        sourceIdentifierTextField.setText("");
 
-  /**
-   *
-   * @return
-   */
-  public String getTitle() {
-
-    return titleTextField.getText();
-  }
-
-  /**
-   *
-   * @return
-   */
-  public String getIssue() {
-
-    return issueTextField.getText();
-  }
-
-  /**
-   *
-   * @return
-   */
-  public String getVolume() {
-
-    return volumeTextField.getText();
-  }
-
-  /**
-   * 
-   * @return
-   */
-  public String getBeginPage() {
-
-    return beginPageTextField.getText();
-  }
-
-  /**
-   * 
-   * @return
-   */
-  public String getEndPage() {
-
-    return endPageTextField.getText();
-  }
-
-  /**
-   *
-   * @return
-   */
-  public String getAbstract() {
-
-    return abstractTextArea.getText();
-  }
-
-  /**
-   * 
-   * @return
-   */
-  public String getDoi() {
-
-    return doiTextField.getText();
-  }
-
-  /**
-   *
-   * @return
-   */
-  public int getCitations() {
-
-    return (Integer)this.citationsSpinner.getValue();
-  }
-
-  /**
-   * 
-   * @return
-   */
-  public String getSourceIdentifier() {
-
-    return sourceIdentifierTextField.getText();
-  }
-
-  public void entityAdded(ArrayList<Document> items) throws KnowledgeBaseException {
-    // Do Nothing
-  }
-
-  public void entityRefresh() throws KnowledgeBaseException {
-    // Do Nothing
-  }
-
-  public void entityUpdated(ArrayList<Document> items) throws KnowledgeBaseException {
-
-    int position;
-
-    position = items.indexOf(this.document);
-
-    if (position != -1) {
-
-      refreshItem(items.get(position));
-
+        setEnableTextField(false);
     }
-  }
 
-  public void entityRemoved(ArrayList<Document> items) throws KnowledgeBaseException {
-    // Do Nothing
-  }
+    /**
+     *
+     */
+    public void setEnableTextField(boolean enabled) {
 
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+        idTextField.setEnabled(enabled);
+        typeTextField.setEnabled(enabled);
+        titleTextField.setEnabled(enabled);
+        issueTextField.setEnabled(enabled);
+        volumeTextField.setEnabled(enabled);
+        beginPageTextField.setEnabled(enabled);
+        endPageTextField.setEnabled(enabled);
+        doiTextField.setEnabled(enabled);
+        abstractTextArea.setEnabled(enabled);
+        citationsSpinner.setEnabled(enabled);
+        sourceIdentifierTextField.setEnabled(enabled);
+    }
 
-    idDescriptionLabel = new javax.swing.JLabel();
-    idTextField = new javax.swing.JTextField();
-    typeDescriptionLabel = new javax.swing.JLabel();
-    typeTextField = new javax.swing.JTextField();
-    titleDescriptionLabel = new javax.swing.JLabel();
-    titleTextField = new javax.swing.JTextField();
-    issueDescriptionLabel = new javax.swing.JLabel();
-    issueTextField = new javax.swing.JTextField();
-    volumeDescriptionLabel = new javax.swing.JLabel();
-    volumeTextField = new javax.swing.JTextField();
-    beginPageDescriptionLabel = new javax.swing.JLabel();
-    beginPageTextField = new javax.swing.JTextField();
-    endPageDescriptionLabel = new javax.swing.JLabel();
-    endPageTextField = new javax.swing.JTextField();
-    doiDescriptionLabel = new javax.swing.JLabel();
-    doiTextField = new javax.swing.JTextField();
-    abstractDescriptionLabel = new javax.swing.JLabel();
-    abstractScrollPane = new javax.swing.JScrollPane();
-    abstractTextArea = new javax.swing.JTextArea();
-    citationsDescriptionLabel = new javax.swing.JLabel();
-    sourceIdentifierDescriptionLabel = new javax.swing.JLabel();
-    sourceIdentifierTextField = new javax.swing.JTextField();
-    citationsSpinner = new javax.swing.JSpinner();
+    /**
+     * @param document
+     */
+    public void refreshItem(Document document) {
 
-    idDescriptionLabel.setText("ID:");
+        this.document = document;
 
-    idTextField.setEditable(false);
+        // Si existe un articulo con ese identificador.
+        if (document != null) {
 
-    typeDescriptionLabel.setText("Type:");
+            idTextField.setText(this.document.getDocumentID().toString());
+            typeTextField.setText(this.document.getType());
+            titleTextField.setText(this.document.getTitle());
+            issueTextField.setText(this.document.getIssue());
+            volumeTextField.setText(this.document.getVolume());
+            beginPageTextField.setText(this.document.getBeginPage());
+            endPageTextField.setText(this.document.getEndPage());
+            doiTextField.setText(this.document.getDoi());
+            abstractTextArea.setText(this.document.getDocAbstract());
+            citationsSpinner.setValue(this.document.getCitationsCount());
+            sourceIdentifierTextField.setText(this.document.getSourceIdentifier());
 
-    titleDescriptionLabel.setText("Title:");
+            setEnableTextField(true);
 
-    issueDescriptionLabel.setText("Issue:");
+        } else {
 
-    volumeDescriptionLabel.setText("Volume:");
+            reset();
+        }
+    }
 
-    beginPageDescriptionLabel.setText("Begin page:");
+    /**
+     * @return
+     */
+    public String getType() {
 
-    endPageDescriptionLabel.setText("Begin page:");
+        return typeTextField.getText();
+    }
 
-    doiDescriptionLabel.setText("Doi:");
+    /**
+     * @return
+     */
+    public String getTitle() {
 
-    abstractDescriptionLabel.setText("Abstract:");
+        return titleTextField.getText();
+    }
 
-    abstractTextArea.setColumns(20);
-    abstractTextArea.setLineWrap(true);
-    abstractTextArea.setRows(5);
-    abstractTextArea.setWrapStyleWord(true);
-    abstractScrollPane.setViewportView(abstractTextArea);
+    /**
+     * @return
+     */
+    public String getIssue() {
 
-    citationsDescriptionLabel.setText("Citations:");
+        return issueTextField.getText();
+    }
 
-    sourceIdentifierDescriptionLabel.setText("Source identifier:");
+    /**
+     * @return
+     */
+    public String getVolume() {
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-    this.setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(titleDescriptionLabel)
-          .addComponent(issueDescriptionLabel)
-          .addComponent(doiDescriptionLabel)
-          .addComponent(abstractDescriptionLabel)
-          .addComponent(idDescriptionLabel))
-        .addGap(5, 5, 5)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(abstractScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(typeDescriptionLabel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(typeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE))
-          .addComponent(titleTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(issueTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(volumeDescriptionLabel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(volumeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(beginPageDescriptionLabel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(beginPageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(endPageDescriptionLabel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(endPageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE))
-          .addComponent(doiTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)))
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(citationsDescriptionLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(citationsSpinner, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(sourceIdentifierDescriptionLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(sourceIdentifierTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(idDescriptionLabel)
-          .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(typeDescriptionLabel)
-          .addComponent(typeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(titleDescriptionLabel)
-          .addComponent(titleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(issueDescriptionLabel)
-          .addComponent(issueTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(volumeDescriptionLabel)
-          .addComponent(volumeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(beginPageDescriptionLabel)
-          .addComponent(beginPageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(endPageDescriptionLabel)
-          .addComponent(endPageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(doiDescriptionLabel)
-          .addComponent(doiTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(abstractDescriptionLabel)
-          .addComponent(abstractScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(citationsDescriptionLabel)
-          .addComponent(citationsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(sourceIdentifierDescriptionLabel)
-          .addComponent(sourceIdentifierTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-    );
-  }// </editor-fold>//GEN-END:initComponents
+        return volumeTextField.getText();
+    }
 
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel abstractDescriptionLabel;
-  private javax.swing.JScrollPane abstractScrollPane;
-  private javax.swing.JTextArea abstractTextArea;
-  private javax.swing.JLabel beginPageDescriptionLabel;
-  private javax.swing.JTextField beginPageTextField;
-  private javax.swing.JLabel citationsDescriptionLabel;
-  private javax.swing.JSpinner citationsSpinner;
-  private javax.swing.JLabel doiDescriptionLabel;
-  private javax.swing.JTextField doiTextField;
-  private javax.swing.JLabel endPageDescriptionLabel;
-  private javax.swing.JTextField endPageTextField;
-  private javax.swing.JLabel idDescriptionLabel;
-  private javax.swing.JTextField idTextField;
-  private javax.swing.JLabel issueDescriptionLabel;
-  private javax.swing.JTextField issueTextField;
-  private javax.swing.JLabel sourceIdentifierDescriptionLabel;
-  private javax.swing.JTextField sourceIdentifierTextField;
-  private javax.swing.JLabel titleDescriptionLabel;
-  private javax.swing.JTextField titleTextField;
-  private javax.swing.JLabel typeDescriptionLabel;
-  private javax.swing.JTextField typeTextField;
-  private javax.swing.JLabel volumeDescriptionLabel;
-  private javax.swing.JTextField volumeTextField;
-  // End of variables declaration//GEN-END:variables
-  private Document document;
+    /**
+     * @return
+     */
+    public String getBeginPage() {
+
+        return beginPageTextField.getText();
+    }
+
+    /**
+     * @return
+     */
+    public String getEndPage() {
+
+        return endPageTextField.getText();
+    }
+
+    /**
+     * @return
+     */
+    public String getAbstract() {
+
+        return abstractTextArea.getText();
+    }
+
+    /**
+     * @return
+     */
+    public String getDoi() {
+
+        return doiTextField.getText();
+    }
+
+    /**
+     * @return
+     */
+    public int getCitations() {
+
+        return (Integer) this.citationsSpinner.getValue();
+    }
+
+    /**
+     * @return
+     */
+    public String getSourceIdentifier() {
+
+        return sourceIdentifierTextField.getText();
+    }
+
+    public void entityAdded(ArrayList<Document> items) throws KnowledgeBaseException {
+        // Do Nothing
+    }
+
+    public void entityRefresh() throws KnowledgeBaseException {
+        // Do Nothing
+    }
+
+    public void entityUpdated(ArrayList<Document> items) throws KnowledgeBaseException {
+
+        int position;
+
+        position = items.indexOf(this.document);
+
+        if (position != -1) {
+
+            refreshItem(items.get(position));
+
+        }
+    }
+
+    public void entityRemoved(ArrayList<Document> items) throws KnowledgeBaseException {
+        // Do Nothing
+    }
+
+    /**
+     * This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        idDescriptionLabel = new javax.swing.JLabel();
+        idTextField = new javax.swing.JTextField();
+        typeDescriptionLabel = new javax.swing.JLabel();
+        typeTextField = new javax.swing.JTextField();
+        titleDescriptionLabel = new javax.swing.JLabel();
+        titleTextField = new javax.swing.JTextField();
+        issueDescriptionLabel = new javax.swing.JLabel();
+        issueTextField = new javax.swing.JTextField();
+        volumeDescriptionLabel = new javax.swing.JLabel();
+        volumeTextField = new javax.swing.JTextField();
+        beginPageDescriptionLabel = new javax.swing.JLabel();
+        beginPageTextField = new javax.swing.JTextField();
+        endPageDescriptionLabel = new javax.swing.JLabel();
+        endPageTextField = new javax.swing.JTextField();
+        doiDescriptionLabel = new javax.swing.JLabel();
+        doiTextField = new javax.swing.JTextField();
+        abstractDescriptionLabel = new javax.swing.JLabel();
+        abstractScrollPane = new javax.swing.JScrollPane();
+        abstractTextArea = new javax.swing.JTextArea();
+        citationsDescriptionLabel = new javax.swing.JLabel();
+        sourceIdentifierDescriptionLabel = new javax.swing.JLabel();
+        sourceIdentifierTextField = new javax.swing.JTextField();
+        citationsSpinner = new javax.swing.JSpinner();
+
+        idDescriptionLabel.setText("ID:");
+
+        idTextField.setEditable(false);
+
+        typeDescriptionLabel.setText("Type:");
+
+        titleDescriptionLabel.setText("Title:");
+
+        issueDescriptionLabel.setText("Issue:");
+
+        volumeDescriptionLabel.setText("Volume:");
+
+        beginPageDescriptionLabel.setText("Begin page:");
+
+        endPageDescriptionLabel.setText("Begin page:");
+
+        doiDescriptionLabel.setText("Doi:");
+
+        abstractDescriptionLabel.setText("Abstract:");
+
+        abstractTextArea.setColumns(20);
+        abstractTextArea.setLineWrap(true);
+        abstractTextArea.setRows(5);
+        abstractTextArea.setWrapStyleWord(true);
+        abstractScrollPane.setViewportView(abstractTextArea);
+
+        citationsDescriptionLabel.setText("Citations:");
+
+        sourceIdentifierDescriptionLabel.setText("Source identifier:");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(titleDescriptionLabel)
+                                        .addComponent(issueDescriptionLabel)
+                                        .addComponent(doiDescriptionLabel)
+                                        .addComponent(abstractDescriptionLabel)
+                                        .addComponent(idDescriptionLabel))
+                                .addGap(5, 5, 5)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(abstractScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(typeDescriptionLabel)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(typeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE))
+                                        .addComponent(titleTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(issueTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(volumeDescriptionLabel)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(volumeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(beginPageDescriptionLabel)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(beginPageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(endPageDescriptionLabel)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(endPageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE))
+                                        .addComponent(doiTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)))
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(citationsDescriptionLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(citationsSpinner, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sourceIdentifierDescriptionLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sourceIdentifierTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(idDescriptionLabel)
+                                        .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(typeDescriptionLabel)
+                                        .addComponent(typeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(titleDescriptionLabel)
+                                        .addComponent(titleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(issueDescriptionLabel)
+                                        .addComponent(issueTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(volumeDescriptionLabel)
+                                        .addComponent(volumeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(beginPageDescriptionLabel)
+                                        .addComponent(beginPageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(endPageDescriptionLabel)
+                                        .addComponent(endPageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(doiDescriptionLabel)
+                                        .addComponent(doiTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(abstractDescriptionLabel)
+                                        .addComponent(abstractScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(citationsDescriptionLabel)
+                                        .addComponent(citationsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(sourceIdentifierDescriptionLabel)
+                                        .addComponent(sourceIdentifierTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel abstractDescriptionLabel;
+    private javax.swing.JScrollPane abstractScrollPane;
+    private javax.swing.JTextArea abstractTextArea;
+    private javax.swing.JLabel beginPageDescriptionLabel;
+    private javax.swing.JTextField beginPageTextField;
+    private javax.swing.JLabel citationsDescriptionLabel;
+    private javax.swing.JSpinner citationsSpinner;
+    private javax.swing.JLabel doiDescriptionLabel;
+    private javax.swing.JTextField doiTextField;
+    private javax.swing.JLabel endPageDescriptionLabel;
+    private javax.swing.JTextField endPageTextField;
+    private javax.swing.JLabel idDescriptionLabel;
+    private javax.swing.JTextField idTextField;
+    private javax.swing.JLabel issueDescriptionLabel;
+    private javax.swing.JTextField issueTextField;
+    private javax.swing.JLabel sourceIdentifierDescriptionLabel;
+    private javax.swing.JTextField sourceIdentifierTextField;
+    private javax.swing.JLabel titleDescriptionLabel;
+    private javax.swing.JTextField titleTextField;
+    private javax.swing.JLabel typeDescriptionLabel;
+    private javax.swing.JTextField typeTextField;
+    private javax.swing.JLabel volumeDescriptionLabel;
+    private javax.swing.JTextField volumeTextField;
+    // End of variables declaration//GEN-END:variables
+    private Document document;
 }

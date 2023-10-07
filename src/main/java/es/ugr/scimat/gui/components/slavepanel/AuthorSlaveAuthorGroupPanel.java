@@ -5,7 +5,6 @@
  */
 package es.ugr.scimat.gui.components.slavepanel;
 
-import java.util.ArrayList;
 import es.ugr.scimat.gui.components.ErrorDialogManager;
 import es.ugr.scimat.model.knowledgebase.entity.Author;
 import es.ugr.scimat.model.knowledgebase.entity.AuthorGroup;
@@ -14,183 +13,184 @@ import es.ugr.scimat.project.CurrentProject;
 import es.ugr.scimat.project.observer.AuthorGroupRelationAuthorObserver;
 import es.ugr.scimat.project.observer.EntityObserver;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AuthorSlaveAuthorGroupPanel extends GenericOneSlaveItemPanel
         implements AuthorGroupRelationAuthorObserver, EntityObserver<AuthorGroup> {
 
-  /** Creates new form WordSlaveWordGroupPanel */
-  public AuthorSlaveAuthorGroupPanel() {
-    initComponents();
+    /**
+     * Creates new form WordSlaveWordGroupPanel
+     */
+    public AuthorSlaveAuthorGroupPanel() {
+        initComponents();
 
-    CurrentProject.getInstance().getKbObserver().addAuthorGroupRelationAuthorsObserver(this);
-    CurrentProject.getInstance().getKbObserver().addAuthorGroupObserver(this);
-  }
-
-  /**
-   *
-   */
-  private void refresh() {
-
-    if (this.authorGroup != null) {
-
-      this.groupNameTextField.setText(this.authorGroup.getGroupName());
-      this.stopGroupCheckBox.setSelected(this.authorGroup.isStopGroup());
-      fireSlaveItemObserver(true);
-
-    } else {
-
-      this.groupNameTextField.setText("");
-      this.stopGroupCheckBox.setSelected(false);
+        CurrentProject.getInstance().getKbObserver().addAuthorGroupRelationAuthorsObserver(this);
+        CurrentProject.getInstance().getKbObserver().addAuthorGroupObserver(this);
     }
-  }
 
-  /**
-   *
-   */
-  public void setMasterItem(Author author) {
+    /**
+     *
+     */
+    private void refresh() {
 
-    this.author = author;
+        if (this.authorGroup != null) {
 
-    try {
+            this.groupNameTextField.setText(this.authorGroup.getGroupName());
+            this.stopGroupCheckBox.setSelected(this.authorGroup.isStopGroup());
+            fireSlaveItemObserver(true);
 
-      if (this.author != null) {
+        } else {
 
-        relationChanged();
+            this.groupNameTextField.setText("");
+            this.stopGroupCheckBox.setSelected(false);
+        }
+    }
 
-      } else {
+    /**
+     *
+     */
+    public void setMasterItem(Author author) {
 
-        this.authorGroup = null;
+        this.author = author;
+
+        try {
+
+            if (this.author != null) {
+
+                relationChanged();
+
+            } else {
+
+                this.authorGroup = null;
+                refresh();
+
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            ErrorDialogManager.getInstance().showException(e);
+
+        }
+    }
+
+    /**
+     *
+     */
+    public void relationChanged() throws KnowledgeBaseException {
+
+        if (this.author != null) {
+
+            this.authorGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().getAuthorGroup(this.author.getAuthorID());
+
+        } else {
+
+            this.authorGroup = null;
+
+        }
+
         refresh();
-
-      }
-
-    } catch (KnowledgeBaseException e) {
-    
-      ErrorDialogManager.getInstance().showException(e);
-
     }
-  }
 
-  /**
-   *
-   */
-  public void relationChanged() throws KnowledgeBaseException {
-
-    if (this.author != null) {
-    
-      this.authorGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorDAO().getAuthorGroup(this.author.getAuthorID());
-      
-    } else {
-    
-      this.authorGroup = null;
-      
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityAdded(ArrayList<AuthorGroup> items) throws KnowledgeBaseException {
+        // Do not do nothing
     }
-    
-    refresh();
-  }
 
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityAdded(ArrayList<AuthorGroup> items) throws KnowledgeBaseException {
-    // Do not do nothing
-  }
+    /**
+     * @param entity
+     * @throws KnowledgeBaseException
+     */
+    public void entityRefresh() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @param entity
-   * @throws KnowledgeBaseException
-   */
-  public void entityRefresh() throws KnowledgeBaseException {
+        if (this.authorGroup != null) {
 
-    if (this.authorGroup != null) {
-
-      this.authorGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorGroupDAO().getAuthorGroup(this.authorGroup.getAuthorGroupID());
-      refresh();
+            this.authorGroup = CurrentProject.getInstance().getFactoryDAO().getAuthorGroupDAO().getAuthorGroup(this.authorGroup.getAuthorGroupID());
+            refresh();
+        }
     }
-  }
 
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityRemoved(ArrayList<AuthorGroup> items) throws KnowledgeBaseException {
-    // Do not do nothing
-  }
-
-  /**
-   *
-   * @param items
-   * @throws KnowledgeBaseException
-   */
-  public void entityUpdated(ArrayList<AuthorGroup> items) throws KnowledgeBaseException {
-
-    int position;
-
-    if (this.authorGroup != null) {
-
-      position = items.indexOf(this.authorGroup);
-
-      if (position != -1) {
-
-        this.authorGroup = items.get(position);
-      }
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityRemoved(ArrayList<AuthorGroup> items) throws KnowledgeBaseException {
+        // Do not do nothing
     }
-  }
 
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+    /**
+     * @param items
+     * @throws KnowledgeBaseException
+     */
+    public void entityUpdated(ArrayList<AuthorGroup> items) throws KnowledgeBaseException {
 
-    groupNameDescriptionLabel = new javax.swing.JLabel();
-    groupNameTextField = new javax.swing.JTextField();
-    stopGroupCheckBox = new javax.swing.JCheckBox();
+        int position;
 
-    groupNameDescriptionLabel.setText("Group name:");
+        if (this.authorGroup != null) {
 
-    groupNameTextField.setEditable(false);
+            position = items.indexOf(this.authorGroup);
 
-    stopGroupCheckBox.setText("is stop group?");
-    stopGroupCheckBox.setEnabled(false);
+            if (position != -1) {
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-    this.setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(groupNameDescriptionLabel)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(groupNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(stopGroupCheckBox)
-        .addContainerGap())
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(groupNameDescriptionLabel)
-          .addComponent(groupNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(stopGroupCheckBox))
-    );
-  }// </editor-fold>//GEN-END:initComponents
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel groupNameDescriptionLabel;
-  private javax.swing.JTextField groupNameTextField;
-  private javax.swing.JCheckBox stopGroupCheckBox;
-  // End of variables declaration//GEN-END:variables
-  private Author author = null;
-  private AuthorGroup authorGroup = null;
+                this.authorGroup = items.get(position);
+            }
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        groupNameDescriptionLabel = new javax.swing.JLabel();
+        groupNameTextField = new javax.swing.JTextField();
+        stopGroupCheckBox = new javax.swing.JCheckBox();
+
+        groupNameDescriptionLabel.setText("Group name:");
+
+        groupNameTextField.setEditable(false);
+
+        stopGroupCheckBox.setText("is stop group?");
+        stopGroupCheckBox.setEnabled(false);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(groupNameDescriptionLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(groupNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(stopGroupCheckBox)
+                                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(groupNameDescriptionLabel)
+                                        .addComponent(groupNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(stopGroupCheckBox))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel groupNameDescriptionLabel;
+    private javax.swing.JTextField groupNameTextField;
+    private javax.swing.JCheckBox stopGroupCheckBox;
+    // End of variables declaration//GEN-END:variables
+    private Author author = null;
+    private AuthorGroup authorGroup = null;
 }

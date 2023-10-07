@@ -5,50 +5,50 @@
  */
 package es.ugr.scimat.api.analysis.temporal;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import es.ugr.scimat.api.similaritymeasure.direct.DirectSimilarityMeasure;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class OverlappingMeasure implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private DirectSimilarityMeasure measure;
+    private DirectSimilarityMeasure measure;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public OverlappingMeasure(DirectSimilarityMeasure measure) {
-    this.measure = measure;
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public OverlappingMeasure(DirectSimilarityMeasure measure) {
+        this.measure = measure;
+    }
 
-  /**
-   * 
-   * @param itemsSource
-   * @param itemsTarget
-   * @return
-   */
-  public double calculateOverlapping(ArrayList<Integer> itemsSource, ArrayList<Integer> itemsTarget) {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    ArrayList<Integer> tmp = new ArrayList<Integer>(itemsSource);
+    /**
+     * @param itemsSource
+     * @param itemsTarget
+     * @return
+     */
+    public double calculateOverlapping(ArrayList<Integer> itemsSource, ArrayList<Integer> itemsTarget) {
 
-    tmp.retainAll(itemsTarget);
+        ArrayList<Integer> tmp = new ArrayList<Integer>(itemsSource);
 
-    return this.measure.calculateMeasure(itemsSource.size(), itemsTarget.size(), tmp.size());
-  }
+        tmp.retainAll(itemsTarget);
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+        return this.measure.calculateMeasure(itemsSource.size(), itemsTarget.size(), tmp.size());
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

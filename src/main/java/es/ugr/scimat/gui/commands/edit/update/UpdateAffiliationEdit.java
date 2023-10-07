@@ -5,9 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -15,198 +12,196 @@ import es.ugr.scimat.model.knowledgebase.entity.Affiliation;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateAffiliationEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * The ID of the Affiliation
-   */
-  private Integer affiliationID;
+    /**
+     * The ID of the Affiliation
+     */
+    private Integer affiliationID;
 
-  /**
-   * This attribute contains the complete affiliation.
-   */
-  private String fullAffilliation;
+    /**
+     * This attribute contains the complete affiliation.
+     */
+    private String fullAffilliation;
 
-  /**
-   * The elements added
-   */
-  private ArrayList<Affiliation> affiliationsUpdated;
+    /**
+     * The elements added
+     */
+    private ArrayList<Affiliation> affiliationsUpdated;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param fullAffilliation
-   */
-  public UpdateAffiliationEdit(Integer affiliationID, String fullAffilliation) {
-    super();
+    /**
+     * @param fullAffilliation
+     */
+    public UpdateAffiliationEdit(Integer affiliationID, String fullAffilliation) {
+        super();
 
-    this.affiliationID = affiliationID;
-    this.fullAffilliation = fullAffilliation;
-    this.affiliationsUpdated = new ArrayList<Affiliation>();
-  }
+        this.affiliationID = affiliationID;
+        this.fullAffilliation = fullAffilliation;
+        this.affiliationsUpdated = new ArrayList<Affiliation>();
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-    boolean successful = false;
+        boolean successful = false;
 
-    try {
+        try {
 
-      if (this.fullAffilliation == null) {
+            if (this.fullAffilliation == null) {
 
-        successful = false;
-        this.errorMessage = "The full affiliation can not be null.";
-      
-      } else if (CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().checkAffiliation(this.fullAffilliation)) { // Check the integrity
+                successful = false;
+                this.errorMessage = "The full affiliation can not be null.";
 
-        successful = false;
-        this.errorMessage = "An Affiliation yet exists with this full affiliation.";
+            } else if (CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().checkAffiliation(this.fullAffilliation)) { // Check the integrity
 
-      } else {
+                successful = false;
+                this.errorMessage = "An Affiliation yet exists with this full affiliation.";
 
-        this.affiliationsUpdated.add(CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().getAffiliation(this.affiliationID));
+            } else {
 
-        successful = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().setFullAffiliation(this.affiliationID, this.fullAffilliation, true);
+                this.affiliationsUpdated.add(CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().getAffiliation(this.affiliationID));
 
-        if (successful) {
+                successful = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().setFullAffiliation(this.affiliationID, this.fullAffilliation, true);
 
-          CurrentProject.getInstance().getKnowledgeBase().commit();
+                if (successful) {
 
-          KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                    CurrentProject.getInstance().getKnowledgeBase().commit();
 
-          successful = true;
+                    KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-          UndoStack.addEdit(this);
+                    successful = true;
 
-        } else {
+                    UndoStack.addEdit(this);
 
-          CurrentProject.getInstance().getKnowledgeBase().rollback();
+                } else {
 
-          successful = false;
-          this.errorMessage = "An error happened.";
+                    CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                    successful = false;
+                    this.errorMessage = "An error happened.";
+                }
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
-      }
 
-    } catch (KnowledgeBaseException e) {
+        return successful;
 
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
     }
 
-    return successful;
-  
-  }
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean flag;
+        Affiliation affiliation;
 
-    boolean flag;
-    Affiliation affiliation;
+        try {
 
-    try {
+            affiliation = this.affiliationsUpdated.get(0);
 
-      affiliation = this.affiliationsUpdated.get(0);
+            flag = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().setFullAffiliation(affiliation.getAffiliationID(),
+                    affiliation.getFullAffiliation(), true);
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().setFullAffiliation(affiliation.getAffiliationID(),
-              affiliation.getFullAffiliation(), true);
+            if (flag) {
 
-      if (flag) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+            } else {
 
-      } else {
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+        } catch (KnowledgeBaseException e) {
 
-    } catch (KnowledgeBaseException e) {
+            e.printStackTrace(System.err);
 
-      e.printStackTrace(System.err);
+            try {
 
-      try{
-        
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /**
-   * 
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().addAffiliation(this.affiliationID, this.fullAffilliation, true);
+            flag = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO().addAffiliation(this.affiliationID, this.fullAffilliation, true);
 
-      if (flag) {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

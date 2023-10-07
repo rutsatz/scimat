@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -15,179 +13,176 @@ import es.ugr.scimat.model.knowledgebase.entity.AuthorReferenceReference;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @authorReference mjcobo
  */
 public class UpdateAuthorReferenceReferencePositionEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private Integer referenceID;
-  private Integer authorReferenceID;
-  private int position;
-  
-  private AuthorReferenceReference oldAuthorReferenceReference;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param referenceID
-   * @param authorReferenceID
-   * @param position 
-   */
-  public UpdateAuthorReferenceReferencePositionEdit(Integer referenceID, Integer authorReferenceID, int position) {
-    
-    this.referenceID = referenceID;
-    this.authorReferenceID = authorReferenceID;
-    this.position = position;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @return
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-    
-    boolean successful = true;
-    
-    AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
-    
-    try {
-      
-      authorReferenceReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
-      
-      this.oldAuthorReferenceReference = authorReferenceReferenceDAO.getAuthorReferenceReference(this.referenceID, this.authorReferenceID);
-      
-      successful = authorReferenceReferenceDAO.setPosition(this.referenceID, this.authorReferenceID, this.position, true);
-      
-      if (successful) {
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+    private Integer referenceID;
+    private Integer authorReferenceID;
+    private int position;
 
-        UndoStack.addEdit(this);
+    private AuthorReferenceReference oldAuthorReferenceReference;
 
-      } else {
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+    /**
+     * @param referenceID
+     * @param authorReferenceID
+     * @param position
+     */
+    public UpdateAuthorReferenceReferencePositionEdit(Integer referenceID, Integer authorReferenceID, int position) {
 
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.referenceID = referenceID;
+        this.authorReferenceID = authorReferenceID;
+        this.position = position;
     }
 
-    return successful;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
-    
-    boolean successful = true; 
-    AuthorReferenceReferenceDAO documentAuthorReferenceDAO;
-    
-    try {
+    /**
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-      documentAuthorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
-      
-      successful = documentAuthorReferenceDAO.setPosition(this.referenceID, this.authorReferenceID, this.oldAuthorReferenceReference.getPosition(), true);
-      
-      if (successful) {
+        boolean successful = true;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        AuthorReferenceReferenceDAO authorReferenceReferenceDAO;
 
-      } else {
+        try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            authorReferenceReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
 
-    } catch (KnowledgeBaseException e) {
+            this.oldAuthorReferenceReference = authorReferenceReferenceDAO.getAuthorReferenceReference(this.referenceID, this.authorReferenceID);
 
-      e.printStackTrace(System.err);
+            successful = authorReferenceReferenceDAO.setPosition(this.referenceID, this.authorReferenceID, this.position, true);
 
-      try{
+            if (successful) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } catch (KnowledgeBaseException e2) {
+                UndoStack.addEdit(this);
 
-        e2.printStackTrace(System.err);
+            } else {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
     }
-  }
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
-    
-    boolean successful = true;
-    AuthorReferenceReferenceDAO documentAuthorReferenceDAO;
-    
-    try {
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-      documentAuthorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
-      
-      successful = documentAuthorReferenceDAO.setPosition(this.referenceID, this.authorReferenceID, this.position, true);
-      
-      if (successful) {
+        boolean successful = true;
+        AuthorReferenceReferenceDAO documentAuthorReferenceDAO;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        try {
 
-      } else {
+            documentAuthorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            successful = documentAuthorReferenceDAO.setPosition(this.referenceID, this.authorReferenceID, this.oldAuthorReferenceReference.getPosition(), true);
 
-    } catch (KnowledgeBaseException e) {
+            if (successful) {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      try{
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } catch (KnowledgeBaseException e2) {
+        } catch (KnowledgeBaseException e) {
 
-        e2.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      }
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        AuthorReferenceReferenceDAO documentAuthorReferenceDAO;
+
+        try {
+
+            documentAuthorReferenceDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorReferenceReferenceDAO();
+
+            successful = documentAuthorReferenceDAO.setPosition(this.referenceID, this.authorReferenceID, this.position, true);
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

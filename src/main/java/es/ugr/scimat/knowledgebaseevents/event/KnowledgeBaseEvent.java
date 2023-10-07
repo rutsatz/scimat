@@ -8,10 +8,9 @@ package es.ugr.scimat.knowledgebaseevents.event;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 
 /**
- *
  * @author mjcobo
  */
 public interface KnowledgeBaseEvent {
-  
-  public void fireEvent() throws KnowledgeBaseException; 
+
+    public void fireEvent() throws KnowledgeBaseException;
 }

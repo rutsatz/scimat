@@ -5,7 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.delete;
 
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -15,181 +14,179 @@ import es.ugr.scimat.model.knowledgebase.entity.ReferenceSource;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public class DeleteReferenceSourceFromReferenceEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private Reference reference;
-  private ReferenceSource oldReferenceSource;
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   */
-  public DeleteReferenceSourceFromReferenceEdit(Reference reference) {
-    this.reference = reference;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @return
-   * @throws KnowledgeBaseException 
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-    
-    boolean successful = true;
-    ReferenceDAO referenceDAO;
-    
-    try {
-      
-      referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
-      
-      this.oldReferenceSource = referenceDAO.getReferenceSource(this.reference.getReferenceID());
-      
-      if (this.oldReferenceSource != null) {
-      
-        referenceDAO.setReferenceSource(reference.getReferenceID(), null, true);
-      }
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-      if (successful) {
+    private Reference reference;
+    private ReferenceSource oldReferenceSource;
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+    /**
+     *
+     */
+    public DeleteReferenceSourceFromReferenceEdit(Reference reference) {
+        this.reference = reference;
     }
 
-    return successful;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
-    
-    boolean successful = true; 
-    ReferenceDAO referenceDAO;
-    
-    try {
-      
-      referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
-      
-      if (this.oldReferenceSource != null) {
-      
-        referenceDAO.setReferenceSource(reference.getReferenceID(), 
-                this.oldReferenceSource.getReferenceSourceID(), true);
-        
-      }
-    
-      if (successful) {
+    /**
+     * @return
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        boolean successful = true;
+        ReferenceDAO referenceDAO;
 
-      } else {
+        try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
 
-    } catch (KnowledgeBaseException e) {
+            this.oldReferenceSource = referenceDAO.getReferenceSource(this.reference.getReferenceID());
 
-      e.printStackTrace(System.err);
+            if (this.oldReferenceSource != null) {
 
-      try{
+                referenceDAO.setReferenceSource(reference.getReferenceID(), null, true);
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            if (successful) {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        e2.printStackTrace(System.err);
+                UndoStack.addEdit(this);
 
-      }
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
     }
-  }
 
-  /**
-   * 
-   * @throws CannotUndoException 
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
-    
-    boolean successful = true;
-    ReferenceDAO referenceDAO;
-    
-    try {
-      
-      referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
-      
-      if (this.oldReferenceSource != null) {
-      
-        referenceDAO.setReferenceSource(reference.getReferenceID(), null, true);
-        
-      }
-    
-      if (successful) {
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+        boolean successful = true;
+        ReferenceDAO referenceDAO;
 
-      } else {
+        try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
 
-    } catch (KnowledgeBaseException e) {
+            if (this.oldReferenceSource != null) {
 
-      e.printStackTrace(System.err);
+                referenceDAO.setReferenceSource(reference.getReferenceID(),
+                        this.oldReferenceSource.getReferenceSourceID(), true);
 
-      try{
+            }
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            if (successful) {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        e2.printStackTrace(System.err);
+            } else {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean successful = true;
+        ReferenceDAO referenceDAO;
+
+        try {
+
+            referenceDAO = CurrentProject.getInstance().getFactoryDAO().getReferenceDAO();
+
+            if (this.oldReferenceSource != null) {
+
+                referenceDAO.setReferenceSource(reference.getReferenceID(), null, true);
+
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

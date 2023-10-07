@@ -1,32 +1,37 @@
 /**
  * *********************************************************************
- *
+ * <p>
  * Copyright (C) 2014
- *
+ * <p>
  * M.J. Cobo (manueljesus.cobo@uca.es)
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see http://www.gnu.org/licenses/
- *
- *********************************************************************
+ * <p>
+ * ********************************************************************
  */
 package es.ugr.scimat.api.loader;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.sql.SQLException;
+import es.ugr.scimat.model.knowledgebase.KnowledgeBaseManager;
+import es.ugr.scimat.model.knowledgebase.dao.*;
+import es.ugr.scimat.model.knowledgebase.entity.*;
+import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
+import es.ugr.scimat.project.CurrentProject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,25 +42,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import es.ugr.scimat.model.knowledgebase.KnowledgeBaseManager;
-import es.ugr.scimat.model.knowledgebase.dao.AuthorDAO;
-import es.ugr.scimat.model.knowledgebase.dao.DocumentAuthorDAO;
-import es.ugr.scimat.model.knowledgebase.dao.DocumentDAO;
-import es.ugr.scimat.model.knowledgebase.dao.DocumentWordDAO;
-import es.ugr.scimat.model.knowledgebase.dao.JournalDAO;
-import es.ugr.scimat.model.knowledgebase.dao.PublishDateDAO;
-import es.ugr.scimat.model.knowledgebase.dao.WordDAO;
-import es.ugr.scimat.model.knowledgebase.entity.Author;
-import es.ugr.scimat.model.knowledgebase.entity.DocumentWord;
-import es.ugr.scimat.model.knowledgebase.entity.Journal;
-import es.ugr.scimat.model.knowledgebase.entity.PublishDate;
-import es.ugr.scimat.model.knowledgebase.entity.Word;
-import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
-import es.ugr.scimat.project.CurrentProject;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.sql.SQLException;
 
 /**
  *
@@ -63,180 +54,181 @@ import es.ugr.scimat.project.CurrentProject;
  */
 public class ISIWoS_XML_Loader implements GenericLoader {
 
-  //--------------------------------------------------------------------------
-  //                        Private attributes                               
-  //--------------------------------------------------------------------------
-  private final String filePath;
+    //--------------------------------------------------------------------------
+    //                        Private attributes
+    //--------------------------------------------------------------------------
+    private final String filePath;
 
-  //--------------------------------------------------------------------------
-  //                            Constructors                                 
-  //--------------------------------------------------------------------------
-  /**
-   *
-   * @param filePath
-   */
-  public ISIWoS_XML_Loader(String filePath) {
-    this.filePath = filePath;
-  }
+    //--------------------------------------------------------------------------
+    //                            Constructors
+    //--------------------------------------------------------------------------
 
-  //--------------------------------------------------------------------------
-  //                           Public Methods                                
-  //--------------------------------------------------------------------------
-  @Override
-  public void execute(KnowledgeBaseManager kbm) throws LoaderException, KnowledgeBaseException {
-
-    DocumentBuilder db;
-    Document records;
-
-    try {
-
-      db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-
-      records = db.parse(new File(this.filePath));
-
-      addRecordToKnowledgeBase(records, kbm);
-
-      kbm.commit();
-
-      CurrentProject.getInstance().getKbObserver().fireKnowledgeBaseRefresh();
-
-    } catch (FileNotFoundException ex) {
-
-      throw new LoaderException(ex);
-
-    } catch (SAXException | ParserConfigurationException | IOException ex) {
-
-      throw new LoaderException(ex);
-
-    } catch (KnowledgeBaseException e) {
-
-      try {
-
-        kbm.getConnection().rollback();
-
-      } catch (SQLException s) {
-
-        throw new KnowledgeBaseException(s);
-      }
-
-      throw e;
-
-    } catch (TransformerException | XPathExpressionException ex) {
-      throw new LoaderException(ex);
+    /**
+     *
+     * @param filePath
+     */
+    public ISIWoS_XML_Loader(String filePath) {
+        this.filePath = filePath;
     }
-  }
 
-  //--------------------------------------------------------------------------
-  //                           Private Methods                               
-  //--------------------------------------------------------------------------
-  private void addRecordToKnowledgeBase(Document records,
-          KnowledgeBaseManager kbm)
-          throws KnowledgeBaseException,
-          IOException,
-          TransformerException,
-          ParserConfigurationException,
-          SAXException,
-          XPathExpressionException {
+    //--------------------------------------------------------------------------
+    //                           Public Methods
+    //--------------------------------------------------------------------------
+    @Override
+    public void execute(KnowledgeBaseManager kbm) throws LoaderException, KnowledgeBaseException {
 
-    int i;
-    NodeList recNodes;
-    String rawXML;
-    WosXML wosXML;
-    Integer documentID, journalID, publishDateID;
+        DocumentBuilder db;
+        Document records;
 
-    // Build the DAOs
-    AuthorDAO authorDAO = new AuthorDAO(kbm);
-    DocumentAuthorDAO documentAuthorDAO = new DocumentAuthorDAO(kbm);
-    DocumentDAO documentDAO = new DocumentDAO(kbm);
-    DocumentWordDAO documentWordDAO = new DocumentWordDAO(kbm);
-    JournalDAO journalDAO = new JournalDAO(kbm);
-    PublishDateDAO publishDateDAO = new PublishDateDAO(kbm);
-    WordDAO wordDAO = new WordDAO(kbm);
-    wosXML = new WosXML();
-    recNodes = records.getDocumentElement().getElementsByTagName("REC");
+        try {
 
-    for (i = 0; i < recNodes.getLength(); i++) {
+            db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
-      System.out.println("Record " + (i + 1));
+            records = db.parse(new File(this.filePath));
 
-      rawXML = nodeToString(recNodes.item(i));
+            addRecordToKnowledgeBase(records, kbm);
 
-      wosXML.setXML(rawXML);
+            kbm.commit();
 
-      documentID = addDocument(wosXML, documentDAO);
+            CurrentProject.getInstance().getKbObserver().fireKnowledgeBaseRefresh();
 
-      if (documentID != null) {
-      // Add authors and associate with the document
-      addAuthor(documentID, wosXML, authorDAO, documentAuthorDAO);
+        } catch (FileNotFoundException ex) {
 
-      // Add journal and associate with the document
-      journalID = addJournal(documentID, wosXML, journalDAO, documentDAO);
+            throw new LoaderException(ex);
 
-      //        // Add publishDate and associate with the document
-      publishDateID = addPublishDate(documentID, wosXML, publishDateDAO, documentDAO);
+        } catch (SAXException | ParserConfigurationException | IOException ex) {
 
-      // Add author's word and associate with the document
-      addAuthorWord(documentID, wosXML, wordDAO, documentWordDAO);
+            throw new LoaderException(ex);
 
-        // Add source's word and associate with the document
-      addSourceWord(documentID, wosXML, wordDAO, documentWordDAO);
+        } catch (KnowledgeBaseException e) {
 
-      }
+            try {
+
+                kbm.getConnection().rollback();
+
+            } catch (SQLException s) {
+
+                throw new KnowledgeBaseException(s);
+            }
+
+            throw e;
+
+        } catch (TransformerException | XPathExpressionException ex) {
+            throw new LoaderException(ex);
+        }
     }
-  }
 
-  private Integer addDocument(WosXML wosXML, DocumentDAO documentDAO)
-          throws KnowledgeBaseException, IOException, XPathExpressionException {
+    //--------------------------------------------------------------------------
+    //                           Private Methods
+    //--------------------------------------------------------------------------
+    private void addRecordToKnowledgeBase(Document records,
+                                          KnowledgeBaseManager kbm)
+            throws KnowledgeBaseException,
+            IOException,
+            TransformerException,
+            ParserConfigurationException,
+            SAXException,
+            XPathExpressionException {
 
-    int i;
-    String title, docAbstract, type, doi, sourceIdentifier, volume, issue, beginPage, endPage, citationsText;
-    Integer documentID;
-    int citations;
+        int i;
+        NodeList recNodes;
+        String rawXML;
+        WosXML wosXML;
+        Integer documentID, journalID, publishDateID;
 
-    title = wosXML.getItemTitle();
+        // Build the DAOs
+        AuthorDAO authorDAO = new AuthorDAO(kbm);
+        DocumentAuthorDAO documentAuthorDAO = new DocumentAuthorDAO(kbm);
+        DocumentDAO documentDAO = new DocumentDAO(kbm);
+        DocumentWordDAO documentWordDAO = new DocumentWordDAO(kbm);
+        JournalDAO journalDAO = new JournalDAO(kbm);
+        PublishDateDAO publishDateDAO = new PublishDateDAO(kbm);
+        WordDAO wordDAO = new WordDAO(kbm);
+        wosXML = new WosXML();
+        recNodes = records.getDocumentElement().getElementsByTagName("REC");
 
-    if (!title.isEmpty()) {
+        for (i = 0; i < recNodes.getLength(); i++) {
 
-      docAbstract = wosXML.getAbstract();
+            System.out.println("Record " + (i + 1));
 
-      if (!docAbstract.isEmpty()) {
+            rawXML = nodeToString(recNodes.item(i));
 
-        docAbstract = docAbstract.replaceAll("\n", " ");
+            wosXML.setXML(rawXML);
 
-      } else {
+            documentID = addDocument(wosXML, documentDAO);
 
-        docAbstract = null;
-      }
+            if (documentID != null) {
+                // Add authors and associate with the document
+                addAuthor(documentID, wosXML, authorDAO, documentAuthorDAO);
 
-      type = wosXML.getDocType(1);
-      
-      for (i = 2; i <= wosXML.getDocTypeCount(); i++) {
-        
-        type += ", " + wosXML.getDocType(i);
-      }
-      
-      doi = wosXML.getDOI();
+                // Add journal and associate with the document
+                journalID = addJournal(documentID, wosXML, journalDAO, documentDAO);
 
-      if (doi.isEmpty()) {
+                //        // Add publishDate and associate with the document
+                publishDateID = addPublishDate(documentID, wosXML, publishDateDAO, documentDAO);
 
-        doi = wosXML.getXrefDOI();
-      }
+                // Add author's word and associate with the document
+                addAuthorWord(documentID, wosXML, wordDAO, documentWordDAO);
 
-      sourceIdentifier = wosXML.getUID();
-      volume = wosXML.getVolume();
-      issue = wosXML.getIssue();
-      beginPage = wosXML.getPageBegin();
-      endPage = wosXML.getPageEnd();
-      citationsText = wosXML.getCitationsCount();
+                // Add source's word and associate with the document
+                addSourceWord(documentID, wosXML, wordDAO, documentWordDAO);
 
-      if (!citationsText.isEmpty()) {
+            }
+        }
+    }
 
-        citations = Integer.valueOf(citationsText);
+    private Integer addDocument(WosXML wosXML, DocumentDAO documentDAO)
+            throws KnowledgeBaseException, IOException, XPathExpressionException {
 
-      } else {
+        int i;
+        String title, docAbstract, type, doi, sourceIdentifier, volume, issue, beginPage, endPage, citationsText;
+        Integer documentID;
+        int citations;
 
-        citations = 0;
-      }
+        title = wosXML.getItemTitle();
+
+        if (!title.isEmpty()) {
+
+            docAbstract = wosXML.getAbstract();
+
+            if (!docAbstract.isEmpty()) {
+
+                docAbstract = docAbstract.replaceAll("\n", " ");
+
+            } else {
+
+                docAbstract = null;
+            }
+
+            type = wosXML.getDocType(1);
+
+            for (i = 2; i <= wosXML.getDocTypeCount(); i++) {
+
+                type += ", " + wosXML.getDocType(i);
+            }
+
+            doi = wosXML.getDOI();
+
+            if (doi.isEmpty()) {
+
+                doi = wosXML.getXrefDOI();
+            }
+
+            sourceIdentifier = wosXML.getUID();
+            volume = wosXML.getVolume();
+            issue = wosXML.getIssue();
+            beginPage = wosXML.getPageBegin();
+            endPage = wosXML.getPageEnd();
+            citationsText = wosXML.getCitationsCount();
+
+            if (!citationsText.isEmpty()) {
+
+                citations = Integer.valueOf(citationsText);
+
+            } else {
+
+                citations = 0;
+            }
 
 //      System.out.println("UID: " + sourceIdentifier);
 //      System.out.println("\tTitle: " + title);
@@ -248,215 +240,215 @@ public class ISIWoS_XML_Loader implements GenericLoader {
 //      System.out.println("\tIssue: " + issue);
 //      System.out.println("\tBegin page: " + beginPage);
 //      System.out.println("\tEnd page: " + endPage);
-      documentID = documentDAO.addDocument(title, docAbstract, type,
-              citations, doi, sourceIdentifier, volume, issue, beginPage, endPage, false);
+            documentID = documentDAO.addDocument(title, docAbstract, type,
+                    citations, doi, sourceIdentifier, volume, issue, beginPage, endPage, false);
 
-    } else {
+        } else {
 
-      documentID = null;
+            documentID = null;
+        }
+
+        return documentID;
     }
 
-    return documentID;
-  }
+    /**
+     *
+     * @param documentID
+     * @param record
+     * @param authorDAO
+     * @param documentAuthorDAO
+     * @throws KnowledgeBaseException
+     */
+    private void addAuthor(Integer documentID, WosXML wosXML,
+                           AuthorDAO authorDAO, DocumentAuthorDAO documentAuthorDAO)
+            throws KnowledgeBaseException, IOException, XPathExpressionException {
 
-  /**
-   *
-   * @param documentID
-   * @param record
-   * @param authorDAO
-   * @param documentAuthorDAO
-   * @throws KnowledgeBaseException
-   */
-  private void addAuthor(Integer documentID, WosXML wosXML,
-          AuthorDAO authorDAO, DocumentAuthorDAO documentAuthorDAO)
-          throws KnowledgeBaseException, IOException, XPathExpressionException {
+        int i;
+        String authorName, fullAuthorName;
+        Author author;
+        Integer authorID;
 
-    int i;
-    String authorName, fullAuthorName;
-    Author author;
-    Integer authorID;
+        for (i = 1; i <= wosXML.getAuthorsCount(); i++) {
 
-    for (i = 1; i <= wosXML.getAuthorsCount(); i++) {
-
-      authorName = wosXML.getAuthorWosStandard(i);
-      fullAuthorName = wosXML.getAuthorFullName(i);
+            authorName = wosXML.getAuthorWosStandard(i);
+            fullAuthorName = wosXML.getAuthorFullName(i);
 //      System.out.println("\tAuthor: " + authorName + " - " + fullAuthorName);
 
-      author = authorDAO.getAuthor(authorName, fullAuthorName);
+            author = authorDAO.getAuthor(authorName, fullAuthorName);
 
-      if (author == null) {
+            if (author == null) {
 
-        authorID = authorDAO.addAuthor(authorName, fullAuthorName, false);
+                authorID = authorDAO.addAuthor(authorName, fullAuthorName, false);
 
-      } else {
+            } else {
 
-        authorID = author.getAuthorID();
-      }
+                authorID = author.getAuthorID();
+            }
 
-      if (!documentAuthorDAO.checkDocumentAuthor(documentID, authorID)) {
+            if (!documentAuthorDAO.checkDocumentAuthor(documentID, authorID)) {
 
-        documentAuthorDAO.addDocumentAuthor(documentID, authorID, i, false);
-      }
+                documentAuthorDAO.addDocumentAuthor(documentID, authorID, i, false);
+            }
+        }
     }
-  }
 
-  private Integer addJournal(Integer documentID, WosXML wosXML,
-          JournalDAO journalDAO, DocumentDAO documentDAO)
-          throws KnowledgeBaseException, XPathExpressionException {
+    private Integer addJournal(Integer documentID, WosXML wosXML,
+                               JournalDAO journalDAO, DocumentDAO documentDAO)
+            throws KnowledgeBaseException, XPathExpressionException {
 
-    String source;
-    Journal journal;
-    Integer journalID = null;
+        String source;
+        Journal journal;
+        Integer journalID = null;
 
-    source = wosXML.getSourceTitle();
+        source = wosXML.getSourceTitle();
 //    System.out.println("\tJournal: " + source);
 
-    if (!source.isEmpty()) {
+        if (!source.isEmpty()) {
 
-      journal = journalDAO.getJournal(source);
+            journal = journalDAO.getJournal(source);
 
-      if (journal == null) {
+            if (journal == null) {
 
-        journalID = journalDAO.addJournal(source, "", false);
+                journalID = journalDAO.addJournal(source, "", false);
 
-      } else {
+            } else {
 
-        journalID = journal.getJournalID();
-      }
+                journalID = journal.getJournalID();
+            }
 
-      documentDAO.setJournal(documentID, journalID, false);
+            documentDAO.setJournal(documentID, journalID, false);
+        }
+        return journalID;
     }
-    return journalID;
-  }
 
-  private Integer addPublishDate(Integer documentID, WosXML wosXML,
-          PublishDateDAO publishDateDAO, DocumentDAO documentDAO)
-          throws KnowledgeBaseException, XPathExpressionException {
+    private Integer addPublishDate(Integer documentID, WosXML wosXML,
+                                   PublishDateDAO publishDateDAO, DocumentDAO documentDAO)
+            throws KnowledgeBaseException, XPathExpressionException {
 
-    String year, date;
-    PublishDate publishDate;
-    Integer publishDateID = null;
+        String year, date;
+        PublishDate publishDate;
+        Integer publishDateID = null;
 
-    year = wosXML.getPublicationYear();
-    date = wosXML.getPublicationCoverDate();
+        year = wosXML.getPublicationYear();
+        date = wosXML.getPublicationCoverDate();
 //    System.out.println("\tDate: " + year + " - " + date);
 
-    if (year != null) {
+        if (year != null) {
 
-      publishDate = publishDateDAO.getPublishDate(year, date);
+            publishDate = publishDateDAO.getPublishDate(year, date);
 
-      if (publishDate == null) {
+            if (publishDate == null) {
 
-        publishDateID = publishDateDAO.addPublishDate(year, date, false);
+                publishDateID = publishDateDAO.addPublishDate(year, date, false);
 
-      } else {
+            } else {
 
-        publishDateID = publishDate.getPublishDateID();
-      }
+                publishDateID = publishDate.getPublishDateID();
+            }
 
-      documentDAO.setPublishDate(documentID, publishDateID, false);
+            documentDAO.setPublishDate(documentID, publishDateID, false);
+        }
+        return publishDateID;
     }
-    return publishDateID;
-  }
 
-  private void addAuthorWord(Integer documentID, WosXML wosXML,
-          WordDAO wordDAO, DocumentWordDAO documentWordDAO)
-          throws KnowledgeBaseException, XPathExpressionException {
+    private void addAuthorWord(Integer documentID, WosXML wosXML,
+                               WordDAO wordDAO, DocumentWordDAO documentWordDAO)
+            throws KnowledgeBaseException, XPathExpressionException {
 
-    int i;
-    String wordNames, wordName;
-    String[] splitWordName;
-    Word word;
-    Integer wordID;
-    DocumentWord documentWord;
+        int i;
+        String wordNames, wordName;
+        String[] splitWordName;
+        Word word;
+        Integer wordID;
+        DocumentWord documentWord;
 
-    wordNames = null;
+        wordNames = null;
 
-    for (i = 1; i <= wosXML.getAuhorKeywordCount(); i++) {
+        for (i = 1; i <= wosXML.getAuhorKeywordCount(); i++) {
 
-      wordName = wosXML.getAuthorKeyword(i).trim().toUpperCase().replaceAll(" ", "-");
+            wordName = wosXML.getAuthorKeyword(i).trim().toUpperCase().replaceAll(" ", "-");
 //      System.out.println("\tWord: " + wordName);
 
-      word = wordDAO.getWord(wordName);
+            word = wordDAO.getWord(wordName);
 
-      if (word == null) {
+            if (word == null) {
 
-        wordID = wordDAO.addWord(wordName, false);
+                wordID = wordDAO.addWord(wordName, false);
 
-      } else {
+            } else {
 
-        wordID = word.getWordID();
-      }
+                wordID = word.getWordID();
+            }
 
-      documentWord = documentWordDAO.getDocumentWord(documentID, wordID);
+            documentWord = documentWordDAO.getDocumentWord(documentID, wordID);
 
-      if (documentWord != null) {
+            if (documentWord != null) {
 
-        documentWordDAO.setAuthorWord(documentID, wordID, true, false);
+                documentWordDAO.setAuthorWord(documentID, wordID, true, false);
 
-      } else {
+            } else {
 
-          documentWordDAO.addDocumentWord(documentID, wordID, true, false, false, false);
-      }
+                documentWordDAO.addDocumentWord(documentID, wordID, true, false, false, false);
+            }
+        }
+
     }
 
-  }
+    private void addSourceWord(Integer documentID, WosXML wosXML,
+                               WordDAO wordDAO, DocumentWordDAO documentWordDAO)
+            throws KnowledgeBaseException, XPathExpressionException {
 
-  private void addSourceWord(Integer documentID, WosXML wosXML,
-          WordDAO wordDAO, DocumentWordDAO documentWordDAO)
-          throws KnowledgeBaseException, XPathExpressionException {
+        int i;
+        String wordNames, wordName;
+        String[] splitWordName;
+        Word word;
+        Integer wordID;
+        DocumentWord documentWord;
 
-    int i;
-    String wordNames, wordName;
-    String[] splitWordName;
-    Word word;
-    Integer wordID;
-    DocumentWord documentWord;
+        wordNames = null;
 
-    wordNames = null;
+        for (i = 1; i <= wosXML.getKeywordPlusCount(); i++) {
 
-    for (i = 1; i <= wosXML.getKeywordPlusCount(); i++) {
-
-      wordName = wosXML.getKeywordPlus(i).trim().toUpperCase().replaceAll(" ", "-");
+            wordName = wosXML.getKeywordPlus(i).trim().toUpperCase().replaceAll(" ", "-");
 //      System.out.println("\tWord: " + wordName);
 
-      word = wordDAO.getWord(wordName);
+            word = wordDAO.getWord(wordName);
 
-      if (word == null) {
+            if (word == null) {
 
-        wordID = wordDAO.addWord(wordName, false);
+                wordID = wordDAO.addWord(wordName, false);
 
-      } else {
+            } else {
 
-        wordID = word.getWordID();
-      }
+                wordID = word.getWordID();
+            }
 
-      documentWord = documentWordDAO.getDocumentWord(documentID, wordID);
+            documentWord = documentWordDAO.getDocumentWord(documentID, wordID);
 
-      if (documentWord != null) {
+            if (documentWord != null) {
 
-        documentWordDAO.setSourceWord(documentID, wordID, true, false);
+                documentWordDAO.setSourceWord(documentID, wordID, true, false);
 
-      } else {
+            } else {
 
-          documentWordDAO.addDocumentWord(documentID, wordID, false, true, false, false);
-      }
+                documentWordDAO.addDocumentWord(documentID, wordID, false, true, false, false);
+            }
+        }
+
     }
 
-  }
+    private String nodeToString(Node node) throws TransformerException {
 
-  private String nodeToString(Node node) throws TransformerException {
+        StringWriter sw = new StringWriter();
 
-    StringWriter sw = new StringWriter();
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        //transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        //transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
-    Transformer transformer = TransformerFactory.newInstance().newTransformer();
-    //transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    //transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+        transformer.transform(new DOMSource(node), new StreamResult(sw));
 
-    transformer.transform(new DOMSource(node), new StreamResult(sw));
-
-    return sw.toString();
-  }
+        return sw.toString();
+    }
 }

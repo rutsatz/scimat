@@ -5,103 +5,99 @@
  */
 package es.ugr.scimat.api.mapping.clustering.result;
 
+import es.ugr.scimat.api.utils.property.PropertySet;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.TreeSet;
-import es.ugr.scimat.api.utils.property.PropertySet;
 
 /**
- *
  * @author mjcobo
  */
 public class Cluster implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   * 
-   */
-  private TreeSet<Integer> nodesList;
+    /**
+     *
+     */
+    private TreeSet<Integer> nodesList;
 
-  /**
-   * The principal node of the cluster. If it is null, the cluster does not have
-   * a principal node.
-   */
-  private Integer mainNode;
+    /**
+     * The principal node of the cluster. If it is null, the cluster does not have
+     * a principal node.
+     */
+    private Integer mainNode;
 
-  /**
-   * 
-   */
-  private PropertySet properties;
+    /**
+     *
+     */
+    private PropertySet properties;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   * @param nodes
-   */
-  public Cluster(ArrayList<Integer> nodes, Integer mainNode) {
+    /**
+     * @param nodes
+     */
+    public Cluster(ArrayList<Integer> nodes, Integer mainNode) {
 
-    this.nodesList = new TreeSet<Integer>(nodes);
-    this.mainNode = mainNode;
-    this.properties = new PropertySet();
-  }
+        this.nodesList = new TreeSet<Integer>(nodes);
+        this.mainNode = mainNode;
+        this.properties = new PropertySet();
+    }
 
-  /**
-   * 
-   * @param nodes
-   */
-  public Cluster(ArrayList<Integer> nodes) {
+    /**
+     * @param nodes
+     */
+    public Cluster(ArrayList<Integer> nodes) {
 
-    this.nodesList = new TreeSet<Integer>(nodes);
-    this.mainNode = null;
-    this.properties = new PropertySet();
-  }
+        this.nodesList = new TreeSet<Integer>(nodes);
+        this.mainNode = null;
+        this.properties = new PropertySet();
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @return
-   */
-  public ArrayList<Integer> getNodes() {
+    /**
+     * @return
+     */
+    public ArrayList<Integer> getNodes() {
 
-    return new ArrayList<Integer>(this.nodesList);
-  }
+        return new ArrayList<Integer>(this.nodesList);
+    }
 
-  /**
-   * 
-   */
-  public int getNodesCount() {
+    /**
+     *
+     */
+    public int getNodesCount() {
 
-    return this.nodesList.size();
-  }
+        return this.nodesList.size();
+    }
 
-  /**
-   * The main node or null if the cluster does not have a main node.
-   * 
-   * @return the main node or null the cluster does not have a main node.
-   */
-  public Integer getMainNode() {
+    /**
+     * The main node or null if the cluster does not have a main node.
+     *
+     * @return the main node or null the cluster does not have a main node.
+     */
+    public Integer getMainNode() {
 
-    return this.mainNode;
-  }
+        return this.mainNode;
+    }
 
-  /**
-   * 
-   * @return
-   */
-  public PropertySet getProperties() {
-    return properties;
-  }
+    /**
+     * @return
+     */
+    public PropertySet getProperties() {
+        return properties;
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -8,55 +8,50 @@ package es.ugr.scimat.api.analysis.temporal;
 import java.io.Serializable;
 
 /**
- *
  * @author mjcobo
  */
 public class EvolutionMapNexus implements Serializable {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
-  
-  private boolean shareMainNode;
-  private double weight;
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  
-  
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @param shareMainNode
-   * @param weight 
-   */
-  public EvolutionMapNexus(boolean shareMainNode, double weight) {
-    this.shareMainNode = shareMainNode;
-    this.weight = weight;
-  }
-  
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-  
-  /**
-   * 
-   * @return 
-   */
-  public double getWeight() {
-    return weight;
-  }
+    private boolean shareMainNode;
+    private double weight;
 
-  /**
-   * 
-   * @return 
-   */
-  public boolean isShareMainNode() {
-    return shareMainNode;
-  }
-  
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
+
+    /**
+     * @param shareMainNode
+     * @param weight
+     */
+    public EvolutionMapNexus(boolean shareMainNode, double weight) {
+        this.shareMainNode = shareMainNode;
+        this.weight = weight;
+    }
+
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @return
+     */
+    public double getWeight() {
+        return weight;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isShareMainNode() {
+        return shareMainNode;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

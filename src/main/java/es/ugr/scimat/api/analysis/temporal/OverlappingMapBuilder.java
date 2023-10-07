@@ -5,57 +5,54 @@
  */
 package es.ugr.scimat.api.analysis.temporal;
 
-import java.util.ArrayList;
-
 import es.ugr.scimat.api.dataset.Dataset;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class OverlappingMapBuilder {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private OverlappingMeasure measure;
+    private OverlappingMeasure measure;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param measure
-   */
-  public OverlappingMapBuilder(OverlappingMeasure measure) {
-    this.measure = measure;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   * 
-   * @param datasets
-   * @return
-   */
-  public OverlappingMap buildOverlappingMap(ArrayList<Dataset> datasets) {
-
-    int i;
-    OverlappingMap overlappingMap = new OverlappingMap();
-
-    for (i = 0; i < datasets.size(); i++) {
-
-      overlappingMap.addItem(datasets.get(i).getItems(), this.measure);
+    /**
+     * @param measure
+     */
+    public OverlappingMapBuilder(OverlappingMeasure measure) {
+        this.measure = measure;
     }
 
-    return overlappingMap;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @param datasets
+     * @return
+     */
+    public OverlappingMap buildOverlappingMap(ArrayList<Dataset> datasets) {
+
+        int i;
+        OverlappingMap overlappingMap = new OverlappingMap();
+
+        for (i = 0; i < datasets.size(); i++) {
+
+            overlappingMap.addItem(datasets.get(i).getItems(), this.measure);
+        }
+
+        return overlappingMap;
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

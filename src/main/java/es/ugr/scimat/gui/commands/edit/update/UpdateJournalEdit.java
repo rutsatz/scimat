@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,219 +12,218 @@ import es.ugr.scimat.model.knowledgebase.entity.Journal;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateJournalEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer journalID;
+    /**
+     *
+     */
+    private Integer journalID;
 
-  /**
-   *
-   */
-  private String source;
+    /**
+     *
+     */
+    private String source;
 
-  /**
-   *
-   */
-  private String conferenceInformation;
+    /**
+     *
+     */
+    private String conferenceInformation;
 
-  /**
-   * The elements added
-   */
-  private Journal journalsOld;
-  
-  private Journal journalsUpdated;
+    /**
+     * The elements added
+     */
+    private Journal journalsOld;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private Journal journalsUpdated;
 
-  public UpdateJournalEdit(Integer journalID, String source, String conferenceInformation) {
-    super();
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-    this.journalID = journalID;
-    this.source = source;
-    this.conferenceInformation = conferenceInformation;
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public UpdateJournalEdit(Integer journalID, String source, String conferenceInformation) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = false;
-
-    try {
-
-      this.journalsOld = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().getJournal(journalID);
-      
-      if (this.journalsOld.getSource().equals(this.source)) {
-      
-        successful = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().setConferenceInformation(journalID, conferenceInformation, true);
-        
-        this.journalsUpdated = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().getJournal(journalID);
-        
-      } else if (this.source == null) {
-
-        successful = false;
-        this.errorMessage = "The source can not be null.";
-
-      } else if (CurrentProject.getInstance().getFactoryDAO().getJournalDAO().checkJournal(source)) {
-
-        successful = false;
-        this.errorMessage = "A journal yet exists with this source.";
-
-      } else {
-
-        successful = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().updateJournal(journalID, source, conferenceInformation, true);
-        
-        this.journalsUpdated = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().getJournal(journalID);
-
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        successful = true;
-
-        UndoStack.addEdit(this);
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.journalID = journalID;
+        this.source = source;
+        this.conferenceInformation = conferenceInformation;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = false;
 
-    boolean flag;
+        try {
 
-    try {
+            this.journalsOld = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().getJournal(journalID);
 
-      if (journalsOld.getSource().equals(journalsUpdated.getSource())) {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().setConferenceInformation(journalsOld.getJournalID(), journalsOld.getConferenceInformation(), true);
-        
-      } else {
+            if (this.journalsOld.getSource().equals(this.source)) {
 
-        flag = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().updateJournal(journalsOld.getJournalID(),
-              journalsOld.getSource(), journalsOld.getConferenceInformation(), true);
-      
-      }
+                successful = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().setConferenceInformation(journalID, conferenceInformation, true);
 
-      if (flag) {
+                this.journalsUpdated = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().getJournal(journalID);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+            } else if (this.source == null) {
 
-      } else {
+                successful = false;
+                this.errorMessage = "The source can not be null.";
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            } else if (CurrentProject.getInstance().getFactoryDAO().getJournalDAO().checkJournal(source)) {
 
-    } catch (KnowledgeBaseException e) {
+                successful = false;
+                this.errorMessage = "A journal yet exists with this source.";
 
-      e.printStackTrace(System.err);
+            } else {
 
-      try{
+                successful = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().updateJournal(journalID, source, conferenceInformation, true);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                this.journalsUpdated = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().getJournal(journalID);
 
-      } catch (KnowledgeBaseException e2) {
+            }
 
-        e2.printStackTrace(System.err);
+            if (successful) {
 
-      }
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                successful = true;
+
+                UndoStack.addEdit(this);
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
+        }
+
+        return successful;
+
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      if (journalsOld.getSource().equals(this.source)) {
-        
-        flag = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().setConferenceInformation(journalID, conferenceInformation, true);
-        
-      } else {
-      
-        flag = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().updateJournal(journalID, source, conferenceInformation, true);
-      }
+            if (journalsOld.getSource().equals(journalsUpdated.getSource())) {
 
-      if (flag) {
+                flag = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().setConferenceInformation(journalsOld.getJournalID(), journalsOld.getConferenceInformation(), true);
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+            } else {
 
-      } else {
+                flag = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().updateJournal(journalsOld.getJournalID(),
+                        journalsOld.getSource(), journalsOld.getConferenceInformation(), true);
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            }
 
-    } catch (KnowledgeBaseException e) {
+            if (flag) {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      try{
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+            } else {
 
-      } catch (KnowledgeBaseException e2) {
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-        e2.printStackTrace(System.err);
+        } catch (KnowledgeBaseException e) {
 
-      }
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        boolean flag;
+
+        try {
+
+            if (journalsOld.getSource().equals(this.source)) {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().setConferenceInformation(journalID, conferenceInformation, true);
+
+            } else {
+
+                flag = CurrentProject.getInstance().getFactoryDAO().getJournalDAO().updateJournal(journalID, source, conferenceInformation, true);
+            }
+
+            if (flag) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -5,71 +5,69 @@
  */
 package es.ugr.scimat.gui.commands.edit;
 
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotUndoException;
+
 /**
- *
  * @author mjcobo
  */
 public abstract class KnowledgeBaseEdit extends AbstractUndoableEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  protected String errorMessage;
+    /**
+     *
+     */
+    protected String errorMessage;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public KnowledgeBaseEdit() {
-    super();
+    /***************************************************************************/
 
-    this.errorMessage = "";
-  }
+    public KnowledgeBaseEdit() {
+        super();
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        this.errorMessage = "";
+    }
 
-  /**
-   *
-   * @return
-   */
-  public String getErrorMessage() {
-    return errorMessage;
-  }
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  public abstract boolean execute() throws KnowledgeBaseException;
+    /**
+     * @return
+     */
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
-  }
+    /**
+     *
+     */
+    public abstract boolean execute() throws KnowledgeBaseException;
 
-  /**
-   * 
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
-  }
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

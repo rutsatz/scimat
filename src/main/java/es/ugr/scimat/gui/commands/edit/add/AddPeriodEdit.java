@@ -5,8 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.add;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -14,196 +12,196 @@ import es.ugr.scimat.model.knowledgebase.entity.Period;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class AddPeriodEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer periodID;
+    /**
+     *
+     */
+    private Integer periodID;
 
-  /**
-   *
-   */
-  private String name;
+    /**
+     *
+     */
+    private String name;
 
-  /**
-   * 
-   */
-  private int position;
+    /**
+     *
+     */
+    private int position;
 
-  /**
-   * The elements added
-   */
-  private ArrayList<Period> periodsAdded;
+    /**
+     * The elements added
+     */
+    private ArrayList<Period> periodsAdded;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-  public AddPeriodEdit(String name) {
-    super();
+    /***************************************************************************/
 
-    this.name = name;
-    this.periodsAdded = new ArrayList<Period>();
-  }
+    public AddPeriodEdit(String name) {
+        super();
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+        this.name = name;
+        this.periodsAdded = new ArrayList<Period>();
+    }
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    boolean successful = false;
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-    try {
+        boolean successful = false;
 
-      if (this.name == null) {
+        try {
 
-        successful = false;
-        this.errorMessage = "The name can not be null.";
+            if (this.name == null) {
 
-      } else if (CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().checkPeriod(this.name)) {
+                successful = false;
+                this.errorMessage = "The name can not be null.";
 
-        successful = false;
-        this.errorMessage = "A period yet exists with this name.";
+            } else if (CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().checkPeriod(this.name)) {
 
-      } else {
-        
-        this.position = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getMaxPosition() + 1;
+                successful = false;
+                this.errorMessage = "A period yet exists with this name.";
 
-        this.periodID = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().addPeriod(this.name, this.position, true);
+            } else {
 
-        if (this.periodID != null) {
+                this.position = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getMaxPosition() + 1;
 
-          CurrentProject.getInstance().getKnowledgeBase().commit();
+                this.periodID = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().addPeriod(this.name, this.position, true);
 
-          this.periodsAdded.add(CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getPeriod(periodID));
+                if (this.periodID != null) {
 
-          KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                    CurrentProject.getInstance().getKnowledgeBase().commit();
 
-          successful = true;
+                    this.periodsAdded.add(CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().getPeriod(periodID));
 
-          UndoStack.addEdit(this);
+                    KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        } else {
+                    successful = true;
 
-          CurrentProject.getInstance().getKnowledgeBase().rollback();
+                    UndoStack.addEdit(this);
 
-          successful = false;
-          this.errorMessage = "An error happened.";
+                } else {
+
+                    CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                    successful = false;
+                    this.errorMessage = "An error happened.";
+                }
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
-      }
 
-    } catch (KnowledgeBaseException e) {
+        return successful;
 
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
     }
 
-    return successful;
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-  }
+        boolean flag;
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        try {
 
-    boolean flag;
+            flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().removePeriod(periodID, true);
 
-    try {
+            if (flag) {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().removePeriod(periodID, true);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      if (flag) {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+            } else {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } else {
+        } catch (KnowledgeBaseException e) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            e.printStackTrace(System.err);
 
-    } catch (KnowledgeBaseException e) {
+            try {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      try{
+            } catch (KnowledgeBaseException e2) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                e2.printStackTrace(System.err);
 
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
+            }
+        }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().addPeriod(periodID, name, position, true);
+            flag = CurrentProject.getInstance().getFactoryDAO().getPeriodDAO().addPeriod(periodID, name, position, true);
 
-      if (flag) {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

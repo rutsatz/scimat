@@ -8,69 +8,67 @@ package es.ugr.scimat.gui.components.tablemodel;
 import es.ugr.scimat.model.knowledgebase.entity.AuthorReference;
 
 /**
- *
  * @author mjcobo
  */
 public class AuthorReferencesTableModel extends GenericDynamicTableModel<AuthorReference> {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  public AuthorReferencesTableModel() {
-    super(new String[] {"ID", "Name", "References", "Documents"});
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   * @param rowIndex
-   * @param columnIndex
-   * @return
-   */
-  @Override
-  public Object getValueAt(int rowIndex, int columnIndex) {
-
-    if ((rowIndex >= 0) && (rowIndex < getRowCount())) {
-
-      AuthorReference authorReference = getItem(rowIndex);
-
-      switch (columnIndex) {
-
-        case 0:
-          return authorReference.getAuthorReferenceID();
-
-        case 1:
-          return authorReference.getAuthorName();
-
-        case 2:
-          return authorReference.getReferencesCount();
-
-        case 3:
-          return authorReference.getDocumentsCount();
-
-        default:
-          return "";
-      }
-
-    } else {
-
-      return "";
-
+    /**
+     *
+     */
+    public AuthorReferencesTableModel() {
+        super(new String[]{"ID", "Name", "References", "Documents"});
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
+
+    /**
+     * @param rowIndex
+     * @param columnIndex
+     * @return
+     */
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+
+        if ((rowIndex >= 0) && (rowIndex < getRowCount())) {
+
+            AuthorReference authorReference = getItem(rowIndex);
+
+            switch (columnIndex) {
+
+                case 0:
+                    return authorReference.getAuthorReferenceID();
+
+                case 1:
+                    return authorReference.getAuthorName();
+
+                case 2:
+                    return authorReference.getReferencesCount();
+
+                case 3:
+                    return authorReference.getDocumentsCount();
+
+                default:
+                    return "";
+            }
+
+        } else {
+
+            return "";
+
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -6,9 +6,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.update;
 
-import java.util.ArrayList;
-import javax.swing.undo.CannotUndoException;
-
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -16,199 +13,199 @@ import es.ugr.scimat.model.knowledgebase.entity.SubjectCategory;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+
 /**
- *
  * @author mjcobo
  */
 public class UpdateSubjectCategoryEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  /**
-   *
-   */
-  private Integer subjectCategoryID;
+    /**
+     *
+     */
+    private Integer subjectCategoryID;
 
-  /**
-   *
-   */
-  private String subjectCategoryName;
+    /**
+     *
+     */
+    private String subjectCategoryName;
 
-  /**
-   * The elements added
-   */
-  private ArrayList<SubjectCategory> subjectCategoriesOld;
-  
-  private ArrayList<SubjectCategory> subjectCategoriesUpdated;
+    /**
+     * The elements added
+     */
+    private ArrayList<SubjectCategory> subjectCategoriesOld;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    private ArrayList<SubjectCategory> subjectCategoriesUpdated;
 
-  public UpdateSubjectCategoryEdit(Integer subjectCategoryID, String subjectCategoryName) {
-    super();
+    /***************************************************************************/
+    /*                            Constructors                                 */
 
-    this.subjectCategoryID = subjectCategoryID;
-    this.subjectCategoryName = subjectCategoryName;
-    this.subjectCategoriesOld = new ArrayList<SubjectCategory>();
-    this.subjectCategoriesUpdated = new ArrayList<SubjectCategory>();
-  }
+    /***************************************************************************/
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    public UpdateSubjectCategoryEdit(Integer subjectCategoryID, String subjectCategoryName) {
+        super();
 
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
+        this.subjectCategoryID = subjectCategoryID;
+        this.subjectCategoryName = subjectCategoryName;
+        this.subjectCategoriesOld = new ArrayList<SubjectCategory>();
+        this.subjectCategoriesUpdated = new ArrayList<SubjectCategory>();
+    }
 
-    boolean successful = false;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-    try {
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-      if (this.subjectCategoryName == null) {
+        boolean successful = false;
 
-        successful = false;
-        this.errorMessage = "The name can not be null.";
+        try {
 
-      } else if (CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().checkSubjectCategory(subjectCategoryName)) {
+            if (this.subjectCategoryName == null) {
 
-        successful = false;
-        this.errorMessage = "A Subject categoty yet exists with this name.";
+                successful = false;
+                this.errorMessage = "The name can not be null.";
 
-      } else {
+            } else if (CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().checkSubjectCategory(subjectCategoryName)) {
 
-        this.subjectCategoriesOld.add(CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().getSubjectCategory(subjectCategoryID));
+                successful = false;
+                this.errorMessage = "A Subject categoty yet exists with this name.";
 
-        successful = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().setSubjectCategoryName(subjectCategoryID, subjectCategoryName, true);
-        
-        this.subjectCategoriesUpdated.add(CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().getSubjectCategory(subjectCategoryID));
+            } else {
 
-        if (successful) {
+                this.subjectCategoriesOld.add(CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().getSubjectCategory(subjectCategoryID));
 
-          CurrentProject.getInstance().getKnowledgeBase().commit();
+                successful = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().setSubjectCategoryName(subjectCategoryID, subjectCategoryName, true);
 
-          KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                this.subjectCategoriesUpdated.add(CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().getSubjectCategory(subjectCategoryID));
 
-          successful = true;
+                if (successful) {
 
-          UndoStack.addEdit(this);
+                    CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        } else {
+                    KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-          CurrentProject.getInstance().getKnowledgeBase().rollback();
+                    successful = true;
 
-          successful = false;
-          this.errorMessage = "An error happened.";
+                    UndoStack.addEdit(this);
+
+                } else {
+
+                    CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                    successful = false;
+                    this.errorMessage = "An error happened.";
+                }
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
-      }
 
-    } catch (KnowledgeBaseException e) {
+        return successful;
 
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
     }
 
-    return successful;
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-  }
+        boolean flag;
+        SubjectCategory subjectCategory;
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        try {
 
-    boolean flag;
-    SubjectCategory subjectCategory;
+            subjectCategory = this.subjectCategoriesOld.get(0);
 
-    try {
+            flag = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().setSubjectCategoryName(subjectCategory.getSubjectCategoryID(),
+                    subjectCategory.getSubjectCategoryName(), true);
 
-      subjectCategory = this.subjectCategoriesOld.get(0);
+            if (flag) {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().setSubjectCategoryName(subjectCategory.getSubjectCategoryID(),
-              subjectCategory.getSubjectCategoryName(), true);
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-      if (flag) {
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+            } else {
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-      } else {
+        } catch (KnowledgeBaseException e) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+            e.printStackTrace(System.err);
 
-    } catch (KnowledgeBaseException e) {
+            try {
 
-      e.printStackTrace(System.err);
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      try{
+            } catch (KnowledgeBaseException e2) {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                e2.printStackTrace(System.err);
 
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
+            }
+        }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
 
-    boolean flag;
+        boolean flag;
 
-    try {
+        try {
 
-      flag = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().setSubjectCategoryName(subjectCategoryID, subjectCategoryName, true);
+            flag = CurrentProject.getInstance().getFactoryDAO().getSubjectCategoryDAO().setSubjectCategoryName(subjectCategoryID, subjectCategoryName, true);
 
-      if (flag) {
+            if (flag) {
 
-        CurrentProject.getInstance().getKnowledgeBase().commit();
+                CurrentProject.getInstance().getKnowledgeBase().commit();
 
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
 
-      } else {
+            } else {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
 
-    } catch (KnowledgeBaseException e) {
+        } catch (KnowledgeBaseException e) {
 
-      e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
 
-      try{
+            try {
 
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
 
-      } catch (KnowledgeBaseException e2) {
+            } catch (KnowledgeBaseException e2) {
 
-        e2.printStackTrace(System.err);
+                e2.printStackTrace(System.err);
 
-      }
+            }
+        }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

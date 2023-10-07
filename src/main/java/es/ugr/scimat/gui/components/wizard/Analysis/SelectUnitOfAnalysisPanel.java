@@ -9,138 +9,136 @@ import es.ugr.scimat.analysis.UnitOfAnalysisEnum;
 import es.ugr.scimat.gui.components.wizard.GenericWizardStepPanel;
 
 /**
- *
  * @author mjcobo
  */
 public class SelectUnitOfAnalysisPanel extends GenericWizardStepPanel {
 
-  /** Creates new form SelectUnitOfAnalysisPanel */
-  public SelectUnitOfAnalysisPanel() {
-    initComponents();
+    /**
+     * Creates new form SelectUnitOfAnalysisPanel
+     */
+    public SelectUnitOfAnalysisPanel() {
+        initComponents();
 
-    //unitOfAnalysisButtonGroup.
-  }
+        //unitOfAnalysisButtonGroup.
+    }
 
-  /**
-   * 
-   */
-  @Override
-  public void refresh() {
-    
-    this.authorWordsCheckBox.setEnabled(false);
-    this.sourceWordsCheckBox.setEnabled(false);
-    this.addedWordsCheckBox.setEnabled(false);
-    
-    this.authorWordsCheckBox.setSelected(false);
-    this.sourceWordsCheckBox.setSelected(false);
-    this.addedWordsCheckBox.setSelected(false);
-    
-    this.unitOfAnalysisButtonGroup.clearSelection();
-       
-    //this.repaint();
-    //this.validate();
-    
-    fireIncorrectDataObservers();
-  }
+    /**
+     *
+     */
+    @Override
+    public void refresh() {
 
-  /**
-   * 
-   */
-  @Override
-  public void fireIncorrectDataObservers() {
+        this.authorWordsCheckBox.setEnabled(false);
+        this.sourceWordsCheckBox.setEnabled(false);
+        this.addedWordsCheckBox.setEnabled(false);
 
-    if (this.unitOfAnalysisButtonGroup.getSelection() != null) {
+        this.authorWordsCheckBox.setSelected(false);
+        this.sourceWordsCheckBox.setSelected(false);
+        this.addedWordsCheckBox.setSelected(false);
 
-      if (this.wordsRadioButton.isSelected()) {
+        this.unitOfAnalysisButtonGroup.clearSelection();
 
-        if (this.authorWordsCheckBox.isSelected() ||
-            this.sourceWordsCheckBox.isSelected() ||
-            this.addedWordsCheckBox.isSelected()) {
+        //this.repaint();
+        //this.validate();
 
-          notifyIncorrectDataObservers(true, "");
+        fireIncorrectDataObservers();
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void fireIncorrectDataObservers() {
+
+        if (this.unitOfAnalysisButtonGroup.getSelection() != null) {
+
+            if (this.wordsRadioButton.isSelected()) {
+
+                if (this.authorWordsCheckBox.isSelected() ||
+                        this.sourceWordsCheckBox.isSelected() ||
+                        this.addedWordsCheckBox.isSelected()) {
+
+                    notifyIncorrectDataObservers(true, "");
+
+                } else {
+
+                    notifyIncorrectDataObservers(false, "A kinds of word must be selected");
+                }
+
+            } else {
+
+                notifyIncorrectDataObservers(true, "");
+            }
 
         } else {
 
-          notifyIncorrectDataObservers(false, "A kinds of word must be selected");
+            notifyIncorrectDataObservers(false, "A unit of analysis must be selected.");
+        }
+    }
+
+    /**
+     * @return
+     */
+    public UnitOfAnalysisEnum getSelectedUnitOfAnalysis() {
+
+        UnitOfAnalysisEnum unitOfAnalyss = null;
+
+        if (this.authorsRadioButton.isSelected()) {
+
+            unitOfAnalyss = UnitOfAnalysisEnum.Authors;
+
+        } else if (this.wordsRadioButton.isSelected()) {
+
+            unitOfAnalyss = UnitOfAnalysisEnum.Words;
+
+        } else if (this.referencesRadioButton.isSelected()) {
+
+            unitOfAnalyss = UnitOfAnalysisEnum.References;
+
+        } else if (this.authorReferencesRadioButton.isSelected()) {
+
+            unitOfAnalyss = UnitOfAnalysisEnum.AuthorsReference;
+
+        } else if (this.sourceReferencesRadioButton.isSelected()) {
+
+            unitOfAnalyss = UnitOfAnalysisEnum.ReferenceSources;
+
         }
 
-      } else {
-
-        notifyIncorrectDataObservers(true, "");
-      }
-
-    } else {
-
-      notifyIncorrectDataObservers(false, "A unit of analysis must be selected.");
-    }
-  }
-
-  /**
-   * 
-   * @return
-   */
-  public UnitOfAnalysisEnum getSelectedUnitOfAnalysis() {
-
-    UnitOfAnalysisEnum unitOfAnalyss = null;
-
-    if (this.authorsRadioButton.isSelected()) {
-
-      unitOfAnalyss = UnitOfAnalysisEnum.Authors;
-
-    } else if (this.wordsRadioButton.isSelected()) {
-
-      unitOfAnalyss = UnitOfAnalysisEnum.Words;
-
-    } else if (this.referencesRadioButton.isSelected()) {
-
-      unitOfAnalyss = UnitOfAnalysisEnum.References;
-
-    } else if (this.authorReferencesRadioButton.isSelected()) {
-
-      unitOfAnalyss = UnitOfAnalysisEnum.AuthorsReference;
-
-    } else if (this.sourceReferencesRadioButton.isSelected()) {
-
-      unitOfAnalyss = UnitOfAnalysisEnum.ReferenceSources;
-
+        return unitOfAnalyss;
     }
 
-    return unitOfAnalyss;
-  }
+    /**
+     * @return
+     */
+    public boolean isAuthorWordsSelected() {
 
-  /**
-   * 
-   * @return
-   */
-  public boolean isAuthorWordsSelected() {
+        return this.authorWordsCheckBox.isSelected();
+    }
 
-    return this.authorWordsCheckBox.isSelected();
-  }
+    /**
+     * @return
+     */
+    public boolean isSourceWordsSelected() {
 
-  /**
-   *
-   * @return
-   */
-  public boolean isSourceWordsSelected() {
+        return this.sourceWordsCheckBox.isSelected();
+    }
 
-    return this.sourceWordsCheckBox.isSelected();
-  }
+    /**
+     * @return
+     */
+    public boolean isAddedWordsSelected() {
 
-  /**
-   *
-   * @return
-   */
-  public boolean isAddedWordsSelected() {
+        return this.addedWordsCheckBox.isSelected();
+    }
 
-    return this.addedWordsCheckBox.isSelected();
-  }
-
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
+    /**
+     * This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -219,92 +217,91 @@ public class SelectUnitOfAnalysisPanel extends GenericWizardStepPanel {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(authorsRadioButton)
-                    .addComponent(wordsRadioButton)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(authorWordsCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sourceWordsCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(addedWordsCheckBox))
-                    .addComponent(referencesRadioButton)
-                    .addComponent(authorReferencesRadioButton)
-                    .addComponent(sourceReferencesRadioButton))
-                .addContainerGap(22, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(authorsRadioButton)
+                                        .addComponent(wordsRadioButton)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addComponent(authorWordsCheckBox)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(sourceWordsCheckBox)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(addedWordsCheckBox))
+                                        .addComponent(referencesRadioButton)
+                                        .addComponent(authorReferencesRadioButton)
+                                        .addComponent(sourceReferencesRadioButton))
+                                .addContainerGap(22, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(authorsRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(wordsRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(authorWordsCheckBox)
-                    .addComponent(sourceWordsCheckBox)
-                    .addComponent(addedWordsCheckBox))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(referencesRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(authorReferencesRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sourceReferencesRadioButton))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(authorsRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(wordsRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(authorWordsCheckBox)
+                                        .addComponent(sourceWordsCheckBox)
+                                        .addComponent(addedWordsCheckBox))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(referencesRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(authorReferencesRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sourceReferencesRadioButton))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-  /**
-   * 
-   * @param evt
-   */
-  private void authorsRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_authorsRadioButtonActionPerformed
-    fireIncorrectDataObservers();
-  }//GEN-LAST:event_authorsRadioButtonActionPerformed
+    /**
+     * @param evt
+     */
+    private void authorsRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_authorsRadioButtonActionPerformed
+        fireIncorrectDataObservers();
+    }//GEN-LAST:event_authorsRadioButtonActionPerformed
 
-  private void wordsRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wordsRadioButtonActionPerformed
+    private void wordsRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wordsRadioButtonActionPerformed
 
-    fireIncorrectDataObservers();
+        fireIncorrectDataObservers();
 
-    if (this.wordsRadioButton.isSelected()) {
+        if (this.wordsRadioButton.isSelected()) {
 
-      this.authorWordsCheckBox.setEnabled(true);
-      this.sourceWordsCheckBox.setEnabled(true);
-      this.addedWordsCheckBox.setEnabled(true);
+            this.authorWordsCheckBox.setEnabled(true);
+            this.sourceWordsCheckBox.setEnabled(true);
+            this.addedWordsCheckBox.setEnabled(true);
 
-    } else {
+        } else {
 
-      this.authorWordsCheckBox.setEnabled(false);
-      this.sourceWordsCheckBox.setEnabled(false);
-      this.addedWordsCheckBox.setEnabled(false);
-    }
-  }//GEN-LAST:event_wordsRadioButtonActionPerformed
+            this.authorWordsCheckBox.setEnabled(false);
+            this.sourceWordsCheckBox.setEnabled(false);
+            this.addedWordsCheckBox.setEnabled(false);
+        }
+    }//GEN-LAST:event_wordsRadioButtonActionPerformed
 
-  private void referencesRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_referencesRadioButtonActionPerformed
-    fireIncorrectDataObservers();
-  }//GEN-LAST:event_referencesRadioButtonActionPerformed
+    private void referencesRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_referencesRadioButtonActionPerformed
+        fireIncorrectDataObservers();
+    }//GEN-LAST:event_referencesRadioButtonActionPerformed
 
-  private void authorReferencesRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_authorReferencesRadioButtonActionPerformed
-    fireIncorrectDataObservers();
-  }//GEN-LAST:event_authorReferencesRadioButtonActionPerformed
+    private void authorReferencesRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_authorReferencesRadioButtonActionPerformed
+        fireIncorrectDataObservers();
+    }//GEN-LAST:event_authorReferencesRadioButtonActionPerformed
 
-  private void sourceReferencesRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sourceReferencesRadioButtonActionPerformed
-    fireIncorrectDataObservers();
-  }//GEN-LAST:event_sourceReferencesRadioButtonActionPerformed
+    private void sourceReferencesRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sourceReferencesRadioButtonActionPerformed
+        fireIncorrectDataObservers();
+    }//GEN-LAST:event_sourceReferencesRadioButtonActionPerformed
 
-  private void authorWordsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_authorWordsCheckBoxActionPerformed
-    fireIncorrectDataObservers();
-  }//GEN-LAST:event_authorWordsCheckBoxActionPerformed
+    private void authorWordsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_authorWordsCheckBoxActionPerformed
+        fireIncorrectDataObservers();
+    }//GEN-LAST:event_authorWordsCheckBoxActionPerformed
 
-  private void sourceWordsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sourceWordsCheckBoxActionPerformed
-    fireIncorrectDataObservers();
-  }//GEN-LAST:event_sourceWordsCheckBoxActionPerformed
+    private void sourceWordsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sourceWordsCheckBoxActionPerformed
+        fireIncorrectDataObservers();
+    }//GEN-LAST:event_sourceWordsCheckBoxActionPerformed
 
-  private void addedWordsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addedWordsCheckBoxActionPerformed
-    fireIncorrectDataObservers();
-  }//GEN-LAST:event_addedWordsCheckBoxActionPerformed
+    private void addedWordsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addedWordsCheckBoxActionPerformed
+        fireIncorrectDataObservers();
+    }//GEN-LAST:event_addedWordsCheckBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox addedWordsCheckBox;

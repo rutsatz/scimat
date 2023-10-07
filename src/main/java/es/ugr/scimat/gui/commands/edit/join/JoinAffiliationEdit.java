@@ -5,10 +5,6 @@
  */
 package es.ugr.scimat.gui.commands.edit.join;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeSet;
-import javax.swing.undo.CannotUndoException;
 import es.ugr.scimat.gui.commands.edit.KnowledgeBaseEdit;
 import es.ugr.scimat.gui.undostack.UndoStack;
 import es.ugr.scimat.knowledgebaseevents.KnowledgeBaseEventsReceiver;
@@ -21,348 +17,348 @@ import es.ugr.scimat.model.knowledgebase.entity.Document;
 import es.ugr.scimat.model.knowledgebase.exception.KnowledgeBaseException;
 import es.ugr.scimat.project.CurrentProject;
 
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
+
 /**
- *
  * @author mjcobo
  */
 public class JoinAffiliationEdit extends KnowledgeBaseEdit {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private ArrayList<Affiliation> affiliationsToMove;
-  private Affiliation targetAffiliation;
+    private ArrayList<Affiliation> affiliationsToMove;
+    private Affiliation targetAffiliation;
 
-  private ArrayList<ArrayList<Author>> authorOfSources = new ArrayList<ArrayList<Author>>();
-  private ArrayList<ArrayList<Document>> documentOfSources = new ArrayList<ArrayList<Document>>();
+    private ArrayList<ArrayList<Author>> authorOfSources = new ArrayList<ArrayList<Author>>();
+    private ArrayList<ArrayList<Document>> documentOfSources = new ArrayList<ArrayList<Document>>();
 
-  private TreeSet<Author> authorsOfTarget = new TreeSet<Author>();
-  private TreeSet<Document> documentsOfTarget = new TreeSet<Document>();
+    private TreeSet<Author> authorsOfTarget = new TreeSet<Author>();
+    private TreeSet<Document> documentsOfTarget = new TreeSet<Document>();
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param affiliationsToMove
-   * @param targetAffiliation
-   */
-  public JoinAffiliationEdit(ArrayList<Affiliation> affiliationsToMove, Affiliation targetAffiliation) {
+    /**
+     * @param affiliationsToMove
+     * @param targetAffiliation
+     */
+    public JoinAffiliationEdit(ArrayList<Affiliation> affiliationsToMove, Affiliation targetAffiliation) {
 
-    this.affiliationsToMove = affiliationsToMove;
-    this.targetAffiliation = targetAffiliation;
-  }
-
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
-
-  /**
-   *
-   * @throws KnowledgeBaseException
-   */
-  @Override
-  public boolean execute() throws KnowledgeBaseException {
-
-    boolean successful = true;
-    int i, j;
-    AffiliationDAO affiliationDAO;
-    AuthorAffiliationDAO authorAffiliationDAO;
-    DocumentAffiliationDAO documentAffiliationDAO;
-    Affiliation affiliation;
-    ArrayList<Author> authors;
-    ArrayList<Document> documents;
-
-    try {
-
-      i = 0;
-      affiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO();
-      authorAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorAffiliationDAO();
-      documentAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAffiliationDAO();
-
-      // Retrieve the realations of the target item.
-      this.authorsOfTarget = new TreeSet<Author>(affiliationDAO.getAuthors(this.targetAffiliation.getAffiliationID()));
-      this.documentsOfTarget = new TreeSet<Document>(affiliationDAO.getDocuments(this.targetAffiliation.getAffiliationID()));
-
-      while ((i < this.affiliationsToMove.size()) && (successful)) {
-
-        affiliation = this.affiliationsToMove.get(i);
-
-        // Retrieve the relations of the source items
-        authors = affiliationDAO.getAuthors(affiliation.getAffiliationID());
-        this.authorOfSources.add(authors);
-
-        documents = affiliationDAO.getDocuments(affiliation.getAffiliationID());
-        this.documentOfSources.add(documents);
-
-        // Do the join
-        j = 0;
-
-        successful = affiliationDAO.removeAffiliation(affiliation.getAffiliationID(), true);
-
-        while ((j < authors.size()) && (successful)) {
-
-          // If the target element is not associated with this element we perform the association.
-          if (! authorAffiliationDAO.checkAuthorAffiliation(authors.get(j).getAuthorID(), 
-                  this.targetAffiliation.getAffiliationID())) {
-
-            successful = authorAffiliationDAO.addAuthorAffiliation(authors.get(j).getAuthorID(), 
-                    this.targetAffiliation.getAffiliationID(), true);
-          }
-
-          j ++;
-        }
-
-        j = 0;
-
-        while ((j < documents.size()) && (successful)) {
-
-          // If the target element is not associated with this element we perform the association.
-          if (! documentAffiliationDAO.checkDocumentAffiliation(documents.get(j).getDocumentID(), 
-                  this.targetAffiliation.getAffiliationID())) {
-
-            successful = documentAffiliationDAO.addDocumentAffiliation(documents.get(j).getDocumentID(), 
-                    this.targetAffiliation.getAffiliationID(), true);
-          }
-
-          j ++;
-        }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-        UndoStack.addEdit(this);
-
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-        this.errorMessage = "An error happened";
-
-      }
-
-
-    } catch (KnowledgeBaseException e) {
-
-      CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      successful = false;
-      this.errorMessage = "An exception happened.";
-
-      throw e;
+        this.affiliationsToMove = affiliationsToMove;
+        this.targetAffiliation = targetAffiliation;
     }
 
-    return successful;
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  }
+    /**
+     * @throws KnowledgeBaseException
+     */
+    @Override
+    public boolean execute() throws KnowledgeBaseException {
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void undo() throws CannotUndoException {
-    super.undo();
+        boolean successful = true;
+        int i, j;
+        AffiliationDAO affiliationDAO;
+        AuthorAffiliationDAO authorAffiliationDAO;
+        DocumentAffiliationDAO documentAffiliationDAO;
+        Affiliation affiliation;
+        ArrayList<Author> authors;
+        ArrayList<Document> documents;
 
-    int i, j;
-    boolean successful = true;
-    TreeSet<Author> tmpAuthors;
-    TreeSet<Document> tmpDocuments;
-    AffiliationDAO affiliationDAO;
-    Affiliation affiliation;
-    AuthorAffiliationDAO authorAffiliationDAO;
-    DocumentAffiliationDAO documentAffiliationDAO;
-    Iterator<Author> itAuthor;
-    Iterator<Document> itDocument;
+        try {
 
-    try {
+            i = 0;
+            affiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO();
+            authorAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorAffiliationDAO();
+            documentAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAffiliationDAO();
 
-      affiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO();
-      authorAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorAffiliationDAO();
-      documentAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAffiliationDAO();
+            // Retrieve the realations of the target item.
+            this.authorsOfTarget = new TreeSet<Author>(affiliationDAO.getAuthors(this.targetAffiliation.getAffiliationID()));
+            this.documentsOfTarget = new TreeSet<Document>(affiliationDAO.getDocuments(this.targetAffiliation.getAffiliationID()));
 
-      tmpAuthors = new TreeSet<Author>(affiliationDAO.getAuthors(this.targetAffiliation.getAffiliationID()));
-      tmpAuthors.removeAll(this.authorsOfTarget);
+            while ((i < this.affiliationsToMove.size()) && (successful)) {
 
-      itAuthor = tmpAuthors.iterator();
+                affiliation = this.affiliationsToMove.get(i);
 
-      while ((itAuthor.hasNext()) && (successful)) {
+                // Retrieve the relations of the source items
+                authors = affiliationDAO.getAuthors(affiliation.getAffiliationID());
+                this.authorOfSources.add(authors);
 
-        successful = authorAffiliationDAO.removeAuthorAffiliation(itAuthor.next().getAuthorID(), this.targetAffiliation.getAffiliationID(), true);
-      }
+                documents = affiliationDAO.getDocuments(affiliation.getAffiliationID());
+                this.documentOfSources.add(documents);
 
-      tmpDocuments = new TreeSet<Document>(affiliationDAO.getDocuments(this.targetAffiliation.getAffiliationID()));
-      tmpDocuments.removeAll(this.documentsOfTarget);
+                // Do the join
+                j = 0;
 
-      itDocument = tmpDocuments.iterator();
+                successful = affiliationDAO.removeAffiliation(affiliation.getAffiliationID(), true);
 
-      while ((itDocument.hasNext()) && (successful)) {
+                while ((j < authors.size()) && (successful)) {
 
-        successful = documentAffiliationDAO.removeDocumentAffiliation(itDocument.next().getDocumentID(), this.targetAffiliation.getAffiliationID(), true);
-      }
+                    // If the target element is not associated with this element we perform the association.
+                    if (!authorAffiliationDAO.checkAuthorAffiliation(authors.get(j).getAuthorID(),
+                            this.targetAffiliation.getAffiliationID())) {
 
-      i = 0;
+                        successful = authorAffiliationDAO.addAuthorAffiliation(authors.get(j).getAuthorID(),
+                                this.targetAffiliation.getAffiliationID(), true);
+                    }
 
-      while ((i < this.affiliationsToMove.size()) && (successful)) {
+                    j++;
+                }
 
-        affiliation = this.affiliationsToMove.get(i);
+                j = 0;
 
-        successful = affiliationDAO.addAffiliation(affiliation, true);
+                while ((j < documents.size()) && (successful)) {
 
-        j = 0;
+                    // If the target element is not associated with this element we perform the association.
+                    if (!documentAffiliationDAO.checkDocumentAffiliation(documents.get(j).getDocumentID(),
+                            this.targetAffiliation.getAffiliationID())) {
 
-        while ((j < this.documentOfSources.get(i).size()) && (successful)) {
+                        successful = documentAffiliationDAO.addDocumentAffiliation(documents.get(j).getDocumentID(),
+                                this.targetAffiliation.getAffiliationID(), true);
+                    }
 
-          successful = documentAffiliationDAO.addDocumentAffiliation(this.documentOfSources.get(i).get(j).getDocumentID(),
-                                                                    affiliation.getAffiliationID(), true);
+                    j++;
+                }
 
-          j++;
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+                UndoStack.addEdit(this);
+
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+                this.errorMessage = "An error happened";
+
+            }
+
+
+        } catch (KnowledgeBaseException e) {
+
+            CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            successful = false;
+            this.errorMessage = "An exception happened.";
+
+            throw e;
         }
 
-        j = 0;
+        return successful;
 
-        while ((j < this.authorOfSources.get(i).size()) && (successful)) {
-
-          successful = authorAffiliationDAO.addAuthorAffiliation(this.authorOfSources.get(i).get(j).getAuthorID(),
-                                                                 affiliation.getAffiliationID(), true);
-
-          j++;
-        }
-
-        i++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /**
-   *
-   * @throws CannotUndoException
-   */
-  @Override
-  public void redo() throws CannotUndoException {
-    super.redo();
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
 
-    int i, j;
-    boolean successful = true;
-    AffiliationDAO affiliationDAO;
-    Affiliation affiliation;
-    ArrayList<Author> authors;
-    ArrayList<Document> documents;
+        int i, j;
+        boolean successful = true;
+        TreeSet<Author> tmpAuthors;
+        TreeSet<Document> tmpDocuments;
+        AffiliationDAO affiliationDAO;
+        Affiliation affiliation;
+        AuthorAffiliationDAO authorAffiliationDAO;
+        DocumentAffiliationDAO documentAffiliationDAO;
+        Iterator<Author> itAuthor;
+        Iterator<Document> itDocument;
 
-    AuthorAffiliationDAO authorAffiliationDAO;
-    DocumentAffiliationDAO documentAffiliationDAO;
+        try {
 
-    try {
+            affiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO();
+            authorAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorAffiliationDAO();
+            documentAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAffiliationDAO();
 
-      i = 0;
-      affiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO();
-      authorAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorAffiliationDAO();
-      documentAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAffiliationDAO();
+            tmpAuthors = new TreeSet<Author>(affiliationDAO.getAuthors(this.targetAffiliation.getAffiliationID()));
+            tmpAuthors.removeAll(this.authorsOfTarget);
 
-      while ((i < this.affiliationsToMove.size()) && (successful)) {
+            itAuthor = tmpAuthors.iterator();
 
-        affiliation = this.affiliationsToMove.get(i);
+            while ((itAuthor.hasNext()) && (successful)) {
 
-        authors = this.authorOfSources.get(i);
-        documents = this.documentOfSources.get(i);
+                successful = authorAffiliationDAO.removeAuthorAffiliation(itAuthor.next().getAuthorID(), this.targetAffiliation.getAffiliationID(), true);
+            }
 
-        // Do the join
-        j = 0;
+            tmpDocuments = new TreeSet<Document>(affiliationDAO.getDocuments(this.targetAffiliation.getAffiliationID()));
+            tmpDocuments.removeAll(this.documentsOfTarget);
 
-        successful = affiliationDAO.removeAffiliation(affiliation.getAffiliationID(), true);
+            itDocument = tmpDocuments.iterator();
 
-        while ((j < authors.size()) && (successful)) {
+            while ((itDocument.hasNext()) && (successful)) {
 
-          // If the target element is not associated with this element we perform the association.
-          if (! authorAffiliationDAO.checkAuthorAffiliation(authors.get(j).getAuthorID(),
-                  this.targetAffiliation.getAffiliationID())) {
+                successful = documentAffiliationDAO.removeDocumentAffiliation(itDocument.next().getDocumentID(), this.targetAffiliation.getAffiliationID(), true);
+            }
 
-            successful = authorAffiliationDAO.addAuthorAffiliation(authors.get(j).getAuthorID(), 
-                    this.targetAffiliation.getAffiliationID(), true);
-          }
+            i = 0;
 
-          j ++;
+            while ((i < this.affiliationsToMove.size()) && (successful)) {
+
+                affiliation = this.affiliationsToMove.get(i);
+
+                successful = affiliationDAO.addAffiliation(affiliation, true);
+
+                j = 0;
+
+                while ((j < this.documentOfSources.get(i).size()) && (successful)) {
+
+                    successful = documentAffiliationDAO.addDocumentAffiliation(this.documentOfSources.get(i).get(j).getDocumentID(),
+                            affiliation.getAffiliationID(), true);
+
+                    j++;
+                }
+
+                j = 0;
+
+                while ((j < this.authorOfSources.get(i).size()) && (successful)) {
+
+                    successful = authorAffiliationDAO.addAuthorAffiliation(this.authorOfSources.get(i).get(j).getAuthorID(),
+                            affiliation.getAffiliationID(), true);
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
         }
-
-        j = 0;
-
-        while ((j < documents.size()) && (successful)) {
-          
-          // If the target element is not associated with this element we perform the association.
-          if (! documentAffiliationDAO.checkDocumentAffiliation(documents.get(j).getDocumentID(), 
-                  this.targetAffiliation.getAffiliationID())) {
-
-            successful = documentAffiliationDAO.addDocumentAffiliation(documents.get(j).getDocumentID(), 
-                    this.targetAffiliation.getAffiliationID(), true);
-          }
-
-          j ++;
-        }
-
-        i ++;
-      }
-
-      if (successful) {
-
-        CurrentProject.getInstance().getKnowledgeBase().commit();
-        
-        KnowledgeBaseEventsReceiver.getInstance().fireEvents();
-
-      } else {
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-      }
-
-    } catch (KnowledgeBaseException e) {
-
-      e.printStackTrace(System.err);
-
-      try{
-
-        CurrentProject.getInstance().getKnowledgeBase().rollback();
-
-      } catch (KnowledgeBaseException e2) {
-
-        e2.printStackTrace(System.err);
-
-      }
     }
-  }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /**
+     * @throws CannotUndoException
+     */
+    @Override
+    public void redo() throws CannotUndoException {
+        super.redo();
+
+        int i, j;
+        boolean successful = true;
+        AffiliationDAO affiliationDAO;
+        Affiliation affiliation;
+        ArrayList<Author> authors;
+        ArrayList<Document> documents;
+
+        AuthorAffiliationDAO authorAffiliationDAO;
+        DocumentAffiliationDAO documentAffiliationDAO;
+
+        try {
+
+            i = 0;
+            affiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAffiliationDAO();
+            authorAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getAuthorAffiliationDAO();
+            documentAffiliationDAO = CurrentProject.getInstance().getFactoryDAO().getDocumentAffiliationDAO();
+
+            while ((i < this.affiliationsToMove.size()) && (successful)) {
+
+                affiliation = this.affiliationsToMove.get(i);
+
+                authors = this.authorOfSources.get(i);
+                documents = this.documentOfSources.get(i);
+
+                // Do the join
+                j = 0;
+
+                successful = affiliationDAO.removeAffiliation(affiliation.getAffiliationID(), true);
+
+                while ((j < authors.size()) && (successful)) {
+
+                    // If the target element is not associated with this element we perform the association.
+                    if (!authorAffiliationDAO.checkAuthorAffiliation(authors.get(j).getAuthorID(),
+                            this.targetAffiliation.getAffiliationID())) {
+
+                        successful = authorAffiliationDAO.addAuthorAffiliation(authors.get(j).getAuthorID(),
+                                this.targetAffiliation.getAffiliationID(), true);
+                    }
+
+                    j++;
+                }
+
+                j = 0;
+
+                while ((j < documents.size()) && (successful)) {
+
+                    // If the target element is not associated with this element we perform the association.
+                    if (!documentAffiliationDAO.checkDocumentAffiliation(documents.get(j).getDocumentID(),
+                            this.targetAffiliation.getAffiliationID())) {
+
+                        successful = documentAffiliationDAO.addDocumentAffiliation(documents.get(j).getDocumentID(),
+                                this.targetAffiliation.getAffiliationID(), true);
+                    }
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            if (successful) {
+
+                CurrentProject.getInstance().getKnowledgeBase().commit();
+
+                KnowledgeBaseEventsReceiver.getInstance().fireEvents();
+
+            } else {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+            }
+
+        } catch (KnowledgeBaseException e) {
+
+            e.printStackTrace(System.err);
+
+            try {
+
+                CurrentProject.getInstance().getKnowledgeBase().rollback();
+
+            } catch (KnowledgeBaseException e2) {
+
+                e2.printStackTrace(System.err);
+
+            }
+        }
+    }
+
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

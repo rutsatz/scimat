@@ -6,71 +6,69 @@
 package es.ugr.scimat.api.analysis.category;
 
 /**
- *
  * @author mjcobo
  */
 public class StrategicDiagramItem {
 
-  /***************************************************************************/
-  /*                        Private attributes                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                        Private attributes                               */
+    /***************************************************************************/
 
-  private String label;
-  private double valueAxisX;
-  private double valueAxisY;
-  private double volume;
+    private String label;
+    private double valueAxisX;
+    private double valueAxisY;
+    private double volume;
 
-  /***************************************************************************/
-  /*                            Constructors                                 */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                            Constructors                                 */
+    /***************************************************************************/
 
-  /**
-   * 
-   * @param label
-   * @param valueAxisX
-   * @param valueAxisY
-   * @param volume
-   */
-  public StrategicDiagramItem(String label, double valueAxisX, double valueAxisY, double volume) {
-    this.label = label;
-    this.valueAxisX = valueAxisX;
-    this.valueAxisY = valueAxisY;
-    this.volume = volume;
-  }
+    /**
+     * @param label
+     * @param valueAxisX
+     * @param valueAxisY
+     * @param volume
+     */
+    public StrategicDiagramItem(String label, double valueAxisX, double valueAxisY, double volume) {
+        this.label = label;
+        this.valueAxisX = valueAxisX;
+        this.valueAxisY = valueAxisY;
+        this.volume = volume;
+    }
 
-  /***************************************************************************/
-  /*                           Public Methods                                */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Public Methods                                */
+    /***************************************************************************/
 
-  /**
-   * @return the label
-   */
-  public String getLabel() {
-    return label;
-  }
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
 
-  /**
-   * @return the xValue
-   */
-  public double getValueAxisX() {
-    return valueAxisX;
-  }
+    /**
+     * @return the xValue
+     */
+    public double getValueAxisX() {
+        return valueAxisX;
+    }
 
-  /**
-   * @return the yValue
-   */
-  public double getValueAxisY() {
-    return valueAxisY;
-  }
+    /**
+     * @return the yValue
+     */
+    public double getValueAxisY() {
+        return valueAxisY;
+    }
 
-  /**
-   * @return the volume
-   */
-  public double getVolume() {
-    return volume;
-  }
+    /**
+     * @return the volume
+     */
+    public double getVolume() {
+        return volume;
+    }
 
-  /***************************************************************************/
-  /*                           Private Methods                               */
-  /***************************************************************************/
+    /***************************************************************************/
+    /*                           Private Methods                               */
+    /***************************************************************************/
 }

@@ -15,6 +15,10 @@ import java.util.Locale;
  */
 public class SciMATApp {
 
+    static {
+        System.setProperty("file.encoding", "UTF-8");
+    }
+
     /***************************************************************************/
     /*                        Private attributes                               */
     /***************************************************************************/

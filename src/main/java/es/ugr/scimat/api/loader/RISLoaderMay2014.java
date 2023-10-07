@@ -33,8 +33,8 @@ public class RISLoaderMay2014 implements GenericLoader {
     /**
      * ************************************************************************
      */
-    private String file;
-    private boolean importReferences;
+    private final String file;
+    private final boolean importReferences;
 
     /**************************************************************************
      /*                            Constructors                                */
@@ -141,11 +141,18 @@ public class RISLoaderMay2014 implements GenericLoader {
                 key = key.trim().toUpperCase();
                 key = StringUtils.remove(key, '\uFEFF');
 
-                if (key.equals("T1")) { // Science Direct, Web of Science
-                    key = "TI";
+                value = value.trim();
+
+                String existingValue = record.get(key);
+                if (StringUtils.isNotBlank(existingValue)) {
+                    value = String.format("%s\n%s", existingValue, value);
                 }
 
-                value = value.trim();
+                if (key.equals("T1")) { // Science Direct, Web of Science
+                    if (StringUtils.isBlank(record.get("TI"))) {
+                        key = "TI";
+                    }
+                }
 
                 record.put(key, value);
             }

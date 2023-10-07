@@ -2,20 +2,12 @@ plugins {
     id 'java'
 }
 
-group 'es.ugr.scimat'
+group 'es.ugr'
 version '1.1.4'
 sourceCompatibility = '1.8'
 
 repositories {
     mavenCentral()
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src']
-        }
-    }
 }
 
 jar {
@@ -45,10 +37,10 @@ dependencies {
     implementation 'net.sourceforge.javacsv:javacsv:2.0'
 
 
-    implementation 'org.xerial:sqlite-jdbc:3.8.11.2'
+    implementation 'org.xerial:sqlite-jdbc:3.7.2'
 
 
-    implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation 'org.apache.commons:commons-lang3:3.1'
 
     implementation 'org.apache.commons:commons-math:2.2'
 

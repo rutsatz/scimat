@@ -1,0 +1,53 @@
+/*
+ * AverageEdgeAggregation.java
+ *
+ * Created on 24-feb-2011, 0:58:04
+ */
+package es.ugr.scimat.api.analysis.network.aggregation;
+
+import java.util.ArrayList;
+
+import es.ugr.scimat.api.dataset.NetworkPair;
+
+/**
+ *
+ * @author mjcobo
+ */
+public class AverageEdgeAggregation implements EdgeAggregation {
+
+  /***************************************************************************/
+  /*                        Private attributes                               */
+  /***************************************************************************/
+
+  /***************************************************************************/
+  /*                            Constructors                                 */
+  /***************************************************************************/
+
+  /***************************************************************************/
+  /*                           Public Methods                                */
+  /***************************************************************************/
+
+  /**
+   * 
+   * @param pairs
+   * @return
+   */
+  public double aggregate(ArrayList<NetworkPair> pairs) {
+
+    int i;
+    double sum;
+
+    sum = 0.0;
+
+    for (i = 0; i < pairs.size(); i++) {
+
+      sum += pairs.get(i).getValue();
+    }
+
+    return sum / pairs.size();
+  }
+
+  /***************************************************************************/
+  /*                           Private Methods                               */
+  /***************************************************************************/
+}
